@@ -2,523 +2,691 @@
 
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Match Oracle" />
-<meta name="theme-color" content="#080c14" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Match Oracle"/>
+<meta name="theme-color" content="#05070f"/>
 <title>Match Oracle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  :root {
-    --bg: #080c14; --card: #0e1420; --border: #1e2535;
-    --blue: #3d8bff; --yellow: #ffea00; --pink: #ff5c87;
-    --green: #00e676; --orange: #ff9100; --red: #ff5252;
-    --dim: #5a6070; --dimmer: #3a4050; --text: #e8eaf0;
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  html { -webkit-text-size-adjust: 100%; }
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: 'Courier New', monospace;
-    min-height: 100vh; min-height: -webkit-fill-available;
-    overflow-x: hidden;
-    padding-top: var(--safe-top);
-    padding-bottom: var(--safe-bottom);
-  }
-  body::before {
-    content: ''; position: fixed; inset: 0; z-index: 0;
-    background-image:
-      linear-gradient(rgba(61,139,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(61,139,255,0.05) 1px, transparent 1px);
-    background-size: 32px 32px; pointer-events: none;
-  }
-  .container {
-    max-width: 680px; margin: 0 auto;
-    padding: 24px 16px 60px;
-    position: relative; z-index: 1;
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#05070f;
+  --surface:#0b0f1e;
+  --surface2:#10172a;
+  --border:rgba(255,255,255,0.06);
+  --border-glow:rgba(99,179,237,0.25);
+  --gold:#f0b429;
+  --gold2:#e8962a;
+  --cyan:#63b3ed;
+  --cyan2:#4299e1;
+  --green:#48bb78;
+  --red:#fc8181;
+  --orange:#f6ad55;
+  --text:#f0f4ff;
+  --text2:#8892a4;
+  --text3:#4a5568;
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  min-height:100vh;overflow-x:hidden;
+  padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,20px);
+}
+
+/* ── AMBIENT ORBS ── */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;opacity:.18}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,#2b5fff,transparent 70%);top:-200px;left:-150px;animation:drift1 20s ease-in-out infinite alternate}
+.orb2{width:400px;height:400px;background:radial-gradient(circle,#7b2fff,transparent 70%);bottom:-100px;right:-100px;animation:drift2 25s ease-in-out infinite alternate}
+.orb3{width:300px;height:300px;background:radial-gradient(circle,#ff6b2b,transparent 70%);top:40%;left:60%;animation:drift3 18s ease-in-out infinite alternate;opacity:.08}
+@keyframes drift1{0%{transform:translate(0,0) scale(1)}100%{transform:translate(60px,40px) scale(1.15)}}
+@keyframes drift2{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-40px,-60px) scale(1.2)}}
+@keyframes drift3{0%{transform:translate(0,0)}100%{transform:translate(-80px,40px)}}
+
+/* ── NOISE TEXTURE ── */
+body::after{
+content:’’;position:fixed;inset:0;z-index:1;pointer-events:none;
+background-image:url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 200 200’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’ opacity=‘0.04’/%3E%3C/svg%3E”);
+opacity:.4;
+}
+
+.wrap{max-width:640px;margin:0 auto;padding:32px 16px 80px;position:relative;z-index:2}
 
 /* ── HEADER ── */
-header { text-align: center; margin-bottom: 28px; }
-.badge {
-display: inline-block; font-size: 9px; letter-spacing: 3px;
-color: var(–blue); border: 1px solid rgba(61,139,255,.3);
-padding: 4px 10px; margin-bottom: 14px;
+header{text-align:center;margin-bottom:36px;padding-top:8px}
+.logo-line{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px}
+.logo-icon{
+width:42px;height:42px;border-radius:50%;
+background:linear-gradient(135deg,#2b5fff,#7b2fff);
+display:flex;align-items:center;justify-content:center;
+font-size:20px;box-shadow:0 0 24px rgba(43,95,255,.5);
+flex-shrink:0;
 }
-h1 {
-font-size: clamp(38px, 10vw, 58px); font-weight: 900; line-height: 1;
-letter-spacing: -2px; font-family: Georgia, serif; margin-bottom: 8px;
+h1{
+font-family:‘Bebas Neue’,sans-serif;
+font-size:clamp(42px,11vw,68px);
+font-weight:400;letter-spacing:3px;line-height:1;
+background:linear-gradient(135deg,#f0f4ff 30%,#63b3ed 70%,#a78bfa);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+background-clip:text;
 }
-h1 span { color: var(–blue); text-shadow: 0 0 30px rgba(61,139,255,.4); }
-.subtitle { font-size: 10px; letter-spacing: 2px; color: var(–dim); text-transform: uppercase; }
+.tagline{font-size:10px;letter-spacing:3px;color:var(–text3);text-transform:uppercase;margin-top:6px}
 
 /* ── CARDS ── */
-.card { background: var(–card); border: 1px solid var(–border); padding: 18px; margin-bottom: 12px; border-radius: 2px; }
-.section-label { display: block; font-size: 9px; letter-spacing: 3px; color: var(–blue); margin-bottom: 10px; }
+.card{
+background:var(–surface);
+border:1px solid var(–border);
+border-radius:16px;padding:20px;
+margin-bottom:12px;
+backdrop-filter:blur(10px);
+-webkit-backdrop-filter:blur(10px);
+}
+.card-glow{box-shadow:0 0 0 1px rgba(99,179,237,.1),0 8px 32px rgba(0,0,0,.4)}
+.slabel{
+display:flex;align-items:center;gap:6px;
+font-size:9px;letter-spacing:3px;color:var(–text3);
+text-transform:uppercase;margin-bottom:14px;font-weight:600;
+}
+.slabel::before{content:’’;display:inline-block;width:16px;height:1px;background:var(–cyan);opacity:.6}
 
 /* ── INPUTS ── */
-input[type=“text”], input[type=“password”], input[type=“date”] {
-width: 100%; background: var(–bg); border: 1px solid var(–border);
-color: var(–text); padding: 12px 14px; font-size: 16px; /* 16px prevents iOS zoom */
-font-family: ‘Courier New’, monospace; outline: none; border-radius: 0;
--webkit-appearance: none; appearance: none;
+input[type=“password”],input[type=“date”]{
+width:100%;background:var(–bg);
+border:1px solid rgba(255,255,255,.08);
+color:var(–text);padding:14px 16px;font-size:16px;
+font-family:‘Inter’,sans-serif;outline:none;
+border-radius:10px;-webkit-appearance:none;appearance:none;
+transition:border-color .2s;
 }
-input[type=“date”] { color-scheme: dark; }
+input[type=“password”]:focus,input[type=“date”]:focus{border-color:var(–cyan2);box-shadow:0 0 0 3px rgba(99,179,237,.1)}
+input[type=“date”]{color-scheme:dark}
 
 /* ── BUTTONS ── */
-.btn {
-background: var(–blue); color: #000; border: none;
-padding: 14px 20px; font-size: 13px; letter-spacing: 3px;
-font-weight: 900; font-family: ‘Courier New’, monospace;
-cursor: pointer; width: 100%; margin-top: 12px;
-border-radius: 0; -webkit-appearance: none;
-min-height: 48px; /* touch target */
+button{font-family:‘Inter’,sans-serif;cursor:pointer;-webkit-appearance:none;appearance:none;touch-action:manipulation;border-radius:10px}
+.btn-primary{
+display:block;width:100%;
+background:linear-gradient(135deg,#2b5fff,#7b2fff);
+color:#fff;border:none;padding:15px;font-size:13px;
+letter-spacing:1px;font-weight:700;margin-top:12px;min-height:50px;
+box-shadow:0 4px 20px rgba(43,95,255,.4);
+transition:transform .15s,box-shadow .15s;
 }
-.btn:active { opacity: .8; }
-.btn:disabled { background: var(–border); color: var(–dimmer); }
-.btn-sm {
-background: none; border: 1px solid rgba(61,139,255,.3); color: var(–blue);
-font-size: 10px; letter-spacing: 2px; padding: 8px 14px;
-font-family: ‘Courier New’, monospace; cursor: pointer; border-radius: 0;
-min-height: 36px;
+.btn-primary:active{transform:scale(.98);box-shadow:0 2px 10px rgba(43,95,255,.3)}
+.btn-sm{
+background:rgba(99,179,237,.1);border:1px solid rgba(99,179,237,.2);
+color:var(–cyan);font-size:10px;letter-spacing:1px;
+padding:8px 16px;min-height:36px;font-weight:600;
 }
-.btn-test {
-background: none; border: 1px solid var(–dimmer); color: var(–dim);
-font-size: 10px; letter-spacing: 2px; padding: 12px 14px;
-font-family: ‘Courier New’, monospace; cursor: pointer;
-margin-top: 10px; width: 100%; border-radius: 0;
-min-height: 44px;
+.btn-ghost{
+display:block;width:100%;background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.08);color:var(–text2);
+font-size:11px;letter-spacing:1px;padding:13px;margin-top:10px;min-height:46px;font-weight:500;
 }
 
 /* ── KEY BAR ── */
-.key-bar {
-display: flex; justify-content: space-between; align-items: center;
-background: #0a1a0a; border: 1px solid rgba(0,230,118,.2);
-padding: 12px 16px; margin-bottom: 12px; font-size: 12px; color: var(–green);
+.key-bar{
+display:flex;justify-content:space-between;align-items:center;
+background:rgba(72,187,120,.07);border:1px solid rgba(72,187,120,.2);
+border-radius:12px;padding:12px 16px;margin-bottom:12px;font-size:12px;color:var(–green);
+font-weight:500;
 }
 
 /* ── LEAGUE GRID ── */
-.league-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-@media (min-width: 480px) { .league-grid { grid-template-columns: repeat(3, 1fr); } }
-.league-btn {
-background: var(–bg); border: 1px solid var(–border);
-padding: 12px 12px; cursor: pointer; text-align: left;
-font-family: ‘Courier New’, monospace; display: flex;
-flex-direction: column; gap: 3px; border-radius: 0;
--webkit-appearance: none; min-height: 56px;
+.league-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:480px){.league-grid{grid-template-columns:repeat(3,1fr)}}
+.league-btn{
+background:var(–bg);border:1px solid rgba(255,255,255,.06);
+padding:12px;text-align:left;display:flex;flex-direction:column;
+gap:3px;min-height:58px;border-radius:12px;
+transition:all .2s;
 }
-.league-btn.active { background: #0d1e38; border-color: var(–blue); }
-.lg-name { font-size: 11px; font-weight: 700; color: var(–text); line-height: 1.3; }
-.lg-country { font-size: 9px; letter-spacing: 2px; color: var(–dimmer); }
+.league-btn:active{transform:scale(.97)}
+.league-btn.active{
+background:rgba(43,95,255,.12);
+border-color:rgba(43,95,255,.5);
+box-shadow:0 0 20px rgba(43,95,255,.15),inset 0 0 0 1px rgba(43,95,255,.2);
+}
+.lg-name{font-size:11px;font-weight:700;color:var(–text);line-height:1.3}
+.lg-country{font-size:9px;letter-spacing:1px;color:var(–text3);font-weight:500}
 
 /* ── DATE ROW ── */
-.date-row { display: flex; gap: 8px; align-items: stretch; }
-.date-row input { flex: 1; min-width: 0; font-size: 15px; }
-.arrow-btn {
-background: var(–bg); border: 1px solid var(–border); color: var(–text);
-padding: 0 16px; cursor: pointer; font-size: 18px; flex-shrink: 0;
-min-height: 48px; min-width: 48px; border-radius: 0; -webkit-appearance: none;
-display: flex; align-items: center; justify-content: center;
+.date-row{display:flex;gap:8px;align-items:stretch}
+.date-row input{flex:1;min-width:0}
+.btn-arrow{
+background:var(–bg);border:1px solid rgba(255,255,255,.08);
+color:var(–text2);width:48px;min-height:48px;font-size:18px;
+display:flex;align-items:center;justify-content:center;flex-shrink:0;
+transition:all .2s;
 }
-.load-btn {
-background: var(–blue); color: #000; border: none;
-padding: 0 16px; font-size: 11px; letter-spacing: 2px;
-font-weight: 900; font-family: ‘Courier New’, monospace;
-cursor: pointer; flex-shrink: 0; min-height: 48px;
-border-radius: 0; -webkit-appearance: none;
+.btn-arrow:active{background:rgba(99,179,237,.1);color:var(–cyan)}
+.btn-load{
+background:linear-gradient(135deg,#2b5fff,#7b2fff);color:#fff;border:none;
+padding:0 18px;font-size:11px;letter-spacing:1px;
+font-weight:700;min-height:48px;flex-shrink:0;
+box-shadow:0 4px 12px rgba(43,95,255,.3);
 }
 
-/* ── STATUS ── */
-.info-msg { text-align: center; color: var(–dimmer); font-size: 12px; letter-spacing: 2px; padding: 20px; }
-.loading-msg { text-align: center; color: var(–blue); font-size: 12px; letter-spacing: 2px; padding: 20px; }
+/* ── STATUS MESSAGES ── */
+.msg-info{text-align:center;color:var(–text3);font-size:12px;letter-spacing:1px;padding:24px}
+.msg-loading{
+text-align:center;padding:24px;
+color:var(–cyan);font-size:12px;letter-spacing:2px;font-weight:500;
+}
+.msg-loading::after{
+content:’’;display:block;width:32px;height:2px;
+background:linear-gradient(90deg,transparent,var(–cyan),transparent);
+margin:10px auto 0;animation:scan 1.5s ease-in-out infinite;
+}
+@keyframes scan{0%,100%{opacity:.3;transform:scaleX(.5)}50%{opacity:1;transform:scaleX(1)}}
 
-/* ── ERROR BOX ── */
-.error-box { padding: 16px; background: #1a0808; border: 1px solid rgba(255,82,82,.4); margin-bottom: 12px; border-radius: 2px; }
-.err-title { color: var(–red); font-size: 11px; letter-spacing: 2px; margin-bottom: 8px; font-weight: 700; }
-.err-detail { color: #cc4444; font-size: 11px; line-height: 1.6; word-break: break-all; }
-.err-hint { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,82,82,.2); color: var(–dimmer); font-size: 10px; line-height: 1.7; }
-.test-result { margin-top: 10px; padding: 12px 14px; font-size: 11px; line-height: 1.6; border: 1px solid; border-radius: 2px; }
-.test-ok  { border-color: rgba(0,230,118,.3); color: var(–green); background: #0a1a0a; }
-.test-fail{ border-color: rgba(255,82,82,.3); color: var(–red);   background: #1a0808; }
+/* ── ERROR ── */
+.err-box{padding:16px;background:rgba(252,129,129,.06);border:1px solid rgba(252,129,129,.2);margin-bottom:12px;border-radius:12px}
+.err-title{color:var(–red);font-size:11px;letter-spacing:2px;margin-bottom:8px;font-weight:700}
+.err-detail{color:rgba(252,129,129,.8);font-size:11px;line-height:1.6;word-break:break-all}
+.err-hint{margin-top:10px;padding-top:10px;border-top:1px solid rgba(252,129,129,.1);color:var(–text3);font-size:10px;line-height:1.7}
+.test-result{margin-top:10px;padding:12px 14px;font-size:11px;line-height:1.6;border:1px solid;border-radius:8px}
+.test-ok{border-color:rgba(72,187,120,.3);color:var(–green);background:rgba(72,187,120,.07)}
+.test-fail{border-color:rgba(252,129,129,.3);color:var(–red);background:rgba(252,129,129,.06)}
 
 /* ── FIXTURE LIST ── */
-.fixture-list { display: flex; flex-direction: column; gap: 4px; }
-.fixture-row {
-padding: 12px; background: var(–bg); border: 1px solid #1a2030;
-cursor: pointer; border-radius: 2px;
+.fx-list{display:flex;flex-direction:column;gap:6px}
+.fx-row{
+padding:14px;background:var(–bg);
+border:1px solid rgba(255,255,255,.05);border-radius:12px;
+transition:all .2s;position:relative;overflow:hidden;
 }
-.fixture-row.active { background: #0d1e38; border-color: rgba(61,139,255,.4); }
-.fx-teams { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 6px; }
-.fx-team { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
-.fx-team.right { justify-content: flex-end; }
-.fx-team img { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
-.fx-name { font-size: 11px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.fx-score { font-size: 12px; font-weight: 900; color: var(–dim); padding: 0 8px; flex-shrink: 0; }
-.fx-meta { display: flex; justify-content: space-between; align-items: center; }
-.fx-status { font-size: 9px; letter-spacing: 2px; border: 1px solid; padding: 2px 7px; }
-.fx-cta { font-size: 9px; color: var(–dimmer); letter-spacing: 2px; }
-.fx-predicting { font-size: 9px; color: var(–blue); font-style: italic; }
-
-/* ── RESULT ── */
-.match-banner {
-display: flex; align-items: center; justify-content: space-between;
-background: var(–card); border: 1px solid var(–border);
-padding: 16px; margin-bottom: 12px;
+.fx-row::before{
+content:’’;position:absolute;left:0;top:0;bottom:0;width:3px;
+background:linear-gradient(180deg,#2b5fff,#7b2fff);
+opacity:0;transition:opacity .2s;border-radius:3px 0 0 3px;
 }
-.team-side { display: flex; flex-direction: column; gap: 5px; flex: 1; }
-.team-side.right { align-items: flex-end; }
-.team-side img { width: 40px; height: 40px; object-fit: contain; }
-.t-name { font-size: 12px; font-weight: 700; line-height: 1.3; }
-.t-tag { font-size: 8px; letter-spacing: 3px; color: var(–dimmer); }
-.vs-badge { font-size: 18px; font-weight: 900; color: var(–border); padding: 0 14px; flex-shrink: 0; }
-.pred-box { background: var(–card); border: 1px solid var(–border); padding: 20px 16px; margin-bottom: 12px; text-align: center; }
-.pred-label { font-size: 9px; letter-spacing: 4px; color: var(–dimmer); margin-bottom: 8px; }
-.pred-value { font-size: clamp(28px, 8vw, 36px); font-weight: 900; letter-spacing: 2px; font-family: Georgia, serif; margin-bottom: 12px; }
-.conf-badge { display: inline-block; padding: 4px 14px; font-size: 10px; letter-spacing: 2px; border: 1px solid; }
-.prob-section { background: var(–card); border: 1px solid var(–border); padding: 16px; margin-bottom: 12px; }
-.prob-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.prob-row:last-child { margin-bottom: 0; }
-.prob-label { width: 80px; font-size: 9px; letter-spacing: 2px; color: var(–dim); flex-shrink: 0; }
-.bar-track { flex: 1; height: 6px; background: #1a2030; overflow: hidden; border-radius: 2px; }
-.bar-fill { height: 100%; border-radius: 2px; transition: width 1s cubic-bezier(0.25,1,0.5,1); }
-.prob-pct { width: 42px; text-align: right; font-size: 13px; font-weight: 700; flex-shrink: 0; }
-.xg-row { display: flex; gap: 12px; margin-bottom: 12px; }
-.xg-card { flex: 1; background: var(–card); border: 1px solid var(–border); padding: 14px; text-align: center; }
-.xg-label { font-size: 8px; letter-spacing: 3px; color: var(–dimmer); margin-bottom: 5px; }
-.xg-value { font-size: 26px; font-weight: 900; font-family: Georgia, serif; }
-.form-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-@media (min-width: 540px) { .form-grid { flex-direction: row; } }
-.form-card { flex: 1; background: var(–card); border: 1px solid; padding: 14px; }
-.form-title { font-size: 9px; letter-spacing: 2px; margin-bottom: 12px; font-weight: 700; line-height: 1.4; }
-.stat-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 8px; border-bottom: 1px solid #0e1824; padding-bottom: 8px; }
-.stat-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.stat-label { color: var(–dim); }
-.stat-value { font-weight: 700; }
-.model-note { font-size: 8px; letter-spacing: 1px; color: #2a3040; text-align: center; padding: 4px; }
-
-.hidden { display: none !important; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
-.fade-in { animation: fadeIn .3s ease; }
-
-/* ── INSTALL BANNER ── */
-.install-hint {
-background: #0a1520; border: 1px solid rgba(61,139,255,.2);
-padding: 12px 16px; margin-bottom: 16px; font-size: 10px;
-color: var(–dimmer); line-height: 1.7; text-align: center;
+.fx-row.active{background:rgba(43,95,255,.08);border-color:rgba(43,95,255,.3)}
+.fx-row.active::before{opacity:1}
+.fx-row:active{transform:scale(.99)}
+.fx-teams{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px}
+.fx-team{display:flex;align-items:center;gap:7px;flex:1;min-width:0}
+.fx-team.r{justify-content:flex-end}
+.fx-team img{width:22px;height:22px;object-fit:contain;flex-shrink:0}
+.fx-name{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(–text)}
+.fx-score{
+font-size:13px;font-weight:700;color:var(–text2);
+padding:2px 10px;background:rgba(255,255,255,.05);
+border-radius:6px;flex-shrink:0;font-family:‘Bebas Neue’,sans-serif;letter-spacing:1px;
 }
-.install-hint strong { color: var(–blue); }
+.fx-meta{display:flex;justify-content:space-between;align-items:center}
+.fx-status{font-size:9px;letter-spacing:2px;padding:3px 8px;border-radius:20px;font-weight:600;background:rgba(255,255,255,.05)}
+.fx-cta{font-size:9px;color:var(–text3);letter-spacing:2px;font-weight:500}
+.fx-busy{font-size:9px;color:var(–cyan);font-weight:500}
+
+/* ── RESULT: MATCH BANNER ── */
+.match-banner{
+background:var(–surface);border:1px solid var(–border);
+border-radius:20px;padding:24px 20px;margin-bottom:12px;
+position:relative;overflow:hidden;
+}
+.match-banner::before{
+content:’’;position:absolute;inset:0;
+background:linear-gradient(135deg,rgba(43,95,255,.08) 0%,transparent 50%,rgba(123,47,255,.08) 100%);
+pointer-events:none;
+}
+.banner-inner{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.t-side{display:flex;flex-direction:column;gap:8px;flex:1}
+.t-side.r{align-items:flex-end}
+.t-logo{
+width:52px;height:52px;object-fit:contain;
+filter:drop-shadow(0 4px 12px rgba(0,0,0,.5));
+}
+.t-name{font-size:13px;font-weight:700;color:var(–text);line-height:1.3}
+.t-tag{
+font-size:8px;letter-spacing:3px;color:var(–text3);
+text-transform:uppercase;font-weight:600;
+}
+.vs-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 16px;flex-shrink:0}
+.vs-text{
+font-family:‘Bebas Neue’,sans-serif;font-size:28px;
+color:rgba(255,255,255,.1);letter-spacing:2px;line-height:1;
+}
+.match-date{font-size:9px;color:var(–text3);letter-spacing:1px;white-space:nowrap}
+
+/* ── RESULT: PREDICTION BOX ── */
+.pred-box{
+position:relative;overflow:hidden;border-radius:20px;
+margin-bottom:12px;padding:28px 20px;text-align:center;
+background:var(–surface);border:1px solid var(–border);
+}
+.pred-box::before{
+content:’’;position:absolute;inset:0;
+background:radial-gradient(ellipse at 50% 0%,rgba(43,95,255,.15),transparent 70%);
+pointer-events:none;
+}
+.pred-eyebrow{font-size:9px;letter-spacing:4px;color:var(–text3);text-transform:uppercase;margin-bottom:12px;font-weight:600}
+.pred-outcome{
+font-family:‘Bebas Neue’,sans-serif;
+font-size:clamp(36px,9vw,52px);
+letter-spacing:4px;line-height:1;margin-bottom:16px;
+text-shadow:0 0 40px currentColor;
+}
+.conf-pill{
+display:inline-flex;align-items:center;gap:6px;
+padding:6px 16px;border-radius:20px;font-size:11px;font-weight:600;
+border:1px solid;letter-spacing:.5px;
+}
+.conf-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* ── RESULT: PROB BARS ── */
+.prob-sec{background:var(–surface);border:1px solid var(–border);border-radius:16px;padding:20px;margin-bottom:12px}
+.prob-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.prob-row:last-child{margin-bottom:0}
+.prob-lbl{width:76px;font-size:9px;letter-spacing:2px;color:var(–text3);flex-shrink:0;font-weight:600;text-transform:uppercase}
+.bar-track{flex:1;height:8px;background:rgba(255,255,255,.06);overflow:hidden;border-radius:4px}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.25,1,.5,1)}
+.prob-pct{width:44px;text-align:right;font-size:14px;font-weight:700;flex-shrink:0;font-family:‘Bebas Neue’,sans-serif;letter-spacing:1px}
+
+/* ── RESULT: XG ── */
+.xg-row{display:flex;gap:10px;margin-bottom:12px}
+.xg-card{
+flex:1;background:var(–surface);border:1px solid var(–border);
+border-radius:16px;padding:16px;text-align:center;
+}
+.xg-lbl{font-size:8px;letter-spacing:3px;color:var(–text3);margin-bottom:6px;font-weight:600;text-transform:uppercase}
+.xg-val{font-size:30px;font-weight:700;font-family:‘Bebas Neue’,sans-serif;letter-spacing:2px;color:var(–text)}
+
+/* ── RESULT: FORM ── */
+.form-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+@media(min-width:520px){.form-grid{flex-direction:row}}
+.form-card{flex:1;background:var(–surface);border:1px solid var(–border);border-radius:16px;padding:16px}
+.form-head{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.form-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.form-title{font-size:10px;letter-spacing:1px;font-weight:700;line-height:1.3;color:var(–text)}
+.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.04)}
+.stat-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.stat-l{color:var(–text2);font-size:11px;font-weight:400}
+.stat-v{font-weight:700;color:var(–text);font-size:13px}
+
+.model-note{font-size:9px;letter-spacing:1px;color:var(–text3);text-align:center;padding:4px;font-weight:500}
+
+/* ── INSTALL HINT ── */
+.install-hint{
+background:rgba(99,179,237,.05);border:1px solid rgba(99,179,237,.12);
+border-radius:12px;padding:12px 16px;margin-bottom:20px;
+font-size:10px;color:var(–text3);line-height:1.7;text-align:center;
+}
+.install-hint strong{color:var(–cyan)}
+
+.hidden{display:none!important}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.slide-up{animation:slideUp .4s cubic-bezier(.25,1,.5,1)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 </style>
 
 </head>
 <body>
-<div class="container">
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
 
-  <!-- INSTALL HINT (shown on mobile) -->
+<div class="wrap">
 
   <div class="install-hint" id="install-hint">
-    📱 <strong>Add to Home Screen:</strong> tap the Share button in Safari → "Add to Home Screen" to use this as an app
+    📱 <strong>Add to Home Screen:</strong> tap Share in Safari → "Add to Home Screen"
   </div>
 
+  <!-- HEADER -->
+
   <header>
-    <div class="badge">STATISTICAL ENGINE v2.1</div>
-    <h1>MATCH<br><span>ORACLE</span></h1>
-    <p class="subtitle">Poisson · Venue form · Last 5 games</p>
+    <div class="logo-line">
+      <div class="logo-icon">⚽</div>
+      <h1>MATCH ORACLE</h1>
+    </div>
+    <p class="tagline">Poisson model · Venue form · Last 5 games</p>
   </header>
 
   <!-- API KEY -->
 
-  <div id="key-section" class="card">
-    <span class="section-label">API-FOOTBALL KEY</span>
-    <input type="password" id="api-key-input" placeholder="Paste your API key" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
-    <button class="btn" onclick="saveKey()">SAVE KEY &amp; START</button>
-    <button class="btn-test hidden" id="test-btn" onclick="testConnection()">TEST CONNECTION</button>
+  <div id="key-section" class="card card-glow">
+    <span class="slabel">API-Football Key</span>
+    <input type="password" id="api-key-input" placeholder="Paste your API key here"
+      autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"/>
+    <button class="btn-primary" id="save-key-btn">Unlock Match Oracle</button>
+    <button class="btn-ghost hidden" id="test-btn">Test Connection</button>
     <div id="test-result" class="hidden"></div>
   </div>
+
   <div id="key-bar" class="key-bar hidden">
-    <span>🔑 API key active</span>
-    <button class="btn-sm" onclick="changeKey()">CHANGE</button>
+    <span>🔑 Connected · API key active</span>
+    <button class="btn-sm" id="change-key-btn">Change</button>
   </div>
 
   <!-- LEAGUE -->
 
   <div id="league-section" class="card hidden">
-    <span class="section-label">SELECT LEAGUE</span>
+    <span class="slabel">Select League</span>
     <div class="league-grid" id="league-grid"></div>
   </div>
 
   <!-- DATE -->
 
   <div id="date-section" class="card hidden">
-    <span class="section-label">SELECT DATE</span>
+    <span class="slabel">Select Date</span>
     <div class="date-row">
-      <button class="arrow-btn" onclick="shiftDate(-1)">←</button>
-      <input type="date" id="date-input" />
-      <button class="arrow-btn" onclick="shiftDate(1)">→</button>
-      <button class="load-btn" onclick="loadFixtures()">LOAD</button>
+      <button class="btn-arrow" id="prev-day">←</button>
+      <input type="date" id="date-input"/>
+      <button class="btn-arrow" id="next-day">→</button>
+      <button class="btn-load" id="load-btn">Load</button>
     </div>
   </div>
 
-  <div id="list-loading" class="loading-msg hidden">Loading fixtures…</div>
-  <div id="list-error" class="error-box hidden">
-    <div class="err-title">⚠ LOAD FAILED</div>
+  <div id="list-loading" class="msg-loading hidden">Fetching fixtures</div>
+  <div id="list-error" class="err-box hidden">
+    <div class="err-title">⚠ Load Failed</div>
     <div class="err-detail" id="list-error-detail"></div>
     <div class="err-hint" id="list-error-hint"></div>
   </div>
-  <div id="list-empty" class="info-msg hidden">No fixtures found. Try another date.</div>
+  <div id="list-empty" class="msg-info hidden">No fixtures found for this date.</div>
 
   <div id="fixture-card" class="card hidden">
-    <span class="section-label" id="fixture-card-label"></span>
-    <div class="fixture-list" id="fixture-list"></div>
+    <span class="slabel" id="fx-card-label"></span>
+    <div class="fx-list" id="fx-list"></div>
   </div>
 
-  <div id="pred-error" class="error-box hidden">
-    <div class="err-title">⚠ PREDICTION FAILED</div>
+  <div id="pred-error" class="err-box hidden">
+    <div class="err-title">⚠ Prediction Failed</div>
     <div class="err-detail" id="pred-error-detail"></div>
   </div>
 
   <div id="result-section" class="hidden"></div>
 
 </div>
+
 <script>
-'use strict';
-let API_KEY = '';
-let selectedLeague = null;
-let activeFixtureId = null;
-let predicting = false;
-
-// Persist key across sessions using localStorage
-try {
-const saved = localStorage.getItem(‘mo_api_key’);
-if (saved) { API_KEY = saved; }
-} catch(e) {}
-
-const LEAGUES = [
-{ id:39,  name:“Premier League”,    country:“England”,     season:2024 },
-{ id:140, name:“La Liga”,           country:“Spain”,       season:2024 },
-{ id:135, name:“Serie A”,           country:“Italy”,       season:2024 },
-{ id:78,  name:“Bundesliga”,        country:“Germany”,     season:2024 },
-{ id:61,  name:“Ligue 1”,           country:“France”,      season:2024 },
-{ id:94,  name:“Primeira Liga”,     country:“Portugal”,    season:2024 },
-{ id:88,  name:“Eredivisie”,        country:“Netherlands”, season:2024 },
-{ id:203, name:“Süper Lig”,         country:“Turkey”,      season:2024 },
-{ id:2,   name:“Champions League”,  country:“Europe”,      season:2024 },
-{ id:3,   name:“Europa League”,     country:“Europe”,      season:2024 },
-{ id:848, name:“Conference League”, country:“Europe”,      season:2024 },
-{ id:253, name:“MLS”,              country:“USA”,          season:2025 },
+var API_KEY='',selectedLeague=null,activeFixtureId=null,predicting=false;
+var LEAGUES=[
+  {id:39, name:'Premier League',  country:'England',     season:2024},
+  {id:140,name:'La Liga',         country:'Spain',       season:2024},
+  {id:135,name:'Serie A',         country:'Italy',       season:2024},
+  {id:78, name:'Bundesliga',      country:'Germany',     season:2024},
+  {id:61, name:'Ligue 1',         country:'France',      season:2024},
+  {id:94, name:'Primeira Liga',   country:'Portugal',    season:2024},
+  {id:88, name:'Eredivisie',      country:'Netherlands', season:2024},
+  {id:203,name:'Süper Lig',       country:'Turkey',      season:2024},
+  {id:2,  name:'Champions League',country:'Europe',      season:2024},
+  {id:3,  name:'Europa League',   country:'Europe',      season:2024},
+  {id:848,name:'Conference League',country:'Europe',     season:2024},
+  {id:253,name:'MLS',             country:'USA',         season:2025},
 ];
 
-const $ = id => document.getElementById(id);
-const show = id => $(id).classList.remove(‘hidden’);
-const hide = id => $(id).classList.add(‘hidden’);
-function todayStr() {
-const d = new Date();
-return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+function el(id){return document.getElementById(id)}
+function show(id){el(id).classList.remove('hidden')}
+function hide(id){el(id).classList.add('hidden')}
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function shiftDate(days){
+  var val=el('date-input').value||todayStr(),p=val.split('-');
+  var d=new Date(Number(p[0]),Number(p[1])-1,Number(p[2])+days);
+  el('date-input').value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  loadFixtures();
 }
 
-// ── API ───────────────────────────────────────────────────────────────────────
-async function apiFetch(endpoint, params) {
-const url = new URL(‘https://v3.football.api-sports.io’ + endpoint);
-Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
-let res;
-try {
-res = await fetch(url.toString(), { headers: { ‘x-apisports-key’: API_KEY } });
-} catch(e) {
-throw { message: ’Network request failed: ’ + e.message,
-hint: ‘Check your internet connection. If this keeps happening, make sure you are hosting this file on a web server (not just opening it as a file).’ };
-}
-let data;
-try { data = await res.json(); } catch(e) {
-throw { message: `HTTP ${res.status} — response not JSON`, hint: ‘Check your API key is valid.’ };
-}
-if (!res.ok) throw { message: `HTTP ${res.status} ${res.statusText}`,
-hint: res.status===401||res.status===403 ? ‘Invalid or expired API key.’ : `Server error ${res.status}` };
-if (data.errors && Object.keys(data.errors).length)
-throw { message: ‘API error: ’ + Object.values(data.errors).join(’, ’),
-hint: ‘Check your API key and subscription plan.’ };
-return data.response;
+function apiFetch(endpoint,params){
+  var url=new URL('https://v3.football.api-sports.io'+endpoint);
+  Object.keys(params).forEach(function(k){url.searchParams.set(k,params[k])});
+  return fetch(url.toString(),{headers:{'x-apisports-key':API_KEY}})
+  .then(function(res){
+    return res.json().then(function(data){
+      if(!res.ok)throw{message:'HTTP '+res.status,hint:(res.status===401||res.status===403)?'Invalid API key.':'Server error '+res.status};
+      if(data.errors&&Object.keys(data.errors).length)throw{message:'API: '+Object.values(data.errors).join(', '),hint:'Check your key and plan.'};
+      return data.response;
+    });
+  }).catch(function(err){
+    if(err.hint)throw err;
+    throw{message:'Network error: '+(err.message||err),hint:'Check your internet connection.'};
+  });
 }
 
-// ── Connection test ───────────────────────────────────────────────────────────
-async function testConnection() {
-const btn = $(‘test-btn’);
-btn.textContent = ‘TESTING…’; btn.disabled = true;
-hide(‘test-result’);
-try {
-const data = await apiFetch(’/status’, {});
-const plan = data?.subscription?.plan ?? ‘unknown’;
-const used = data?.requests?.current ?? ‘?’;
-const limit = data?.requests?.limit_day ?? ‘?’;
-$(‘test-result’).className = ‘test-result test-ok’;
-$(‘test-result’).innerHTML = `✓ Connected · Plan: ${plan}<br>Requests today: ${used} / ${limit}`;
-show(‘test-result’);
-} catch(e) {
-$(‘test-result’).className = ‘test-result test-fail’;
-$(‘test-result’).innerHTML = `✗ ${e.message}<br><span style="font-size:10px;opacity:.7">${e.hint||''}</span>`;
-show(‘test-result’);
-} finally { btn.textContent = ‘TEST CONNECTION’; btn.disabled = false; }
+function saveKey(){
+  var k=el('api-key-input').value.trim();
+  if(!k){alert('Please paste your API key first.');return;}
+  API_KEY=k;
+  try{localStorage.setItem('mo_key',k)}catch(e){}
+  showLeagues();
+}
+function showLeagues(){
+  hide('key-section');show('key-bar');show('league-section');buildLeagueGrid();
+}
+function changeKey(){
+  API_KEY='';
+  try{localStorage.removeItem('mo_key')}catch(e){}
+  selectedLeague=null;
+  ['key-bar','league-section','date-section','fixture-card','result-section','list-error','list-empty','pred-error'].forEach(hide);
+  el('api-key-input').value='';show('key-section');
 }
 
-// ── Key ───────────────────────────────────────────────────────────────────────
-function saveKey() {
-const k = $(‘api-key-input’).value.trim();
-if (!k) return;
-API_KEY = k;
-try { localStorage.setItem(‘mo_api_key’, k); } catch(e) {}
-applyKeySaved();
+function buildLeagueGrid(){
+  var grid=el('league-grid');grid.innerHTML='';
+  LEAGUES.forEach(function(lg){
+    var btn=document.createElement('button');
+    btn.className='league-btn';
+    btn.innerHTML='<span class="lg-name">'+lg.name+'</span><span class="lg-country">'+lg.country+'</span>';
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.league-btn').forEach(function(b){b.classList.remove('active')});
+      btn.classList.add('active');selectedLeague=lg;
+      show('date-section');
+      if(!el('date-input').value)el('date-input').value=todayStr();
+      loadFixtures();
+    });
+    grid.appendChild(btn);
+  });
 }
 
-function applyKeySaved() {
-hide(‘key-section’);
-show(‘key-bar’);
-show(‘league-section’);
-buildLeagueGrid();
+function loadFixtures(){
+  if(!selectedLeague)return;
+  var date=el('date-input').value||todayStr();
+  ['list-error','list-empty','fixture-card','result-section','pred-error'].forEach(hide);
+  show('list-loading');activeFixtureId=null;
+  apiFetch('/fixtures',{league:selectedLeague.id,season:selectedLeague.season,date:date})
+  .then(function(data){
+    hide('list-loading');
+    if(!data||!data.length){show('list-empty');return;}
+    el('fx-card-label').textContent=data.length+' FIXTURE'+(data.length!==1?'S':'')+' · '+selectedLeague.name+' · '+date;
+    var list=el('fx-list');list.innerHTML='';
+    data.forEach(function(f){
+      var sb=statusBadge(f);
+      var row=document.createElement('div');
+      row.className='fx-row';row.id='fx-'+f.fixture.id;
+      var sc=f.goals.home!==null?f.goals.home+'–'+f.goals.away:'vs';
+      row.innerHTML=
+        '<div class="fx-teams">'+
+          '<div class="fx-team">'+
+            '<img src="'+f.teams.home.logo+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'+
+            '<span class="fx-name">'+f.teams.home.name+'</span>'+
+          '</div>'+
+          '<div class="fx-score">'+sc+'</div>'+
+          '<div class="fx-team r">'+
+            '<span class="fx-name">'+f.teams.away.name+'</span>'+
+            '<img src="'+f.teams.away.logo+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'+
+          '</div>'+
+        '</div>'+
+        '<div class="fx-meta">'+
+          '<span class="fx-status" style="color:'+sb.color+';background:'+sb.color+'18">'+sb.text+'</span>'+
+          '<span class="fx-cta" id="cta-'+f.fixture.id+'">Predict →</span>'+
+        '</div>';
+      row.addEventListener('click',(function(fix){return function(){if(!predicting)predictFixture(fix)}})(f));
+      list.appendChild(row);
+    });
+    show('fixture-card');
+  }).catch(function(e){
+    hide('list-loading');
+    el('list-error-detail').textContent=e.message||String(e);
+    el('list-error-hint').innerHTML=(e.hint||'').replace(/\n/g,'<br>');
+    show('list-error');
+  });
 }
 
-function changeKey() {
-API_KEY = ‘’;
-try { localStorage.removeItem(‘mo_api_key’); } catch(e) {}
-selectedLeague = null;
-[‘key-bar’,‘league-section’,‘date-section’,‘fixture-card’,‘result-section’,‘list-error’,‘list-empty’,‘pred-error’].forEach(hide);
-$(‘api-key-input’).value = ‘’;
-show(‘key-section’);
+function predictFixture(fixture){
+  hide('pred-error');hide('result-section');predicting=true;
+  if(activeFixtureId){var p=el('fx-'+activeFixtureId);if(p)p.classList.remove('active')}
+  activeFixtureId=fixture.fixture.id;
+  var row=el('fx-'+fixture.fixture.id);if(row)row.classList.add('active');
+  var ht=fixture.teams.home,at=fixture.teams.away,season=fixture.league.season;
+  function setStep(msg){var c=el('cta-'+fixture.fixture.id);if(c){c.className='fx-busy';c.textContent='⟳ '+msg}}
+  function resetCta(msg){var c=el('cta-'+fixture.fixture.id);if(c){c.className='fx-cta';c.textContent=msg}}
+  setStep('Home form…');
+  apiFetch('/fixtures',{team:ht.id,season:season,venue:'home',last:5,status:'FT'})
+  .then(function(hFix){
+    setStep('Away form…');
+    return apiFetch('/fixtures',{team:at.id,season:season,venue:'away',last:5,status:'FT'})
+    .then(function(aFix){
+      setStep('Running model…');
+      var hm=extractForm(hFix,ht.id,'home'),am=extractForm(aFix,at.id,'away');
+      if(!hm||!am)throw{message:'Not enough form data yet.'};
+      var L=buildLambdas(hm,am),probs=calcProbs(L.hL,L.aL);
+      var mx=Math.max(probs.home,probs.draw,probs.away);
+      var predicted=mx===probs.home?'HOME WIN':mx===probs.draw?'DRAW':'AWAY WIN';
+      renderResult(fixture,ht,at,hm,am,probs,predicted,mx);
+      resetCta('✓ Done');
+    });
+  }).catch(function(e){
+    el('pred-error-detail').textContent=e.message||String(e);show('pred-error');resetCta('Predict →');
+  }).then(function(){predicting=false});
 }
 
-$(‘api-key-input’).addEventListener(‘keydown’, e => { if(e.key===‘Enter’) saveKey(); });
-
-// ── League grid ───────────────────────────────────────────────────────────────
-function buildLeagueGrid() {
-const grid = $(‘league-grid’); grid.innerHTML = ‘’;
-LEAGUES.forEach(lg => {
-const btn = document.createElement(‘button’);
-btn.className = ‘league-btn’;
-btn.innerHTML = `<span class="lg-name">${lg.name}</span><span class="lg-country">${lg.country}</span>`;
-btn.addEventListener(‘click’, () => {
-document.querySelectorAll(’.league-btn’).forEach(b => b.classList.remove(‘active’));
-btn.classList.add(‘active’);
-selectedLeague = lg;
-show(‘date-section’);
-if (!$(‘date-input’).value) $(‘date-input’).value = todayStr();
-loadFixtures();
-});
-grid.appendChild(btn);
-});
+function poissonPMF(l,k){if(l<=0)return k===0?1:0;var r=-l+k*Math.log(l);for(var i=1;i<=k;i++)r-=Math.log(i);return Math.exp(r)}
+function calcProbs(hL,aL){
+  var h=0,d=0,a=0;
+  for(var i=0;i<=8;i++)for(var j=0;j<=8;j++){var p=poissonPMF(hL,i)*poissonPMF(aL,j);if(i>j)h+=p;else if(i===j)d+=p;else a+=p}
+  var t=h+d+a;return{home:h/t*100,draw:d/t*100,away:a/t*100,hL:hL,aL:aL};
 }
-
-// ── Date ──────────────────────────────────────────────────────────────────────
-function shiftDate(days) {
-const val = $(‘date-input’).value || todayStr();
-const [y,m,d] = val.split(’-’).map(Number);
-const nd = new Date(y, m-1, d+days);
-$(‘date-input’).value = `${nd.getFullYear()}-${String(nd.getMonth()+1).padStart(2,'0')}-${String(nd.getDate()).padStart(2,'0')}`;
-loadFixtures();
-}
-
-// ── Load fixtures ─────────────────────────────────────────────────────────────
-async function loadFixtures() {
-if (!selectedLeague) return;
-const date = $(‘date-input’).value || todayStr();
-[‘list-error’,‘list-empty’,‘fixture-card’,‘result-section’,‘pred-error’].forEach(hide);
-show(‘list-loading’); activeFixtureId = null;
-try {
-const data = await apiFetch(’/fixtures’, { league:selectedLeague.id, season:selectedLeague.season, date });
-hide(‘list-loading’);
-if (!data.length) { show(‘list-empty’); return; }
-$(‘fixture-card-label’).textContent = `${data.length} FIXTURE${data.length!==1?'S':''} · ${selectedLeague.name} · ${date}`;
-const list = $(‘fixture-list’); list.innerHTML = ‘’;
-data.forEach(f => {
-const sb = statusBadge(f);
-const row = document.createElement(‘div’);
-row.className = ‘fixture-row’; row.id = `fx-${f.fixture.id}`;
-row.innerHTML = ` <div class="fx-teams"> <div class="fx-team"> <img src="${f.teams.home.logo}" alt="" loading="lazy" onerror="this.style.display='none'"> <span class="fx-name">${f.teams.home.name}</span> </div> <div class="fx-score">${f.goals.home!==null?`${f.goals.home}–${f.goals.away}`:'vs'}</div> <div class="fx-team right"> <span class="fx-name">${f.teams.away.name}</span> <img src="${f.teams.away.logo}" alt="" loading="lazy" onerror="this.style.display='none'"> </div> </div> <div class="fx-meta"> <span class="fx-status" style="color:${sb.color};border-color:${sb.color}44">${sb.text}</span> <span class="fx-cta" id="cta-${f.fixture.id}">PREDICT →</span> </div>`;
-row.addEventListener(‘click’, () => { if(!predicting) predictFixture(f); });
-list.appendChild(row);
-});
-show(‘fixture-card’);
-} catch(e) {
-hide(‘list-loading’);
-$(‘list-error-detail’).textContent = e.message || String(e);
-$(‘list-error-hint’).innerHTML = (e.hint||’’).replace(/\n/g,’<br>’);
-show(‘list-error’);
-}
-}
-
-// ── Predict ───────────────────────────────────────────────────────────────────
-async function predictFixture(fixture) {
-hide(‘pred-error’); hide(‘result-section’);
-predicting = true;
-if (activeFixtureId) { const p=$(`fx-${activeFixtureId}`); if(p) p.classList.remove(‘active’); }
-activeFixtureId = fixture.fixture.id;
-const row = $(`fx-${fixture.fixture.id}`); if(row) row.classList.add(‘active’);
-const homeTeam=fixture.teams.home, awayTeam=fixture.teams.away, season=fixture.league.season;
-const setStep = msg => { const c=$(`cta-${fixture.fixture.id}`); if(c){c.className=‘fx-predicting’;c.textContent=‘⟳ ‘+msg;} };
-try {
-setStep(‘Home form…’);
-const hFix = await apiFetch(’/fixtures’,{team:homeTeam.id,season,venue:‘home’,last:5,status:‘FT’});
-setStep(‘Away form…’);
-const aFix = await apiFetch(’/fixtures’,{team:awayTeam.id,season,venue:‘away’,last:5,status:‘FT’});
-setStep(‘Calculating…’);
-const hm=extractForm(hFix,homeTeam.id,‘home’), am=extractForm(aFix,awayTeam.id,‘away’);
-if(!hm||!am) throw{message:‘Not enough form data. Try a fixture later in the season.’};
-const{homeLambda,awayLambda}=buildLambdas(hm,am);
-const probs=calcProbs(homeLambda,awayLambda);
-const maxProb=Math.max(probs.home,probs.draw,probs.away);
-const predicted=maxProb===probs.home?‘HOME WIN’:maxProb===probs.draw?‘DRAW’:‘AWAY WIN’;
-renderResult({fixture,homeTeam,awayTeam,hm,am,probs,predicted,maxProb,conf:confidence(maxProb)});
-const c=$(`cta-${fixture.fixture.id}`); if(c){c.className=‘fx-cta’;c.textContent=‘✓ DONE’;}
-} catch(e) {
-$(‘pred-error-detail’).textContent=e.message||String(e); show(‘pred-error’);
-const c=$(`cta-${fixture.fixture.id}`); if(c){c.className=‘fx-cta’;c.textContent=‘PREDICT →’;}
-} finally { predicting=false; }
-}
-
-// ── Stats ─────────────────────────────────────────────────────────────────────
-function poissonPMF(l,k){if(l<=0)return k===0?1:0;let r=-l+k*Math.log(l);for(let i=1;i<=k;i++)r-=Math.log(i);return Math.exp(r);}
-function calcProbs(hL,aL){let h=0,d=0,a=0;for(let i=0;i<=8;i++)for(let j=0;j<=8;j++){const p=poissonPMF(hL,i)*poissonPMF(aL,j);if(i>j)h+=p;else if(i===j)d+=p;else a+=p;}const t=h+d+a;return{home:h/t*100,draw:d/t*100,away:a/t*100,homeLambda:hL,awayLambda:aL};}
 function extractForm(fixtures,teamId,venue){
-const rel=fixtures.filter(f=>venue===‘home’?f.teams.home.id===teamId:f.teams.away.id===teamId).slice(0,5);
-if(!rel.length)return null;
-let gf=0,ga=0,pts=0,cs=0;
-rel.forEach(f=>{const ih=f.teams.home.id===teamId,s=ih?f.goals.home:f.goals.away,c=ih?f.goals.away:f.goals.home,w=ih?f.teams.home.winner:f.teams.away.winner,l=ih?f.teams.away.winner:f.teams.home.winner;gf+=s??0;ga+=c??0;if(w)pts+=3;else if(!l)pts+=1;if((c??1)===0)cs++;});
-const n=rel.length;return{avgGoalsFor:gf/n,avgGoalsAgainst:ga/n,ppg:pts/n,cleanSheetRate:cs/n,gamesUsed:n};
+  var rel=fixtures.filter(function(f){return venue==='home'?f.teams.home.id===teamId:f.teams.away.id===teamId}).slice(0,5);
+  if(!rel.length)return null;
+  var gf=0,ga=0,pts=0,cs=0;
+  rel.forEach(function(f){
+    var ih=f.teams.home.id===teamId;
+    var sc=ih?f.goals.home:f.goals.away,cc=ih?f.goals.away:f.goals.home;
+    var w=ih?f.teams.home.winner:f.teams.away.winner,l=ih?f.teams.away.winner:f.teams.home.winner;
+    gf+=sc||0;ga+=cc||0;if(w)pts+=3;else if(!l)pts+=1;if(cc===0)cs++;
+  });
+  var n=rel.length;return{avgGoalsFor:gf/n,avgGoalsAgainst:ga/n,ppg:pts/n,cleanSheetRate:cs/n,gamesUsed:n};
 }
-function buildLambdas(hm,am,avg=1.35){return{homeLambda:Math.max(0.3,(hm.avgGoalsFor/avg)*(am.avgGoalsAgainst/avg)*avg*1.1),awayLambda:Math.max(0.3,(am.avgGoalsFor/avg)*(hm.avgGoalsAgainst/avg)*avg)};}
-function confidence(p){if(p>=70)return{label:‘Strong’,color:’#00e676’};if(p>=55)return{label:‘Moderate’,color:’#ffea00’};if(p>=40)return{label:‘Slight’,color:’#ff9100’};return{label:‘Uncertain’,color:’#ff5252’};}
-function statusBadge(f){const s=f.fixture.status.short,e=f.fixture.status.elapsed;if([‘1H’,‘2H’,‘HT’,‘ET’,‘P’].includes(s))return{text:e?`${e}'`:‘LIVE’,color:’#00e676’};if(s===‘FT’)return{text:‘FT’,color:’#5a6070’};if(s===‘NS’){const t=new Date(f.fixture.date);return{text:t.toLocaleTimeString([],{hour:‘2-digit’,minute:‘2-digit’}),color:’#3d8bff’};}return{text:s,color:’#ff9100’};}
-
-// ── Render ────────────────────────────────────────────────────────────────────
-function renderResult({fixture,homeTeam,awayTeam,hm,am,probs,predicted,maxProb,conf}){
-const sec=$(‘result-section’);
-sec.innerHTML=` <div class="match-banner"> <div class="team-side"><img src="${homeTeam.logo}" alt="" onerror="this.style.display='none'"><span class="t-name">${homeTeam.name}</span><span class="t-tag">HOME</span></div> <div class="vs-badge">VS</div> <div class="team-side right"><img src="${awayTeam.logo}" alt="" onerror="this.style.display='none'"><span class="t-name">${awayTeam.name}</span><span class="t-tag">AWAY</span></div> </div> <div class="pred-box"> <div class="pred-label">PREDICTED OUTCOME</div> <div class="pred-value" style="color:${conf.color}">${predicted}</div> <span class="conf-badge" style="color:${conf.color};border-color:${conf.color}55;background:${conf.color}18">${conf.label} confidence — ${maxProb.toFixed(1)}%</span> </div> <div class="prob-section"> ${[['HOME WIN',probs.home,'#3d8bff'],['DRAW',probs.draw,'#ffea00'],['AWAY WIN',probs.away,'#ff5c87']].map(([l,p,c])=>`
-<div class="prob-row">
-<span class="prob-label">${l}</span>
-<div class="bar-track"><div class="bar-fill" style="width:${p.toFixed(1)}%;background:${c};box-shadow:0 0 8px ${c}66"></div></div>
-<span class="prob-pct" style="color:${c}">${p.toFixed(1)}%</span>
-</div>`).join('')} </div> <div class="xg-row"> <div class="xg-card"><div class="xg-label">HOME xG</div><div class="xg-value">${probs.homeLambda.toFixed(2)}</div></div> <div class="xg-card"><div class="xg-label">AWAY xG</div><div class="xg-value">${probs.awayLambda.toFixed(2)}</div></div> </div> <div class="form-grid"> ${formCard(`${homeTeam.name} · Last ${hm.gamesUsed} Home`,hm,'#3d8bff')} ${formCard(`${awayTeam.name} · Last ${am.gamesUsed} Away`,am,'#ff5c87')} </div> <div class="model-note">Poisson model · Home adv ×1.1 · Venue-specific form only</div>`;
-show(‘result-section’); sec.classList.add(‘fade-in’);
-setTimeout(()=>sec.scrollIntoView({behavior:‘smooth’,block:‘start’}),50);
+function buildLambdas(hm,am){
+  var avg=1.35;
+  return{hL:Math.max(0.3,(hm.avgGoalsFor/avg)*(am.avgGoalsAgainst/avg)*avg*1.1),aL:Math.max(0.3,(am.avgGoalsFor/avg)*(hm.avgGoalsAgainst/avg)*avg)};
 }
-function formCard(title,m,color){
-return`<div class="form-card" style="border-color:${color}44"> <div class="form-title" style="color:${color}">${title}</div> ${[['Avg Goals Scored',m.avgGoalsFor.toFixed(2)],['Avg Goals Conceded',m.avgGoalsAgainst.toFixed(2)],['Points Per Game',m.ppg.toFixed(2)],['Clean Sheet Rate',`${(m.cleanSheetRate*100).toFixed(0)}%`]] .map(([l,v])=>`<div class="stat-row"><span class="stat-label">${l}</span><span class="stat-value">${v}</span></div>`).join(’’)}
-
-  </div>`;
+function confidence(p){
+  if(p>=70)return{label:'Strong confidence',   color:'#48bb78'};
+  if(p>=55)return{label:'Moderate confidence', color:'#f0b429'};
+  if(p>=40)return{label:'Slight edge',          color:'#f6ad55'};
+  return          {label:'Too close to call',   color:'#fc8181'};
 }
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-$(‘date-input’).value = todayStr();
-
-// If key was saved in localStorage, skip straight to league selection
-if (API_KEY) {
-$(‘api-key-input’).value = ‘••••••••’;
-applyKeySaved();
+function statusBadge(f){
+  var s=f.fixture.status.short,e=f.fixture.status.elapsed;
+  if(['1H','2H','HT','ET','P'].indexOf(s)>-1)return{text:e?e+"' LIVE":'LIVE',color:'#48bb78'};
+  if(s==='FT')return{text:'Full Time',color:'#8892a4'};
+  if(s==='NS'){var t=new Date(f.fixture.date);return{text:t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),color:'#63b3ed'}}
+  return{text:s,color:'#f6ad55'};
 }
 
-// Hide install hint on desktop
-if (!(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))) {
-hide(‘install-hint’);
+function renderResult(fixture,ht,at,hm,am,probs,predicted,maxProb){
+  var conf=confidence(maxProb);
+  var matchDate=new Date(fixture.fixture.date).toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
+  var sec=el('result-section');
+  sec.innerHTML=
+  // BANNER
+  '<div class="match-banner slide-up">'+
+    '<div class="banner-inner">'+
+      '<div class="t-side">'+
+        '<img class="t-logo" src="'+ht.logo+'" alt="" onerror="this.style.display=\'none\'">'+
+        '<span class="t-name">'+ht.name+'</span>'+
+        '<span class="t-tag">Home</span>'+
+      '</div>'+
+      '<div class="vs-wrap">'+
+        '<span class="vs-text">VS</span>'+
+        '<span class="match-date">'+matchDate+'</span>'+
+      '</div>'+
+      '<div class="t-side r">'+
+        '<img class="t-logo" src="'+at.logo+'" alt="" onerror="this.style.display=\'none\'">'+
+        '<span class="t-name">'+at.name+'</span>'+
+        '<span class="t-tag">Away</span>'+
+      '</div>'+
+    '</div>'+
+  '</div>'+
+  // PREDICTION
+  '<div class="pred-box slide-up" style="animation-delay:.05s">'+
+    '<div class="pred-eyebrow">Predicted Outcome</div>'+
+    '<div class="pred-outcome" style="color:'+conf.color+';text-shadow:0 0 60px '+conf.color+'66">'+predicted+'</div>'+
+    '<span class="conf-pill" style="color:'+conf.color+';border-color:'+conf.color+'44;background:'+conf.color+'12">'+
+      '<span class="conf-dot"></span>'+conf.label+' &mdash; '+maxProb.toFixed(1)+'%'+
+    '</span>'+
+  '</div>'+
+  // PROB BARS
+  '<div class="prob-sec slide-up" style="animation-delay:.1s">'+
+    pBar('Home Win',probs.home,'#63b3ed')+
+    pBar('Draw',probs.draw,'#f0b429')+
+    pBar('Away Win',probs.away,'#fc8181')+
+  '</div>'+
+  // XG
+  '<div class="xg-row slide-up" style="animation-delay:.15s">'+
+    '<div class="xg-card"><div class="xg-lbl">Home xG</div><div class="xg-val" style="color:#63b3ed">'+probs.hL.toFixed(2)+'</div></div>'+
+    '<div class="xg-card"><div class="xg-lbl">Away xG</div><div class="xg-val" style="color:#fc8181">'+probs.aL.toFixed(2)+'</div></div>'+
+  '</div>'+
+  // FORM
+  '<div class="form-grid slide-up" style="animation-delay:.2s">'+
+    fCard(ht.name+' · Last '+hm.gamesUsed+' Home',hm,'#63b3ed')+
+    fCard(at.name+' · Last '+am.gamesUsed+' Away',am,'#fc8181')+
+  '</div>'+
+  '<div class="model-note">Poisson model · Home advantage ×1.1 · Venue-specific form only</div>';
+
+  show('result-section');
+  setTimeout(function(){sec.scrollIntoView({behavior:'smooth',block:'start'})},60);
 }
+function pBar(label,prob,color){
+  return '<div class="prob-row">'+
+    '<span class="prob-lbl">'+label+'</span>'+
+    '<div class="bar-track"><div class="bar-fill" style="width:'+prob.toFixed(1)+'%;background:linear-gradient(90deg,'+color+'aa,'+color+');box-shadow:0 0 10px '+color+'44"></div></div>'+
+    '<span class="prob-pct" style="color:'+color+'">'+prob.toFixed(1)+'</span>'+
+  '</div>';
+}
+function fCard(title,m,color){
+  return '<div class="form-card">'+
+    '<div class="form-head"><div class="form-dot" style="background:'+color+';box-shadow:0 0 8px '+color+'"></div><span class="form-title">'+title+'</span></div>'+
+    sRow('Goals Scored / game',m.avgGoalsFor.toFixed(2))+
+    sRow('Goals Conceded / game',m.avgGoalsAgainst.toFixed(2))+
+    sRow('Points / game',m.ppg.toFixed(2))+
+    sRow('Clean sheets',Math.round(m.cleanSheetRate*100)+'%')+
+  '</div>';
+}
+function sRow(l,v){return '<div class="stat-row"><span class="stat-l">'+l+'</span><span class="stat-v">'+v+'</span></div>'}
+
+document.addEventListener('DOMContentLoaded',function(){
+  el('date-input').value=todayStr();
+  el('save-key-btn').addEventListener('click',saveKey);
+  el('change-key-btn').addEventListener('click',changeKey);
+  el('prev-day').addEventListener('click',function(){shiftDate(-1)});
+  el('next-day').addEventListener('click',function(){shiftDate(1)});
+  el('load-btn').addEventListener('click',loadFixtures);
+  el('api-key-input').addEventListener('keydown',function(e){if(e.key==='Enter')saveKey()});
+  el('test-btn').addEventListener('click',function(){
+    var btn=el('test-btn');btn.textContent='Testing…';btn.disabled=true;hide('test-result');
+    apiFetch('/status',{}).then(function(data){
+      var plan=(data&&data.subscription&&data.subscription.plan)||'unknown';
+      var used=(data&&data.requests&&data.requests.current)||'?';
+      var lim=(data&&data.requests&&data.requests.limit_day)||'?';
+      el('test-result').className='test-result test-ok';
+      el('test-result').innerHTML='✓ Connected · Plan: '+plan+'<br>Requests today: '+used+' / '+lim;
+      show('test-result');
+    }).catch(function(e){
+      el('test-result').className='test-result test-fail';
+      el('test-result').innerHTML='✗ '+(e.message||e)+'<br><small style="opacity:.7">'+(e.hint||'')+'</small>';
+      show('test-result');
+    }).then(function(){btn.textContent='Test Connection';btn.disabled=false});
+  });
+  try{var s=localStorage.getItem('mo_key');if(s){API_KEY=s;showLeagues()}}catch(e){}
+  if(!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))hide('install-hint');
+});
 </script>
 
 </body>
