@@ -9,256 +9,275 @@
 <meta name="theme-color" content="#000000"/>
 <title>Match Oracle</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --bg:#000000;
-  --bg2:#080808;
-  --surface:#0a0a0a;
-  --surface2:#111111;
-  --border:rgba(255,255,255,0.06);
-  --border2:rgba(255,255,255,0.12);
-  --red:#ff3030;
-  --red2:#cc2020;
-  --amber:#ff8c00;
-  --amber2:#ffaa33;
-  --green:#00ff88;
-  --green2:#00cc66;
-  --blue:#0088ff;
-  --cyan:#00ddff;
-  --text:#e8e8e8;
-  --text2:#666666;
-  --text3:#333333;
+  --bg2:#0c0c0c;
+  --bg3:#141414;
+  --surface:#111111;
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.18);
+  --yellow:#FFE000;
+  --yellow2:#FFD000;
+  --blue:#4DA6FF;
+  --blue2:#66B8FF;
+  --white:#FFFFFF;
+  --white2:#CCCCCC;
+  --white3:#888888;
+  --white4:#444444;
+  --green:#00FF88;
+  --red:#FF4444;
+  --orange:#FF9900;
   --mono:'Share Tech Mono',monospace;
+  --body:'Barlow Condensed',sans-serif;
+  --display:'Bebas Neue',sans-serif;
 }
 html{-webkit-text-size-adjust:100%}
 body{
-  background:var(--bg);color:var(--text);
-  font-family:'Rajdhani',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--white);
+  font-family:var(--body);
   min-height:100vh;overflow-x:hidden;
   padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,20px);
 }
 
-/* SCANLINE OVERLAY */
+/* SCANLINES */
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:999;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.06) 3px,rgba(0,0,0,0.06) 4px);
 }
 
-/* NOISE TEXTURE */
-body::after{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:998;opacity:.025;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* RED ACCENT GLOW */
+/* TOP GLOW BAR */
 .glow-top{
-  position:fixed;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent 0%,var(--red) 50%,transparent 100%);
+  position:fixed;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent 0%,var(--yellow) 40%,var(--blue) 70%,transparent 100%);
   z-index:1000;
-  box-shadow:0 0 40px 4px rgba(255,48,48,0.4);
+  box-shadow:0 0 30px 4px rgba(255,224,0,0.35);
 }
 
-.wrap{max-width:640px;margin:0 auto;padding:28px 14px 80px;position:relative;z-index:2}
+.wrap{max-width:640px;margin:0 auto;padding:26px 14px 80px;position:relative;z-index:2}
 
-/* HEADER */
-header{text-align:center;margin-bottom:32px;padding-top:12px;position:relative}
-.header-line{
-  width:100%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,48,48,0.5),transparent);
-  margin-bottom:24px;
-}
-.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px}
+/* ── HEADER ── */
+header{text-align:center;margin-bottom:28px;padding-top:10px}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:4px}
 .logo-icon{
-  width:40px;height:40px;border-radius:4px;flex-shrink:0;
-  background:#ff3030;
+  width:42px;height:42px;flex-shrink:0;
+  background:var(--yellow);
   display:flex;align-items:center;justify-content:center;
-  font-size:20px;
-  box-shadow:0 0 30px rgba(255,48,48,0.6),inset 0 0 20px rgba(0,0,0,0.3);
-  clip-path:polygon(0 4px,4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px));
+  font-size:22px;
+  clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);
+  box-shadow:0 0 40px rgba(255,224,0,0.5);
 }
 .site-title{
-  font-family:'Bebas Neue',Georgia,sans-serif;
-  font-size:clamp(42px,10vw,66px);font-weight:400;letter-spacing:6px;line-height:1;
-  color:var(--text);
-  text-shadow:0 0 60px rgba(255,48,48,0.3);
+  font-family:var(--display);
+  font-size:clamp(44px,11vw,68px);font-weight:400;letter-spacing:6px;line-height:1;
+  color:var(--white);
+  text-shadow:0 0 60px rgba(255,255,255,0.15);
 }
 .tagline{
   font-family:var(--mono);
-  font-size:9px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;
-  border-top:1px solid var(--border);
-  padding-top:10px;margin-top:8px;
+  font-size:9px;letter-spacing:3px;color:var(--white4);
+  margin-top:6px;
 }
-.tagline span{color:var(--red);margin:0 6px}
+.t-sep{color:var(--yellow)}
+.t-sep-b{color:var(--blue2)}
+.header-divider{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--yellow),var(--blue),transparent);
+  margin-top:14px;opacity:0.4;
+}
 
-/* CARDS */
+/* ── CARDS ── */
 .card{
   background:var(--surface);
   border:1px solid var(--border);
-  border-top:1px solid rgba(255,48,48,0.2);
-  border-radius:2px;padding:18px;margin-bottom:10px;
+  border-radius:3px;padding:18px;margin-bottom:10px;
   position:relative;overflow:hidden;
 }
-.card::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
-  background:linear-gradient(180deg,var(--red),transparent);
+.card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(77,166,255,0.4),transparent);
 }
 
 .slabel{
   display:flex;align-items:center;gap:8px;
   font-family:var(--mono);
-  font-size:9px;letter-spacing:3px;color:var(--text3);
-  text-transform:uppercase;font-weight:400;margin-bottom:14px;
+  font-size:9px;letter-spacing:3px;color:var(--white4);
+  text-transform:uppercase;margin-bottom:14px;
 }
-.slabel::after{content:'';flex:1;height:1px;background:var(--border)}
+.slabel-line{flex:1;height:1px;background:var(--border);display:block}
 
-/* INPUTS */
+/* ── INPUTS ── */
 input[type="password"],input[type="date"]{
-  width:100%;background:rgba(0,0,0,0.8);
+  width:100%;
+  background:rgba(255,255,255,0.04);
   border:1px solid var(--border2);
-  color:var(--text);padding:13px 16px;
-  font-size:15px;font-family:'Rajdhani',sans-serif;font-weight:500;
+  color:var(--white);
+  padding:13px 16px;
+  font-size:16px;font-family:var(--body);font-weight:500;
   outline:none;border-radius:2px;
   -webkit-appearance:none;appearance:none;
   transition:border-color .2s,box-shadow .2s;
+  letter-spacing:.3px;
 }
-input:focus{border-color:var(--red);box-shadow:0 0 0 2px rgba(255,48,48,0.12),0 0 20px rgba(255,48,48,0.08)}
+input:focus{
+  border-color:var(--yellow);
+  box-shadow:0 0 0 2px rgba(255,224,0,0.12),0 0 20px rgba(255,224,0,0.06);
+}
 input[type="date"]{color-scheme:dark}
-input::placeholder{color:var(--text3)}
+input::placeholder{color:var(--white4)}
 
-/* BUTTONS */
+/* ── BUTTONS ── */
 button{
-  font-family:'Rajdhani',sans-serif;cursor:pointer;
+  font-family:var(--body);cursor:pointer;
   -webkit-appearance:none;appearance:none;
-  touch-action:manipulation;border-radius:2px;letter-spacing:.5px;
+  touch-action:manipulation;border-radius:2px;
 }
 .btn-primary{
   display:block;width:100%;border:none;
-  padding:14px;font-size:14px;letter-spacing:2px;font-weight:700;
+  padding:14px;font-size:16px;letter-spacing:2px;font-weight:700;
   margin-top:10px;min-height:50px;color:#000;
-  background:var(--red);
+  background:var(--yellow);
   text-transform:uppercase;
-  box-shadow:0 4px 30px rgba(255,48,48,0.4),inset 0 1px 0 rgba(255,255,255,0.1);
+  box-shadow:0 4px 30px rgba(255,224,0,0.35);
   transition:transform .15s,box-shadow .15s,opacity .15s;
 }
-.btn-primary:active{transform:scale(.98);box-shadow:0 2px 12px rgba(255,48,48,0.3);opacity:.9}
+.btn-primary:active{transform:scale(.98);opacity:.88}
 .btn-sm{
-  background:transparent;border:1px solid var(--border2);
-  color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:1px;
-  padding:7px 14px;min-height:34px;font-weight:400;
-  transition:all .15s;
+  background:transparent;
+  border:1px solid var(--white4);
+  color:var(--white3);
+  font-family:var(--mono);font-size:9px;letter-spacing:1px;
+  padding:7px 14px;min-height:34px;
+  transition:all .15s;text-transform:uppercase;
 }
-.btn-sm:hover{border-color:var(--red);color:var(--red)}
+.btn-sm:active{border-color:var(--yellow);color:var(--yellow)}
 .btn-ghost{
   display:block;width:100%;
   background:transparent;border:1px solid var(--border);
-  color:var(--text3);font-family:var(--mono);font-size:10px;letter-spacing:1px;
-  padding:12px;margin-top:8px;min-height:44px;font-weight:400;
-  text-transform:uppercase;
-  transition:all .2s;
+  color:var(--white4);font-family:var(--mono);font-size:10px;letter-spacing:1px;
+  padding:12px;margin-top:8px;min-height:44px;
+  text-transform:uppercase;transition:all .2s;
 }
-.btn-ghost:hover{border-color:var(--border2);color:var(--text2)}
+.btn-ghost:active{border-color:var(--border2);color:var(--white3)}
 
-/* KEY BAR */
+/* ── KEY BAR ── */
 .key-bar{
   display:flex;justify-content:space-between;align-items:center;
-  background:rgba(0,255,136,0.04);
-  border:1px solid rgba(0,255,136,0.15);
+  background:rgba(0,255,136,0.05);
+  border:1px solid rgba(0,255,136,0.2);
   border-radius:2px;padding:11px 16px;margin-bottom:10px;
-  font-family:var(--mono);font-size:11px;color:var(--green2);
+  font-family:var(--mono);font-size:10px;color:var(--green);
+  letter-spacing:1px;
 }
 .key-dot{
-  display:inline-block;width:6px;height:6px;border-radius:50%;
+  display:inline-block;width:7px;height:7px;border-radius:50%;
   background:var(--green);margin-right:8px;
-  box-shadow:0 0 8px var(--green);
+  box-shadow:0 0 10px var(--green);
   animation:blink 2s ease-in-out infinite;
 }
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* LEAGUE SECTIONS */
-.league-section-title{
-  font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--text3);
-  text-transform:uppercase;padding:14px 0 8px;
-  border-bottom:1px solid var(--border);
-  margin-bottom:8px;
+/* ── LEAGUE SECTIONS ── */
+.league-section-hdr{
+  font-family:var(--mono);font-size:9px;letter-spacing:3px;
+  color:var(--yellow);
+  text-transform:uppercase;
+  padding:12px 0 7px;
+  border-bottom:1px solid rgba(255,224,0,0.15);
+  margin-bottom:7px;
+  display:flex;align-items:center;gap:6px;
 }
-.league-section-title span{color:var(--red);margin-right:6px}
+.league-section-hdr::before{content:'▸';opacity:.6}
 
-.league-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:6px}
-@media(min-width:480px){.league-grid{grid-template-columns:repeat(3,1fr)}}
+.league-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-bottom:4px}
+@media(min-width:460px){.league-grid{grid-template-columns:repeat(3,1fr)}}
+
 .league-btn{
-  background:var(--bg2);border:1px solid var(--border);
-  padding:11px 10px;text-align:left;
-  display:flex;flex-direction:column;gap:2px;min-height:52px;
-  transition:all .15s;border-radius:2px;
-  position:relative;overflow:hidden;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  padding:10px;text-align:left;
+  display:flex;flex-direction:column;gap:2px;
+  min-height:50px;border-radius:2px;
+  transition:all .15s;position:relative;overflow:hidden;
 }
 .league-btn::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
-  background:var(--red);transform:scaleY(0);transition:transform .15s;
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--yellow);transform:scaleX(0);transform-origin:left;
+  transition:transform .2s;
 }
-.league-btn:active{transform:scale(.98)}
+.league-btn:active{transform:scale(.97)}
 .league-btn.active{
-  background:rgba(255,48,48,0.08);
-  border-color:rgba(255,48,48,0.4);
+  background:rgba(255,224,0,0.07);
+  border-color:rgba(255,224,0,0.4);
 }
-.league-btn.active::before{transform:scaleY(1)}
-.lg-name{font-size:11px;font-weight:700;color:var(--text);line-height:1.2;letter-spacing:.3px}
-.lg-country{font-family:var(--mono);font-size:8px;letter-spacing:.5px;color:var(--text3);margin-top:2px}
+.league-btn.active::before{transform:scaleX(1)}
+.lg-name{
+  font-family:var(--body);
+  font-size:12px;font-weight:700;
+  color:var(--white);line-height:1.2;letter-spacing:.3px;
+}
+.lg-country{
+  font-family:var(--mono);
+  font-size:8px;letter-spacing:.5px;color:var(--white4);
+}
 
-/* DATE ROW */
+/* ── DATE ROW ── */
 .date-row{display:flex;gap:6px;align-items:stretch}
 .date-row input{flex:1;min-width:0}
 .btn-arrow{
   background:var(--bg2);border:1px solid var(--border);
-  color:var(--text3);width:44px;min-height:46px;font-size:16px;
+  color:var(--white3);width:44px;min-height:46px;font-size:14px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
   transition:all .15s;font-family:var(--mono);
 }
-.btn-arrow:active{background:rgba(255,48,48,0.1);color:var(--red);border-color:rgba(255,48,48,0.3)}
+.btn-arrow:active{
+  background:rgba(255,224,0,0.08);
+  color:var(--yellow);border-color:rgba(255,224,0,0.3);
+}
 .btn-load{
-  background:var(--red);color:#000;border:none;
-  padding:0 18px;font-family:var(--mono);font-size:11px;letter-spacing:2px;font-weight:400;
+  background:var(--blue);color:#000;border:none;
+  padding:0 18px;font-family:var(--body);font-size:14px;letter-spacing:1px;font-weight:700;
   min-height:46px;flex-shrink:0;text-transform:uppercase;
-  box-shadow:0 0 20px rgba(255,48,48,0.3);
+  box-shadow:0 0 24px rgba(77,166,255,0.4);
   transition:opacity .15s;
 }
 .btn-load:active{opacity:.8}
 
-/* STATUS */
+/* ── STATUS MESSAGES ── */
 .msg-info{
   text-align:center;font-family:var(--mono);
-  color:var(--text3);font-size:11px;padding:28px;letter-spacing:2px;
+  color:var(--white4);font-size:11px;padding:28px;letter-spacing:2px;
 }
 .msg-loading{
   text-align:center;font-family:var(--mono);
-  color:var(--red);font-size:11px;letter-spacing:3px;
-  font-weight:400;padding:28px;text-transform:uppercase;
+  color:var(--yellow);font-size:11px;letter-spacing:4px;
+  padding:28px;text-transform:uppercase;
 }
-.scan-line{
-  width:100%;height:1px;margin:14px auto 0;
-  background:linear-gradient(90deg,transparent,var(--red),transparent);
-  animation:scan 1.6s ease-in-out infinite;
+.scan-wrap{width:140px;overflow:hidden;margin:12px auto 0;height:2px;background:rgba(255,255,255,0.06);border-radius:1px}
+.scan-bar{
+  height:100%;width:40px;border-radius:1px;
+  background:linear-gradient(90deg,transparent,var(--yellow),transparent);
+  animation:scanmove 1.4s ease-in-out infinite;
 }
-@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.scan-wrap{width:120px;overflow:hidden;margin:10px auto 0;position:relative}
+@keyframes scanmove{0%{transform:translateX(-40px)}100%{transform:translateX(140px)}}
 
-/* ERROR */
+/* ── ERRORS ── */
 .err-box{
-  padding:14px;
-  background:rgba(255,48,48,0.04);
-  border:1px solid rgba(255,48,48,0.2);
+  padding:14px;background:rgba(255,68,68,0.05);
+  border:1px solid rgba(255,68,68,0.25);
   margin-bottom:10px;border-radius:2px;
 }
 .err-title{font-family:var(--mono);color:var(--red);font-size:10px;letter-spacing:2px;margin-bottom:8px}
-.err-detail{color:rgba(255,100,100,0.8);font-size:11px;line-height:1.6;word-break:break-all;font-family:var(--mono)}
-.err-hint{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,48,48,0.1);color:var(--text3);font-family:var(--mono);font-size:10px;line-height:1.7}
+.err-detail{color:rgba(255,120,120,0.9);font-family:var(--mono);font-size:11px;line-height:1.6;word-break:break-all}
+.err-hint{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,68,68,0.12);color:var(--white4);font-family:var(--mono);font-size:10px;line-height:1.7}
 .test-result{margin-top:10px;padding:11px 14px;font-size:11px;line-height:1.6;border:1px solid;border-radius:2px;font-family:var(--mono)}
-.test-ok{border-color:rgba(0,255,136,0.25);color:var(--green2);background:rgba(0,255,136,0.04)}
-.test-fail{border-color:rgba(255,48,48,0.3);color:var(--red);background:rgba(255,48,48,0.04)}
+.test-ok{border-color:rgba(0,255,136,0.3);color:var(--green);background:rgba(0,255,136,0.05)}
+.test-fail{border-color:rgba(255,68,68,0.3);color:var(--red);background:rgba(255,68,68,0.05)}
 
-/* FIXTURE LIST */
+/* ── FIXTURE ROWS ── */
 .fx-list{display:flex;flex-direction:column;gap:5px}
 .fx-row{
   padding:12px 14px;
@@ -269,158 +288,162 @@ button{
   position:relative;overflow:hidden;
 }
 .fx-row::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
-  background:var(--red);transform:scaleY(0);transition:transform .2s;
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--yellow),var(--blue));
+  transform:scaleX(0);transform-origin:left;transition:transform .25s;
 }
-.fx-row.active{
-  background:rgba(255,48,48,0.06);
-  border-color:rgba(255,48,48,0.3);
-}
-.fx-row.active::before{transform:scaleY(1)}
+.fx-row.active{background:rgba(255,224,0,0.05);border-color:rgba(255,224,0,0.25)}
+.fx-row.active::before{transform:scaleX(1)}
 .fx-row:active{transform:scale(.995)}
-.fx-teams{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px}
-.fx-team{display:flex;align-items:center;gap:7px;flex:1;min-width:0}
+
+.fx-teams{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
+.fx-team{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
 .fx-team.r{justify-content:flex-end}
 .fx-team img{width:20px;height:20px;object-fit:contain;flex-shrink:0}
-.fx-name{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.3px}
+.fx-name{font-size:13px;font-weight:700;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.3px}
 .fx-score{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:15px;color:var(--text2);
-  padding:2px 9px;background:rgba(255,255,255,0.04);
-  border:1px solid var(--border);
-  flex-shrink:0;letter-spacing:1px;border-radius:2px;
+  font-family:var(--display);
+  font-size:15px;color:var(--yellow);
+  padding:2px 10px;
+  background:rgba(255,224,0,0.07);
+  border:1px solid rgba(255,224,0,0.2);
+  flex-shrink:0;letter-spacing:2px;border-radius:2px;
 }
 .fx-meta{display:flex;justify-content:space-between;align-items:center}
 .fx-status{
   font-family:var(--mono);font-size:9px;letter-spacing:1px;
-  padding:2px 8px;border-radius:2px;
+  padding:2px 8px;border-radius:2px;font-weight:400;
 }
-.fx-cta{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px}
-.fx-busy{font-family:var(--mono);font-size:9px;color:var(--amber);font-weight:400;letter-spacing:1px}
+.fx-cta{font-family:var(--mono);font-size:9px;color:var(--blue2);letter-spacing:1px}
+.fx-busy{font-family:var(--mono);font-size:9px;color:var(--orange);letter-spacing:1px}
 
-/* RESULT SECTION */
+/* ── RESULT: MATCH BANNER ── */
 .match-banner{
   border-radius:2px;padding:22px 18px;margin-bottom:10px;
   background:var(--surface);border:1px solid var(--border);
-  border-top:1px solid rgba(255,48,48,0.3);
   position:relative;overflow:hidden;
 }
-.match-banner::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,48,48,0.3),transparent);
+.match-banner::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--yellow),var(--blue),transparent);
 }
 .banner-inner{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
 .t-side{display:flex;flex-direction:column;gap:6px;flex:1}
 .t-side.r{align-items:flex-end}
-.t-logo{width:50px;height:50px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.8))}
-.t-name{font-size:13px;font-weight:700;line-height:1.2;letter-spacing:.5px}
-.t-tag{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--text3)}
+.t-logo{width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.8))}
+.t-name{font-family:var(--body);font-size:14px;font-weight:700;line-height:1.2;letter-spacing:.5px;color:var(--white)}
+.t-tag{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--white4)}
 .vs-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;flex-shrink:0}
-.vs-text{font-family:'Bebas Neue',sans-serif;font-size:24px;color:rgba(255,48,48,0.2);letter-spacing:3px}
-.match-dt{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.5px;white-space:nowrap}
+.vs-text{font-family:var(--display);font-size:26px;color:rgba(255,255,255,0.1);letter-spacing:4px}
+.match-dt{font-family:var(--mono);font-size:9px;color:var(--blue2);letter-spacing:.5px;white-space:nowrap}
 
-/* PREDICTION BOX */
+/* ── RESULT: PRED BOX ── */
 .pred-box{
-  border-radius:2px;padding:26px 18px;margin-bottom:10px;text-align:center;
+  border-radius:2px;padding:28px 18px;margin-bottom:10px;text-align:center;
   background:var(--surface);border:1px solid var(--border);
   position:relative;overflow:hidden;
 }
 .pred-box::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,48,48,0.5),transparent);
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--blue),var(--yellow),transparent);
 }
-.pred-eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:4px;color:var(--text3);margin-bottom:12px}
+.pred-eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:4px;color:var(--white4);margin-bottom:10px;text-transform:uppercase}
 .pred-outcome{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(36px,9vw,54px);letter-spacing:5px;line-height:1;
-  margin-bottom:14px;
+  font-family:var(--display);
+  font-size:clamp(40px,10vw,60px);letter-spacing:6px;line-height:1;
+  margin-bottom:16px;
+  color:var(--yellow);
+  text-shadow:0 0 50px rgba(255,224,0,0.5);
 }
 .conf-pill{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:6px 16px;border-radius:2px;
-  font-family:var(--mono);font-size:10px;font-weight:400;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 18px;border-radius:2px;
+  font-family:var(--mono);font-size:10px;
   border:1px solid;letter-spacing:1px;
 }
-.conf-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;animation:blink 2s ease-in-out infinite}
+.conf-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;animation:blink 2s infinite}
 
-/* PROB BARS */
+/* ── RESULT: PROB BARS ── */
 .prob-sec{background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:18px;margin-bottom:10px}
-.prob-sec-title{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--text3);margin-bottom:16px;text-transform:uppercase}
+.prob-hdr{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--white4);margin-bottom:16px;text-transform:uppercase}
 .prob-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .prob-row:last-child{margin-bottom:0}
-.prob-lbl{width:70px;font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--text3);flex-shrink:0;text-transform:uppercase}
-.bar-track{flex:1;height:6px;background:rgba(255,255,255,0.05);overflow:hidden;border-radius:1px}
+.prob-lbl{width:68px;font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--white3);flex-shrink:0;text-transform:uppercase}
+.bar-track{flex:1;height:7px;background:rgba(255,255,255,0.06);overflow:hidden;border-radius:1px}
 .bar-fill{height:100%;border-radius:1px;transition:width 1.4s cubic-bezier(.25,1,.5,1)}
-.prob-pct{width:42px;text-align:right;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;flex-shrink:0}
+.prob-pct{width:44px;text-align:right;font-family:var(--display);font-size:18px;letter-spacing:1px;flex-shrink:0}
 
-/* XG */
+/* ── RESULT: XG ── */
 .xg-row{display:flex;gap:8px;margin-bottom:10px}
-.xg-card{
-  flex:1;background:var(--surface);border:1px solid var(--border);
-  border-radius:2px;padding:14px;text-align:center;position:relative;overflow:hidden;
-}
-.xg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px}
-.xg-card.home-card::before{background:linear-gradient(90deg,transparent,rgba(0,136,255,0.5),transparent)}
-.xg-card.away-card::before{background:linear-gradient(90deg,transparent,rgba(255,48,48,0.5),transparent)}
-.xg-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--text3);margin-bottom:4px}
-.xg-val{font-size:34px;font-weight:400;font-family:'Bebas Neue',sans-serif;letter-spacing:2px}
+.xg-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:14px;text-align:center;position:relative;overflow:hidden}
+.xg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.xg-card.home-xg::before{background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.xg-card.away-xg::before{background:linear-gradient(90deg,transparent,var(--yellow),transparent)}
+.xg-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--white4);margin-bottom:4px;text-transform:uppercase}
+.xg-val{font-family:var(--display);font-size:36px;letter-spacing:2px}
 
-/* FORM CARDS */
+/* ── RESULT: FORM CARDS ── */
 .form-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
 @media(min-width:520px){.form-grid{flex-direction:row}}
 .form-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:14px}
 .form-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.form-dot{width:6px;height:6px;border-radius:1px;flex-shrink:0}
-.form-ttl{font-size:10px;font-weight:700;line-height:1.3;color:var(--text);letter-spacing:.5px}
+.form-dot{width:7px;height:7px;flex-shrink:0;border-radius:1px}
+.form-ttl{font-family:var(--body);font-size:11px;font-weight:700;color:var(--white);letter-spacing:.5px;line-height:1.3}
 .stat-row{
   display:flex;justify-content:space-between;align-items:center;
   margin-bottom:8px;padding-bottom:8px;
-  border-bottom:1px solid rgba(255,255,255,0.04);
+  border-bottom:1px solid rgba(255,255,255,0.05);
 }
 .stat-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.stat-l{color:var(--text3);font-family:var(--mono);font-size:10px;letter-spacing:.5px}
-.stat-v{font-weight:700;color:var(--text);font-size:13px;font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
-.model-note{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--text3);text-align:center;padding:8px;text-transform:uppercase}
+.stat-l{color:var(--white4);font-family:var(--mono);font-size:9px;letter-spacing:.5px}
+.stat-v{font-family:var(--display);font-size:15px;letter-spacing:1px;color:var(--white)}
+.model-note{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--white4);text-align:center;padding:8px;text-transform:uppercase}
 
-/* INSTALL HINT */
+/* ── INSTALL HINT ── */
 .install-hint{
-  background:rgba(255,48,48,0.04);border:1px solid rgba(255,48,48,0.12);
-  border-radius:2px;padding:10px 14px;margin-bottom:16px;
-  font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.7;text-align:center;letter-spacing:1px;
+  background:rgba(255,224,0,0.04);
+  border:1px solid rgba(255,224,0,0.12);
+  border-radius:2px;padding:10px 14px;margin-bottom:14px;
+  font-family:var(--mono);font-size:9px;color:var(--white4);line-height:1.7;text-align:center;letter-spacing:1px;
 }
-.install-hint strong{color:var(--amber2)}
+.install-hint strong{color:var(--yellow)}
 
 .hidden{display:none!important}
 @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.up{animation:up .3s cubic-bezier(.25,1,.5,1) both}
-.up2{animation:up .3s .05s cubic-bezier(.25,1,.5,1) both}
-.up3{animation:up .3s .1s cubic-bezier(.25,1,.5,1) both}
-.up4{animation:up .3s .15s cubic-bezier(.25,1,.5,1) both}
-.up5{animation:up .3s .2s cubic-bezier(.25,1,.5,1) both}
+.up {animation:up .3s cubic-bezier(.25,1,.5,1) both}
+.up2{animation:up .3s .06s cubic-bezier(.25,1,.5,1) both}
+.up3{animation:up .3s .12s cubic-bezier(.25,1,.5,1) both}
+.up4{animation:up .3s .18s cubic-bezier(.25,1,.5,1) both}
+.up5{animation:up .3s .24s cubic-bezier(.25,1,.5,1) both}
 </style>
 </head>
 <body>
 <div class="glow-top"></div>
-
 <div class="wrap">
 
   <div class="install-hint" id="install-hint">
-    📱 <strong>Add to Home Screen</strong> · tap Share in Safari → "Add to Home Screen"
+    📱 <strong>Add to Home Screen</strong> · Share in Safari → "Add to Home Screen"
   </div>
 
   <header>
-    <div class="header-line"></div>
     <div class="logo-row">
       <div class="logo-icon">⚽</div>
       <span class="site-title">Match Oracle</span>
     </div>
-    <p class="tagline">Poisson<span>▸</span>Venue Form<span>▸</span>Last 5 Games</p>
+    <p class="tagline">
+      <span class="t-sep">Poisson</span>
+      <span style="color:var(--white4)"> ▸ </span>
+      <span class="t-sep-b">Venue Form</span>
+      <span style="color:var(--white4)"> ▸ </span>
+      <span class="t-sep">Last 5 Games</span>
+    </p>
+    <div class="header-divider"></div>
   </header>
 
   <!-- KEY INPUT -->
   <div id="key-section" class="card">
-    <span class="slabel">API-Football Key</span>
-    <input type="password" id="api-key-input" placeholder="Paste your API key here"
+    <span class="slabel">API-Football Key<span class="slabel-line"></span></span>
+    <input type="password" id="api-key-input" placeholder="Paste your API-Football key here"
       autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"/>
     <button class="btn-primary" id="save-key-btn">Unlock Match Oracle</button>
     <button class="btn-ghost hidden" id="test-btn">Test Connection</button>
@@ -434,13 +457,13 @@ button{
 
   <!-- LEAGUE -->
   <div id="league-section" class="card hidden">
-    <span class="slabel">Select League</span>
+    <span class="slabel">Select League<span class="slabel-line"></span></span>
     <div id="league-grid"></div>
   </div>
 
   <!-- DATE -->
   <div id="date-section" class="card hidden">
-    <span class="slabel">Select Date</span>
+    <span class="slabel">Select Date<span class="slabel-line"></span></span>
     <div class="date-row">
       <button class="btn-arrow" id="prev-day">◀</button>
       <input type="date" id="date-input"/>
@@ -451,7 +474,7 @@ button{
 
   <div id="list-loading" class="msg-loading hidden">
     Fetching Fixtures
-    <div class="scan-wrap"><div class="scan-line"></div></div>
+    <div class="scan-wrap"><div class="scan-bar"></div></div>
   </div>
   <div id="list-error" class="err-box hidden">
     <div class="err-title">⚠ Load Failed</div>
@@ -461,7 +484,7 @@ button{
   <div id="list-empty" class="msg-info hidden">— No fixtures found for this date —</div>
 
   <div id="fixture-card" class="card hidden">
-    <span class="slabel" id="fx-card-label"></span>
+    <span class="slabel" id="fx-label">Fixtures<span class="slabel-line"></span></span>
     <div class="fx-list" id="fx-list"></div>
   </div>
 
@@ -471,152 +494,145 @@ button{
   </div>
 
   <div id="result-section" class="hidden"></div>
-
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
 var API_KEY = '';
 var selectedLeague = null;
 var activeFixtureId = null;
 var predicting = false;
 
-// ── League Data ────────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
+   LEAGUES
+══════════════════════════════════════════════════ */
 var LEAGUE_GROUPS = [
-  {
-    title: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 English Leagues',
-    leagues: [
-      {id:39,  name:'Premier League',   country:'England', season:2024},
-      {id:40,  name:'Championship',     country:'England', season:2024},
-      {id:41,  name:'League One',       country:'England', season:2024},
-      {id:42,  name:'League Two',       country:'England', season:2024},
-      {id:43,  name:'National League',  country:'England', season:2024},
-    ]
-  },
-  {
-    title: '🇩🇪 German Leagues',
-    leagues: [
-      {id:78,  name:'Bundesliga',       country:'Germany', season:2024},
-      {id:79,  name:'2. Bundesliga',    country:'Germany', season:2024},
-      {id:80,  name:'3. Liga',          country:'Germany', season:2024},
-    ]
-  },
-  {
-    title: '🇳🇱 Dutch Leagues',
-    leagues: [
-      {id:88,  name:'Eredivisie',       country:'Netherlands', season:2024},
-      {id:89,  name:'Eerste Divisie',   country:'Netherlands', season:2024},
-    ]
-  },
-  {
-    title: '🇳🇴 Norwegian Leagues',
-    leagues: [
-      {id:103, name:'Eliteserien',      country:'Norway', season:2025},
-      {id:104, name:'1. divisjon',      country:'Norway', season:2025},
-    ]
-  },
-  {
-    title: '🌍 Top European Leagues',
-    leagues: [
-      {id:140, name:'La Liga',          country:'Spain',    season:2024},
-      {id:135, name:'Serie A',          country:'Italy',    season:2024},
-      {id:61,  name:'Ligue 1',          country:'France',   season:2024},
-      {id:94,  name:'Primeira Liga',    country:'Portugal', season:2024},
-      {id:203, name:'Süper Lig',        country:'Turkey',   season:2024},
-      {id:113, name:'Allsvenskan',      country:'Sweden',   season:2025},
-      {id:119, name:'Superliga',        country:'Denmark',  season:2024},
-      {id:345, name:'Czech Liga',       country:'Czech Rep',season:2024},
-    ]
-  },
-  {
-    title: '🏆 European Competitions',
-    leagues: [
-      {id:2,   name:'Champions League', country:'Europe', season:2024},
-      {id:3,   name:'Europa League',    country:'Europe', season:2024},
-      {id:848, name:'Conference Lge',   country:'Europe', season:2024},
-    ]
-  },
-  {
-    title: '🇺🇸 North America',
-    leagues: [
-      {id:253, name:'MLS',              country:'USA',    season:2025},
-      {id:262, name:'Liga MX',          country:'Mexico', season:2024},
-    ]
-  },
+  { title:'English Leagues', leagues:[
+    {id:39,  name:'Premier League',  country:'England', season:2024},
+    {id:40,  name:'Championship',    country:'England', season:2024},
+    {id:41,  name:'League One',      country:'England', season:2024},
+    {id:42,  name:'League Two',      country:'England', season:2024},
+    {id:43,  name:'National League', country:'England', season:2024},
+  ]},
+  { title:'German Leagues', leagues:[
+    {id:78, name:'Bundesliga',    country:'Germany', season:2024},
+    {id:79, name:'2. Bundesliga', country:'Germany', season:2024},
+    {id:80, name:'3. Liga',       country:'Germany', season:2024},
+  ]},
+  { title:'Dutch Leagues', leagues:[
+    {id:88, name:'Eredivisie',     country:'Netherlands', season:2024},
+    {id:89, name:'Eerste Divisie', country:'Netherlands', season:2024},
+  ]},
+  { title:'Norwegian Leagues', leagues:[
+    {id:103, name:'Eliteserien', country:'Norway', season:2025},
+    {id:104, name:'1. Divisjon', country:'Norway', season:2025},
+  ]},
+  { title:'Top European Leagues', leagues:[
+    {id:140, name:'La Liga',       country:'Spain',    season:2024},
+    {id:135, name:'Serie A',       country:'Italy',    season:2024},
+    {id:61,  name:'Ligue 1',       country:'France',   season:2024},
+    {id:94,  name:'Primeira Liga', country:'Portugal', season:2024},
+    {id:203, name:'Süper Lig',     country:'Turkey',   season:2024},
+    {id:113, name:'Allsvenskan',   country:'Sweden',   season:2025},
+    {id:119, name:'Superliga',     country:'Denmark',  season:2024},
+  ]},
+  { title:'European Competitions', leagues:[
+    {id:2,   name:'Champions League', country:'Europe', season:2024},
+    {id:3,   name:'Europa League',    country:'Europe', season:2024},
+    {id:848, name:'Conference Lge',   country:'Europe', season:2024},
+  ]},
+  { title:'Americas', leagues:[
+    {id:253, name:'MLS',     country:'USA',    season:2025},
+    {id:262, name:'Liga MX', country:'Mexico', season:2024},
+  ]},
 ];
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
-function el(id){ return document.getElementById(id); }
-function show(id){ var e=el(id); if(e) e.classList.remove('hidden'); }
-function hide(id){ var e=el(id); if(e) e.classList.add('hidden'); }
-function pad(n){ return String(n).padStart(2,'0'); }
+/* ══════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════ */
+function el(id)   { return document.getElementById(id); }
+function show(id) { var e=el(id); if(e) e.classList.remove('hidden'); }
+function hide(id) { var e=el(id); if(e) e.classList.add('hidden'); }
+function pad(n)   { return String(n).padStart(2,'0'); }
+function esc(s)   { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function todayStr(){
   var d=new Date();
   return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 }
 
-// ── API ────────────────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
+   API FETCH
+══════════════════════════════════════════════════ */
 function apiFetch(endpoint, params){
-  var url = new URL('https://v3.football.api-sports.io'+endpoint);
-  Object.keys(params).forEach(function(k){ url.searchParams.set(k, params[k]); });
+  var url = new URL('https://v3.football.api-sports.io' + endpoint);
+  Object.keys(params).forEach(function(k){
+    if(params[k] != null && params[k] !== '') url.searchParams.set(k, params[k]);
+  });
   return fetch(url.toString(), { headers:{ 'x-apisports-key': API_KEY } })
-    .then(function(res){
-      return res.json().then(function(data){
-        if(!res.ok) throw { message:'HTTP '+res.status,
-          hint:(res.status===401||res.status===403)?'Invalid or expired API key.':'Server error '+res.status };
-        if(data.errors && Object.keys(data.errors).length)
-          throw { message:'API error: '+Object.values(data.errors).join(', '), hint:'Check your key and plan.' };
-        return data.response;
+    .then(function(r){
+      return r.json().then(function(data){
+        if(!r.ok) throw {
+          message:'HTTP '+r.status,
+          hint:(r.status===401||r.status===403)?'Invalid or expired API key.':'Server error '+r.status
+        };
+        if(data.errors){
+          var errs=Object.values(data.errors).filter(Boolean);
+          if(errs.length) throw { message:'API: '+errs.join(', '), hint:'Check your key and plan.' };
+        }
+        return Array.isArray(data.response) ? data.response : [];
       });
     })
-    .catch(function(err){
-      if(err && err.hint) throw err;
-      throw { message:'Network error: '+(err.message||String(err)), hint:'Check your internet connection.' };
+    .catch(function(e){
+      if(e && e.hint) throw e;
+      throw { message:'Network: '+(e.message||e), hint:'Check internet connection.' };
     });
 }
 
-// ── Key ────────────────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
+   KEY
+══════════════════════════════════════════════════ */
 function saveKey(){
   var k=el('api-key-input').value.trim();
-  if(!k){ alert('Please paste your API key first.'); return; }
+  if(!k){ alert('Please paste your API-Football key.'); return; }
   API_KEY=k;
   try{ localStorage.setItem('mo_key',k); }catch(e){}
   activateApp();
 }
-
 function activateApp(){
   hide('key-section');
   show('key-bar');
   show('league-section');
   buildLeagueGrid();
 }
-
 function changeKey(){
-  API_KEY='';
+  API_KEY=''; selectedLeague=null;
   try{ localStorage.removeItem('mo_key'); }catch(e){}
-  selectedLeague=null;
-  ['key-bar','league-section','date-section','fixture-card','result-section','list-error','list-empty','pred-error'].forEach(hide);
+  ['key-bar','league-section','date-section','fixture-card','result-section',
+   'list-error','list-empty','pred-error','list-loading'].forEach(hide);
   el('api-key-input').value='';
   show('key-section');
 }
 
-// ── League Grid ────────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
+   LEAGUE GRID
+══════════════════════════════════════════════════ */
 function buildLeagueGrid(){
-  var container = el('league-grid');
-  container.innerHTML='';
-  LEAGUE_GROUPS.forEach(function(group){
-    var titleEl = document.createElement('div');
-    titleEl.className='league-section-title';
-    titleEl.innerHTML='<span>▸</span>'+group.title;
-    container.appendChild(titleEl);
-
-    var grid = document.createElement('div');
+  var c=el('league-grid');
+  c.innerHTML='';
+  LEAGUE_GROUPS.forEach(function(g){
+    var hdr=document.createElement('div');
+    hdr.className='league-section-hdr';
+    hdr.textContent=g.title;
+    c.appendChild(hdr);
+    var grid=document.createElement('div');
     grid.className='league-grid';
-    group.leagues.forEach(function(lg){
+    g.leagues.forEach(function(lg){
       var btn=document.createElement('button');
       btn.className='league-btn';
-      btn.innerHTML='<span class="lg-name">'+lg.name+'</span><span class="lg-country">'+lg.country+'</span>';
-      btn.addEventListener('click', function(){
+      btn.innerHTML='<span class="lg-name">'+esc(lg.name)+'</span><span class="lg-country">'+esc(lg.country)+'</span>';
+      btn.addEventListener('click',function(){
         document.querySelectorAll('.league-btn').forEach(function(b){ b.classList.remove('active'); });
         btn.classList.add('active');
         selectedLeague=lg;
@@ -626,28 +642,34 @@ function buildLeagueGrid(){
       });
       grid.appendChild(btn);
     });
-    container.appendChild(grid);
+    c.appendChild(grid);
   });
 }
 
-// ── Date ───────────────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
+   DATE
+══════════════════════════════════════════════════ */
 function shiftDate(days){
   var val=el('date-input').value||todayStr();
   var p=val.split('-');
-  var d=new Date(Number(p[0]),Number(p[1])-1,Number(p[2])+days);
+  var d=new Date(+p[0],+p[1]-1,+p[2]+days);
   el('date-input').value=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
   loadFixtures();
 }
 
-// ── Load Fixtures ──────────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
+   LOAD FIXTURES
+   KEY FIX: Only pass league + season + date.
+   No status filter, no last, no venue on this call.
+══════════════════════════════════════════════════ */
 function loadFixtures(){
   if(!selectedLeague) return;
   var date=el('date-input').value||todayStr();
+
   ['list-error','list-empty','fixture-card','result-section','pred-error'].forEach(hide);
   show('list-loading');
   activeFixtureId=null;
 
-  // FIX: use 'league' + 'season' + 'date' — don't pass 'status' when searching by date
   apiFetch('/fixtures', {
     league: selectedLeague.id,
     season: selectedLeague.season,
@@ -656,25 +678,31 @@ function loadFixtures(){
   .then(function(data){
     hide('list-loading');
 
-    // Filter to only real fixtures (not null responses)
-    var fixtures = (data||[]).filter(function(f){
-      return f && f.fixture && f.teams && f.teams.home && f.teams.away;
+    var fixtures=(data||[]).filter(function(f){
+      return f && f.fixture && f.fixture.id
+          && f.teams && f.teams.home && f.teams.away
+          && f.teams.home.name && f.teams.away.name;
     });
 
     if(!fixtures.length){ show('list-empty'); return; }
 
-    // Sort by kick-off time
-    fixtures.sort(function(a,b){
-      return new Date(a.fixture.date) - new Date(b.fixture.date);
-    });
+    fixtures.sort(function(a,b){ return new Date(a.fixture.date)-new Date(b.fixture.date); });
 
-    el('fx-card-label').textContent = fixtures.length+' FIXTURE'+(fixtures.length!==1?'S':'')+' · '+selectedLeague.name+' · '+date;
+    // update label
+    var lbl=el('fx-label');
+    lbl.innerHTML=fixtures.length+' Fixture'+(fixtures.length!==1?'s':'')+
+      ' &middot; '+esc(selectedLeague.name)+' &middot; '+date+
+      '<span class="slabel-line"></span>';
+
     var list=el('fx-list');
     list.innerHTML='';
 
     fixtures.forEach(function(f){
       var sb=statusBadge(f);
-      var sc=f.goals&&f.goals.home!==null&&f.goals.away!==null ? f.goals.home+' – '+f.goals.away : 'vs';
+      var gh=f.goals&&f.goals.home!=null?f.goals.home:null;
+      var ga=f.goals&&f.goals.away!=null?f.goals.away:null;
+      var sc=(gh!==null&&ga!==null)?(gh+' – '+ga):'vs';
+
       var row=document.createElement('div');
       row.className='fx-row';
       row.id='fx-'+f.fixture.id;
@@ -682,11 +710,11 @@ function loadFixtures(){
         '<div class="fx-teams">'+
           '<div class="fx-team">'+
             (f.teams.home.logo?'<img src="'+f.teams.home.logo+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+
-            '<span class="fx-name">'+f.teams.home.name+'</span>'+
+            '<span class="fx-name">'+esc(f.teams.home.name)+'</span>'+
           '</div>'+
           '<div class="fx-score">'+sc+'</div>'+
           '<div class="fx-team r">'+
-            '<span class="fx-name">'+f.teams.away.name+'</span>'+
+            '<span class="fx-name">'+esc(f.teams.away.name)+'</span>'+
             (f.teams.away.logo?'<img src="'+f.teams.away.logo+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+
           '</div>'+
         '</div>'+
@@ -694,7 +722,7 @@ function loadFixtures(){
           '<span class="fx-status" style="color:'+sb.color+';background:'+sb.color+'18">'+sb.text+'</span>'+
           '<span class="fx-cta" id="cta-'+f.fixture.id+'">Predict ▸</span>'+
         '</div>';
-      row.addEventListener('click', function(){ if(!predicting) predictFixture(f); });
+      row.addEventListener('click',function(){ if(!predicting) predictFixture(f); });
       list.appendChild(row);
     });
     show('fixture-card');
@@ -707,43 +735,49 @@ function loadFixtures(){
   });
 }
 
-// ── Predict ────────────────────────────────────────────────────────────────────
-function predictFixture(fixture){
+/* ══════════════════════════════════════════════════
+   PREDICT
+   Fetch last 30 games per team (no date filter),
+   extract venue form, fallback to all games.
+══════════════════════════════════════════════════ */
+function predictFixture(f){
   hide('pred-error'); hide('result-section');
   predicting=true;
+
   if(activeFixtureId){ var old=el('fx-'+activeFixtureId); if(old) old.classList.remove('active'); }
-  activeFixtureId=fixture.fixture.id;
-  var row=el('fx-'+fixture.fixture.id); if(row) row.classList.add('active');
-  var ht=fixture.teams.home, at=fixture.teams.away;
-  var season=fixture.league ? fixture.league.season : selectedLeague.season;
+  activeFixtureId=f.fixture.id;
+  var row=el('fx-'+f.fixture.id); if(row) row.classList.add('active');
 
-  function setCta(cls,msg){ var c=el('cta-'+fixture.fixture.id); if(c){c.className=cls;c.textContent=msg;} }
-  setCta('fx-busy','⟳ Home form…');
+  var ht=f.teams.home, at=f.teams.away;
+  var season=(f.league&&f.league.season)||selectedLeague.season;
 
-  // FIX: Use 'last' param with team+season; fetch more games to ensure we get venue-specific ones
+  function setCta(cls,msg){ var c=el('cta-'+f.fixture.id); if(c){c.className=cls;c.textContent=msg;} }
+  setCta('fx-busy','⟳ Fetching form…');
+
   Promise.all([
-    apiFetch('/fixtures', { team: ht.id, season: season, last: 20 }),
-    apiFetch('/fixtures', { team: at.id, season: season, last: 20 })
+    apiFetch('/fixtures', { team:ht.id, season:season, last:30 }),
+    apiFetch('/fixtures', { team:at.id, season:season, last:30 })
   ])
-  .then(function(results){
-    setCta('fx-busy','⟳ Running model…');
-    var hAllFix = results[0];
-    var aAllFix = results[1];
+  .then(function(res){
+    setCta('fx-busy','⟳ Building model…');
 
-    var hm = extractForm(hAllFix, ht.id, 'home');
-    var am = extractForm(aAllFix, at.id, 'away');
+    var hDone=onlyFinished(res[0]);
+    var aDone=onlyFinished(res[1]);
 
-    // Fallback: if not enough venue-specific, use all games
-    if(!hm || hm.gamesUsed < 3) hm = extractForm(hAllFix, ht.id, 'all');
-    if(!am || am.gamesUsed < 3) am = extractForm(aAllFix, at.id, 'all');
+    var hm=extractForm(hDone, ht.id, 'home');
+    if(!hm||hm.n<2) hm=extractForm(hDone, ht.id, 'all');
 
-    if(!hm || !am) throw { message:'Not enough form data available for this match.' };
+    var am=extractForm(aDone, at.id, 'away');
+    if(!am||am.n<2) am=extractForm(aDone, at.id, 'all');
+
+    if(!hm||!am||hm.n===0||am.n===0)
+      throw { message:'Not enough completed matches found. Try later in the season.' };
 
     var L=buildLambdas(hm,am);
     var probs=calcProbs(L.hL,L.aL);
     var mx=Math.max(probs.home,probs.draw,probs.away);
-    var predicted=mx===probs.home?'Home Win':mx===probs.draw?'Draw':'Away Win';
-    renderResult(fixture, ht, at, hm, am, probs, predicted, mx);
+    var pred=mx===probs.home?'Home Win':mx===probs.draw?'Draw':'Away Win';
+    renderResult(f,ht,at,hm,am,probs,pred,mx);
     setCta('fx-cta','✓ Done');
   })
   .catch(function(e){
@@ -754,13 +788,60 @@ function predictFixture(fixture){
   .then(function(){ predicting=false; });
 }
 
-// ── Maths ──────────────────────────────────────────────────────────────────────
+function onlyFinished(arr){
+  return (arr||[]).filter(function(f){
+    if(!f||!f.fixture||!f.teams||!f.goals) return false;
+    var s=f.fixture.status&&f.fixture.status.short;
+    return s==='FT'||s==='AET'||s==='PEN';
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   MATHS
+══════════════════════════════════════════════════ */
+function extractForm(arr, teamId, venue){
+  var rel=[];
+  for(var i=0;i<arr.length;i++){
+    var f=arr[i];
+    var ih=f.teams.home.id===teamId;
+    var ia=f.teams.away.id===teamId;
+    if(venue==='home'&&!ih) continue;
+    if(venue==='away'&&!ia) continue;
+    if(venue==='all'&&!ih&&!ia) continue;
+    rel.push(f);
+    if(rel.length===5) break;
+  }
+  if(!rel.length) return null;
+  var gf=0,ga=0,pts=0,cs=0;
+  rel.forEach(function(f){
+    var ih=f.teams.home.id===teamId;
+    var sc=ih?(f.goals.home||0):(f.goals.away||0);
+    var cc=ih?(f.goals.away||0):(f.goals.home||0);
+    var win=ih?f.teams.home.winner:f.teams.away.winner;
+    var los=ih?f.teams.away.winner:f.teams.home.winner;
+    gf+=sc; ga+=cc;
+    if(win) pts+=3; else if(!los) pts+=1;
+    if(cc===0) cs++;
+  });
+  var n=rel.length;
+  return { avgGF:gf/n, avgGA:ga/n, ppg:pts/n, csr:cs/n, n:n, venue:venue };
+}
+
+function buildLambdas(hm,am){
+  var avg=1.35;
+  return {
+    hL: Math.max(0.3, (hm.avgGF/avg)*(am.avgGA/avg)*avg*1.1),
+    aL: Math.max(0.3, (am.avgGF/avg)*(hm.avgGA/avg)*avg)
+  };
+}
+
 function poissonPMF(l,k){
   if(l<=0) return k===0?1:0;
   var r=-l+k*Math.log(l);
   for(var i=1;i<=k;i++) r-=Math.log(i);
   return Math.exp(r);
 }
+
 function calcProbs(hL,aL){
   var h=0,d=0,a=0;
   for(var i=0;i<=8;i++){
@@ -772,107 +853,75 @@ function calcProbs(hL,aL){
   var t=h+d+a;
   return { home:h/t*100, draw:d/t*100, away:a/t*100, hL:hL, aL:aL };
 }
-function extractForm(fixtures, teamId, venue){
-  if(!fixtures || !fixtures.length) return null;
-  var rel=[];
-  for(var i=0;i<fixtures.length;i++){
-    var f=fixtures[i];
-    if(!f || !f.fixture || !f.teams || !f.goals) continue;
-    // Only use finished games
-    if(f.fixture.status && f.fixture.status.short !== 'FT' && f.fixture.status.short !== 'AET' && f.fixture.status.short !== 'PEN') continue;
 
-    var isHome = f.teams.home && f.teams.home.id === teamId;
-    var isAway = f.teams.away && f.teams.away.id === teamId;
-
-    if(venue==='home' && !isHome) continue;
-    if(venue==='away' && !isAway) continue;
-    if(venue==='all' && !isHome && !isAway) continue;
-
-    rel.push(f);
-    if(rel.length===5) break;
-  }
-  if(!rel.length) return null;
-  var gf=0,ga=0,pts=0,cs=0;
-  for(var i=0;i<rel.length;i++){
-    var f=rel[i];
-    var ih = f.teams.home.id===teamId;
-    var sc = ih ? (f.goals.home||0) : (f.goals.away||0);
-    var cc = ih ? (f.goals.away||0) : (f.goals.home||0);
-    var w  = ih ? f.teams.home.winner : f.teams.away.winner;
-    var lo = ih ? f.teams.away.winner : f.teams.home.winner;
-    gf+=sc; ga+=cc;
-    if(w) pts+=3; else if(!lo) pts+=1;
-    if(cc===0) cs++;
-  }
-  var n=rel.length;
-  return { avgGoalsFor:gf/n, avgGoalsAgainst:ga/n, ppg:pts/n, cleanSheetRate:cs/n, gamesUsed:n, venueType:venue };
-}
-function buildLambdas(hm,am){
-  var avg=1.35;
-  return {
-    hL: Math.max(0.3, (hm.avgGoalsFor/avg)*(am.avgGoalsAgainst/avg)*avg*1.1),
-    aL: Math.max(0.3, (am.avgGoalsFor/avg)*(hm.avgGoalsAgainst/avg)*avg)
-  };
-}
 function confidence(p){
-  if(p>=70) return { label:'Strong',  color:'#00ff88' };
-  if(p>=55) return { label:'Moderate',color:'#ff8c00' };
-  if(p>=40) return { label:'Slight Edge',color:'#ffaa33' };
-  return            { label:'Coin Flip',color:'#ff3030' };
+  if(p>=70) return { label:'Strong Confidence',   color:'#00FF88' };
+  if(p>=55) return { label:'Moderate Confidence', color:'#FFE000' };
+  if(p>=42) return { label:'Slight Edge',          color:'#4DA6FF' };
+  return           { label:'Too Close to Call',   color:'#FF9900' };
 }
+
 function statusBadge(f){
   var s=f.fixture.status.short, e=f.fixture.status.elapsed;
-  if(['1H','2H','HT','ET','P'].indexOf(s)>-1) return { text:e?e+"' LIVE":'LIVE', color:'#00ff88' };
-  if(s==='FT') return { text:'Full Time', color:'#333' };
-  if(s==='NS'){ var t=new Date(f.fixture.date); return { text:t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), color:'#0088ff' }; }
-  return { text:s, color:'#ff8c00' };
+  if(['1H','2H','HT','ET','P'].indexOf(s)>-1) return { text:e?e+"' LIVE":'LIVE', color:'#00FF88' };
+  if(s==='FT') return { text:'Full Time', color:'#444444' };
+  if(s==='NS'){
+    var t=new Date(f.fixture.date);
+    return { text:t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), color:'#4DA6FF' };
+  }
+  return { text:s, color:'#FF9900' };
 }
 
-// ── Render Result ──────────────────────────────────────────────────────────────
-function renderResult(fixture, ht, at, hm, am, probs, predicted, maxProb){
+/* ══════════════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════════════ */
+function renderResult(fixture,ht,at,hm,am,probs,predicted,maxProb){
   var conf=confidence(maxProb);
   var dt=new Date(fixture.fixture.date).toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
+  var hv=hm.venue==='home'?' Home':hm.venue==='away'?' Away':'';
+  var av=am.venue==='away'?' Away':am.venue==='home'?' Home':'';
   var sec=el('result-section');
+
   sec.innerHTML=
     '<div class="match-banner up"><div class="banner-inner">'+
       '<div class="t-side">'+
         (ht.logo?'<img class="t-logo" src="'+ht.logo+'" alt="" onerror="this.style.display=\'none\'">':'')+
-        '<span class="t-name">'+ht.name+'</span>'+
-        '<span class="t-tag">Home</span>'+
+        '<span class="t-name">'+esc(ht.name)+'</span>'+
+        '<span class="t-tag">HOME</span>'+
       '</div>'+
       '<div class="vs-wrap"><span class="vs-text">VS</span><span class="match-dt">'+dt+'</span></div>'+
       '<div class="t-side r">'+
         (at.logo?'<img class="t-logo" src="'+at.logo+'" alt="" onerror="this.style.display=\'none\'">':'')+
-        '<span class="t-name">'+at.name+'</span>'+
-        '<span class="t-tag">Away</span>'+
+        '<span class="t-name">'+esc(at.name)+'</span>'+
+        '<span class="t-tag">AWAY</span>'+
       '</div>'+
     '</div></div>'+
 
     '<div class="pred-box up2">'+
       '<div class="pred-eyebrow">Predicted Outcome</div>'+
-      '<div class="pred-outcome" style="color:'+conf.color+';text-shadow:0 0 40px '+conf.color+'44">'+predicted+'</div>'+
-      '<span class="conf-pill" style="color:'+conf.color+';border-color:'+conf.color+'44;background:'+conf.color+'0d">'+
+      '<div class="pred-outcome">'+esc(predicted)+'</div>'+
+      '<span class="conf-pill" style="color:'+conf.color+';border-color:'+conf.color+'44;background:'+conf.color+'10">'+
         '<span class="conf-dot"></span>'+conf.label+' &mdash; '+maxProb.toFixed(1)+'%'+
       '</span>'+
     '</div>'+
 
     '<div class="prob-sec up3">'+
-      '<div class="prob-sec-title">Win Probabilities</div>'+
-      pBar('Home Win', probs.home, '#0088ff')+
-      pBar('Draw',     probs.draw, '#ff8c00')+
-      pBar('Away Win', probs.away, '#ff3030')+
+      '<div class="prob-hdr">Win Probabilities</div>'+
+      pBar('Home', probs.home, '#4DA6FF')+
+      pBar('Draw', probs.draw, '#FFE000')+
+      pBar('Away', probs.away, '#FFFFFF')+
     '</div>'+
 
     '<div class="xg-row up4">'+
-      '<div class="xg-card home-card"><div class="xg-lbl">Home xG</div><div class="xg-val" style="color:#0088ff">'+probs.hL.toFixed(2)+'</div></div>'+
-      '<div class="xg-card away-card"><div class="xg-lbl">Away xG</div><div class="xg-val" style="color:#ff3030">'+probs.aL.toFixed(2)+'</div></div>'+
+      '<div class="xg-card home-xg"><div class="xg-lbl">Home xG</div><div class="xg-val" style="color:#4DA6FF">'+probs.hL.toFixed(2)+'</div></div>'+
+      '<div class="xg-card away-xg"><div class="xg-lbl">Away xG</div><div class="xg-val" style="color:#FFE000">'+probs.aL.toFixed(2)+'</div></div>'+
     '</div>'+
 
     '<div class="form-grid up5">'+
-      fCard(ht.name+' · Last '+hm.gamesUsed+(hm.venueType==='home'?' Home':hm.venueType==='away'?' Away':' Games'), hm, '#0088ff')+
-      fCard(at.name+' · Last '+am.gamesUsed+(am.venueType==='away'?' Away':am.venueType==='home'?' Home':' Games'), am, '#ff3030')+
+      fCard(esc(ht.name)+' · Last '+hm.n+hv, hm, '#4DA6FF')+
+      fCard(esc(at.name)+' · Last '+am.n+av, am, '#FFE000')+
     '</div>'+
-    '<div class="model-note">Poisson Distribution · Home Advantage ×1.1 · Venue Form</div>';
+    '<div class="model-note">Poisson Distribution · Home Advantage ×1.1 · Venue-Specific Form</div>';
 
   show('result-section');
   setTimeout(function(){ sec.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
@@ -881,51 +930,61 @@ function renderResult(fixture, ht, at, hm, am, probs, predicted, maxProb){
 function pBar(label,prob,color){
   return '<div class="prob-row">'+
     '<span class="prob-lbl">'+label+'</span>'+
-    '<div class="bar-track"><div class="bar-fill" style="width:'+prob.toFixed(1)+'%;background:linear-gradient(90deg,'+color+'55,'+color+');box-shadow:0 0 8px '+color+'44"></div></div>'+
+    '<div class="bar-track"><div class="bar-fill" style="width:'+prob.toFixed(1)+'%;background:'+color+';opacity:0.9"></div></div>'+
     '<span class="prob-pct" style="color:'+color+'">'+prob.toFixed(1)+'</span>'+
   '</div>';
 }
+
 function fCard(title,m,color){
   return '<div class="form-card">'+
-    '<div class="form-head"><div class="form-dot" style="background:'+color+';box-shadow:0 0 6px '+color+'88"></div><span class="form-ttl">'+title+'</span></div>'+
-    sRow('Goals Scored / Game', m.avgGoalsFor.toFixed(2))+
-    sRow('Goals Conceded / Game', m.avgGoalsAgainst.toFixed(2))+
-    sRow('Points / Game', m.ppg.toFixed(2))+
-    sRow('Clean Sheet Rate', Math.round(m.cleanSheetRate*100)+'%')+
+    '<div class="form-head"><div class="form-dot" style="background:'+color+'"></div><span class="form-ttl">'+title+'</span></div>'+
+    sRow('Goals Scored / Game',   m.avgGF.toFixed(2))+
+    sRow('Goals Conceded / Game', m.avgGA.toFixed(2))+
+    sRow('Points / Game',         m.ppg.toFixed(2))+
+    sRow('Clean Sheet Rate',      Math.round(m.csr*100)+'%')+
   '</div>';
 }
+
 function sRow(l,v){
   return '<div class="stat-row"><span class="stat-l">'+l+'</span><span class="stat-v">'+v+'</span></div>';
 }
 
-// ── Boot ───────────────────────────────────────────────────────────────────────
-el('date-input').value=todayStr();
+/* ══════════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════════ */
+el('date-input').value = todayStr();
 el('save-key-btn').addEventListener('click', saveKey);
 el('change-key-btn').addEventListener('click', changeKey);
 el('prev-day').addEventListener('click', function(){ shiftDate(-1); });
 el('next-day').addEventListener('click', function(){ shiftDate(1); });
 el('load-btn').addEventListener('click', loadFixtures);
 el('api-key-input').addEventListener('keydown', function(e){ if(e.key==='Enter') saveKey(); });
+
 el('test-btn').addEventListener('click', function(){
   var btn=el('test-btn'); btn.textContent='Testing…'; btn.disabled=true; hide('test-result');
-  apiFetch('/status',{}).then(function(data){
-    var plan=(data&&data.subscription&&data.subscription.plan)||'unknown';
-    var used=(data&&data.requests&&data.requests.current)||'?';
-    var lim=(data&&data.requests&&data.requests.limit_day)||'?';
+  apiFetch('/status',{})
+  .then(function(data){
+    var d=(data&&data[0])||{};
+    var plan=(d.subscription&&d.subscription.plan)||'unknown';
+    var used=(d.requests&&d.requests.current)||'?';
+    var lim=(d.requests&&d.requests.limit_day)||'?';
     el('test-result').className='test-result test-ok';
     el('test-result').innerHTML='✓ Connected · Plan: '+plan+'<br>Requests today: '+used+' / '+lim;
     show('test-result');
-  }).catch(function(e){
+  })
+  .catch(function(e){
     el('test-result').className='test-result test-fail';
-    el('test-result').innerHTML='✗ '+(e.message||e)+'<br><small style="opacity:.7">'+(e.hint||'')+'</small>';
+    el('test-result').innerHTML='✗ '+(e.message||e)+'<br><small>'+(e.hint||'')+'</small>';
     show('test-result');
-  }).then(function(){ btn.textContent='Test Connection'; btn.disabled=false; });
+  })
+  .then(function(){ btn.textContent='Test Connection'; btn.disabled=false; });
 });
 
-// Restore saved key
-try{ var saved=localStorage.getItem('mo_key'); if(saved){ API_KEY=saved; activateApp(); } }catch(e){}
+try{
+  var saved=localStorage.getItem('mo_key');
+  if(saved){ API_KEY=saved; activateApp(); }
+}catch(e){}
 
-// Hide install hint on desktop
 if(!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) hide('install-hint');
 </script>
 </body>
