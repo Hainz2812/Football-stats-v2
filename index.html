@@ -118,20 +118,13 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 .rc-date{font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:1px;margin-top:2px;}
 
 /* ROW 2: prediction */
-.rc-pred{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--b1);gap:10px;}
-.rc-pred-label{font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;flex-shrink:0;}
-.rc-pred-out{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--Y);line-height:1;}
-.rc-conf{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:2px;font-family:var(--mono);font-size:9px;border:1px solid;letter-spacing:1px;flex-shrink:0;}
+.rc-pred{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid var(--b1);gap:8px;flex-wrap:wrap;}
+.rc-pred-out{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--Y);line-height:1;flex-shrink:0;}
+.rc-pred-probs{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;font-weight:700;flex:1;}
+.rc-pred-sep{color:var(--t3);font-size:9px;}
+.rc-conf{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;border:1px solid;letter-spacing:1px;flex-shrink:0;white-space:nowrap;}
 .rc-conf-dot{width:4px;height:4px;border-radius:50%;background:currentColor;animation:blink 2s ease-in-out infinite;}
 
-/* ROWS 3-5: probability bars */
-.rc-probs{padding:10px 16px;border-bottom:1px solid var(--b1);}
-.rc-prob-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
-.rc-prob-row:last-child{margin-bottom:0;}
-.rc-prob-lbl{font-family:var(--mono);font-size:9px;color:var(--t2);width:66px;flex-shrink:0;text-transform:uppercase;}
-.rc-bar-track{flex:1;height:6px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
-.rc-bar-fill{height:100%;border-radius:2px;transition:width 1.3s cubic-bezier(.25,1,.5,1);}
-.rc-prob-pct{font-family:'Bebas Neue',sans-serif;font-size:15px;width:38px;text-align:right;flex-shrink:0;}
 
 /* STATS TABLE */
 .rc-stats{padding:0;}
@@ -177,6 +170,53 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
   .rc-stats-hdr,.rc-stats-row{padding:8px 14px;}
   .rc-stat-val{font-size:15px;}
 }
+
+/* ── INLINE PREDICTION PANEL ─────────────────────────── */
+.fx-wrap{ display:flex; flex-direction:column; }
+.fx-loading{ font-family:var(--mono); font-size:9px; color:var(--t3); letter-spacing:1px; animation:pulse 1.4s ease-in-out infinite; }
+@keyframes pulse{ 0%,100%{opacity:.4} 50%{opacity:1} }
+
+.fx-panel{ border-top:1px solid rgba(255,230,0,.1); background:rgba(255,230,0,.02); }
+
+/* Single-line prediction strip */
+.fp-pred-strip{
+  display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px;
+  padding:8px 14px; border-bottom:1px solid rgba(255,255,255,.05);
+}
+.fp-lbl{ font-family:var(--mono); font-size:9px; color:var(--t3); letter-spacing:2px; text-transform:uppercase; flex-shrink:0; }
+.fp-out{ font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:2px; flex-shrink:0; line-height:1; }
+.fp-divider{ color:var(--t3); font-size:9px; flex-shrink:0; }
+.fp-prob{ font-family:var(--mono); font-size:10px; font-weight:700; flex-shrink:0; letter-spacing:.5px; }
+.fp-conf{ font-family:var(--mono); font-size:9px; letter-spacing:1px; flex-shrink:0; font-weight:700; }
+
+/* Stats table */
+.fp-stats{ padding:0; }
+.fp-stats-hdr{
+  display:grid; grid-template-columns:1fr repeat(5,52px);
+  padding:6px 14px; background:rgba(255,255,255,.02);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.fp-stats-hdr span{ font-family:var(--mono); font-size:8px; color:var(--t3); letter-spacing:1px; text-transform:uppercase; text-align:center; }
+.fp-stats-hdr span:first-child{ text-align:left; }
+.fp-stats-row{
+  display:grid; grid-template-columns:1fr repeat(5,52px);
+  padding:9px 14px; align-items:center;
+  border-bottom:1px solid rgba(255,255,255,.03);
+}
+.fp-stats-row:last-child{ border-bottom:none; }
+.fp-team-cell{ display:flex; align-items:center; gap:6px; overflow:hidden; }
+.fp-team-cell img{ width:16px; height:16px; object-fit:contain; flex-shrink:0; }
+.fp-team-cell span{ font-size:11px; font-weight:700; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fp-cell{ text-align:center; }
+.fp-val{ font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:.5px; display:block; line-height:1; }
+.fp-sub{ font-family:var(--mono); font-size:7px; color:var(--t3); display:block; margin-top:1px; }
+
+/* Landscape: tighter stats columns */
+@media(orientation:landscape) and (max-height:500px){
+  .fp-stats-hdr, .fp-stats-row{ grid-template-columns:1fr repeat(5,44px); padding:6px 10px; }
+  .fp-pred-strip{ padding:6px 10px; }
+}
+
 </style>
 </head>
 <body>
@@ -375,6 +415,11 @@ function loadAll(){
         var w=document.createElement('div'); w.className='lg-fixtures';
         fx.forEach(function(f){ w.appendChild(buildRow(f,lg)); });
         g.appendChild(w); el('results-area').appendChild(g);
+        // Auto-predict first fixture of first league found
+        if(found===1 && !activePredFixId){
+          var firstF=fx[0], firstLg=lg;
+          setTimeout(function(){ predict(firstF,firstLg); },50);
+        }
       }
       next(i+1);
     });
@@ -387,6 +432,11 @@ function buildRow(f,lg){
   var gH=f.goals&&f.goals.home!==null?f.goals.home:null;
   var gA=f.goals&&f.goals.away!==null?f.goals.away:null;
   var sc=(gH!==null&&gA!==null)?gH+' - '+gA:'vs';
+
+  // Outer wrapper holds fixture row + prediction panel
+  var wrap=document.createElement('div');
+  wrap.className='fx-wrap';
+
   var row=document.createElement('div');
   row.className='fx-row'; row.id='fx-'+f.fixture.id;
   row.innerHTML=
@@ -399,39 +449,63 @@ function buildRow(f,lg){
       '</div>'+
     '</div>'+
     '<div class="fx-meta"><span class="fx-status" style="color:'+sb.c+';background:'+sb.c+'18">'+esc(sb.t)+'</span>'+
-      '<span class="fx-cta" id="cta-'+f.fixture.id+'">Predict &#9656;</span></div>';
-  row.addEventListener('click',function(){ if(!predicting) predict(f,lg); });
-  return row;
+      '<span class="fx-loading" id="fxl-'+f.fixture.id+'">calculating...</span></div>';
+
+  var panel=document.createElement('div');
+  panel.className='fx-panel hidden'; panel.id='fxp-'+f.fixture.id;
+
+  wrap.appendChild(row);
+  wrap.appendChild(panel);
+  autoPredictRow(f, lg, panel);
+  return wrap;
 }
 
-function predict(f,lg){
-  hide('pred-err-box'); hide('result-section'); predicting=true;
-  if(activePredFixId){ var o=el('fx-'+activePredFixId); if(o) o.classList.remove('active'); }
-  activePredFixId=f.fixture.id;
-  var row=el('fx-'+f.fixture.id); if(row) row.classList.add('active');
+function autoPredictRow(f, lg, panel){
   var ht=f.teams.home, at=f.teams.away;
   var season=(f.league&&f.league.season)||lg.season;
-  function cta(cls,msg){ var c=el('cta-'+f.fixture.id); if(c){c.className=cls;c.textContent=msg;} }
-  cta('fx-busy','Loading...');
   Promise.all([
     xhr('https://v3.football.api-sports.io/fixtures?team='+ht.id+'&season='+season+'&last=20'),
     xhr('https://v3.football.api-sports.io/fixtures?team='+at.id+'&season='+season+'&last=20')
   ]).then(function(res){
-    cta('fx-busy','Calculating...');
     var hR=Array.isArray(res[0].response)?res[0].response:[];
     var aR=Array.isArray(res[1].response)?res[1].response:[];
     var hm=form(hR,ht.id,'home'); var am=form(aR,at.id,'away');
     if(!hm||hm.n<3) hm=form(hR,ht.id,'all')||hm;
     if(!am||am.n<3) am=form(aR,at.id,'all')||am;
-    if(!hm||!am) throw {message:'Not enough match data yet this season.'};
+    if(!hm||!am) throw {message:'n/a'};
     var L=lambdas(hm,am), P=probs(L.h,L.a);
     var mx=Math.max(P.h,P.d,P.a);
     var pred=mx===P.h?'Home Win':mx===P.d?'Draw':'Away Win';
-    renderResult(f,ht,at,hm,am,P,pred,mx);
-    cta('fx-cta','&#10003; Done');
-  }).catch(function(e){
-    el('pred-err-body').textContent=e.message||String(e); show('pred-err-box'); cta('fx-cta','Predict &#9656;');
-  }).then(function(){ predicting=false; });
+    var cf=conf(mx);
+    // Hide loading text
+    var loadEl=document.getElementById('fxl-'+f.fixture.id);
+    if(loadEl) loadEl.style.display='none';
+    // Build inline prediction + stats
+    panel.innerHTML=
+      '<div class="fp-pred-strip">'+
+        '<span class="fp-lbl">Prediction</span>'+
+        '<span class="fp-out" style="color:'+cf.c+'">'+esc(pred)+'</span>'+
+        '<span class="fp-divider">·</span>'+
+        '<span style="color:#4db8ff" class="fp-prob">H&nbsp;'+P.h.toFixed(1)+'%</span>'+
+        '<span class="fp-divider">·</span>'+
+        '<span style="color:#ffe600" class="fp-prob">D&nbsp;'+P.d.toFixed(1)+'%</span>'+
+        '<span class="fp-divider">·</span>'+
+        '<span style="color:#ff9a1f" class="fp-prob">A&nbsp;'+P.a.toFixed(1)+'%</span>'+
+        '<span class="fp-divider">·</span>'+
+        '<span class="fp-conf" style="color:'+cf.c+'">'+esc(cf.l)+'</span>'+
+      '</div>'+
+      '<div class="fp-stats">'+
+        '<div class="fp-stats-hdr">'+
+          '<span>Team</span><span>xG</span><span>Scored</span><span>Conceded</span><span>Pts/G</span><span>CS%</span>'+
+        '</div>'+
+        fpStatsRow(ht, hm, P.hL, '#4db8ff')+
+        fpStatsRow(at, am, P.aL, '#ff9a1f')+
+      '</div>';
+    panel.classList.remove('hidden');
+  }).catch(function(){
+    var loadEl=document.getElementById('fxl-'+f.fixture.id);
+    if(loadEl) loadEl.style.display='none';
+  });
 }
 
 function poisPMF(l,k){ if(l<=0) return k===0?1:0; var r=-l+k*Math.log(l); for(var i=1;i<=k;i++) r-=Math.log(i); return Math.exp(r); }
@@ -471,92 +545,18 @@ function badge(f){
   return {t:s,c:'#ff9a1f'};
 }
 
-function renderResult(fixture,ht,at,hm,am,P,predicted,maxP){
-  var cf=conf(maxP);
-  var dt=new Date(fixture.fixture.date).toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
-  var gH=fixture.goals&&fixture.goals.home!==null?fixture.goals.home:null;
-  var gA=fixture.goals&&fixture.goals.away!==null?fixture.goals.away:null;
-  var sc=(gH!==null&&gA!==null)?gH+' - '+gA:'vs';
-  var sec=el('result-section');
-
-  // Determine label for form rows
-  var hLbl=hm.venue==='home'?'Last '+hm.n+' Home':'Last '+hm.n+' Games';
-  var aLbl=am.venue==='away'?'Last '+am.n+' Away':'Last '+am.n+' Games';
-
-  sec.innerHTML=
-    '<div class="res-card up">'+
-
-    // ROW 1: Fixture
-    '<div class="rc-fixture">'+
-      '<div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0">'+
-        (ht.logo?'<img class="rc-team-logo" src="'+esc(ht.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+
-        '<span class="rc-team-name">'+esc(ht.name)+'</span>'+
-      '</div>'+
-      '<div class="rc-vs"><span class="rc-score">'+esc(sc)+'</span><span class="rc-date">'+esc(dt)+'</span></div>'+
-      '<div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0;justify-content:flex-end">'+
-        '<span class="rc-team-name r">'+esc(at.name)+'</span>'+
-        (at.logo?'<img class="rc-team-logo" src="'+esc(at.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+
-      '</div>'+
-    '</div>'+
-
-    // ROW 2: Prediction
-    '<div class="rc-pred">'+
-      '<span class="rc-pred-label">Prediction</span>'+
-      '<span class="rc-pred-out">'+esc(predicted)+'</span>'+
-      '<span class="rc-conf" style="color:'+cf.c+';border-color:'+cf.c+'44;background:'+cf.c+'0d">'+
-        '<span class="rc-conf-dot" style="background:'+cf.c+'"></span>'+esc(cf.l)+' '+maxP.toFixed(1)+'%'+
-      '</span>'+
-    '</div>'+
-
-    // ROWS 3-5: Probability bars (Home / Draw / Away)
-    '<div class="rc-probs">'+
-      rcProbRow('Home Win', P.h, '#4db8ff')+
-      rcProbRow('Draw',     P.d, '#ffe600')+
-      rcProbRow('Away Win', P.a, '#ff9a1f')+
-    '</div>'+
-
-    // STATS TABLE
-    '<div class="rc-stats">'+
-      '<div class="rc-stats-hdr">'+
-        '<span>Team ('+hLbl.replace('Last ','').replace(' Home',' H').replace(' Away',' A')+')</span>'+
-        '<span>xG</span><span>Scored</span><span>Conceded</span><span>Pts/G</span><span>CS%</span>'+
-      '</div>'+
-      rcStatsRow(ht, hm, P.hL)+
-      rcStatsRow(at, am, P.aL)+
-    '</div>'+
-
-    '<div class="model-note">Poisson · Home Advantage ×1.1 · Last 5 venue games</div>'+
-    '</div>';
-
-  show('result-section');
-  setTimeout(function(){ sec.scrollIntoView({behavior:'smooth',block:'start'}); },60);
-}
-
-function rcProbRow(lbl, pct, color){
-  return '<div class="rc-prob-row">'+
-    '<span class="rc-prob-lbl">'+esc(lbl)+'</span>'+
-    '<div class="rc-bar-track"><div class="rc-bar-fill" style="width:'+pct.toFixed(1)+'%;background:linear-gradient(90deg,'+color+'44,'+color+')"></div></div>'+
-    '<span class="rc-prob-pct" style="color:'+color+'">'+pct.toFixed(1)+'</span>'+
+function fpStatsRow(team, m, xg, color){
+  return '<div class="fp-stats-row">'+
+    '<div class="fp-team-cell">'+(team.logo?'<img src="'+esc(team.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+'<span>'+esc(team.name)+'</span></div>'+
+    fpCell(xg.toFixed(2), 'xG', color)+
+    fpCell(m.avgGF.toFixed(2), 'Scored', '#4db8ff')+
+    fpCell(m.avgGA.toFixed(2), 'Conceded', '#ff9a1f')+
+    fpCell(m.ppg.toFixed(2), 'Pts/G', '#39ff88')+
+    fpCell(Math.round(m.csRate*100)+'%', 'CS%', '#aaa')+
   '</div>';
 }
-
-function rcStatsRow(team, m, xg){
-  return '<div class="rc-stats-row">'+
-    '<div class="rc-team-cell">'+
-      (team.logo?'<img src="'+esc(team.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+
-      '<span>'+esc(team.name)+'</span>'+
-    '</div>'+
-    rcStatCell(xg.toFixed(2), 'xG', 'rc-xg')+
-    rcStatCell(m.avgGF.toFixed(2), 'scored', 'rc-scored')+
-    rcStatCell(m.avgGA.toFixed(2), 'conceded', 'rc-conc')+
-    rcStatCell(m.ppg.toFixed(2), 'pts/g', 'rc-pts')+
-    rcStatCell(Math.round(m.csRate*100)+'%', 'clean sh', 'rc-cs')+
-  '</div>';
-}
-
-function rcStatCell(val, sub, cls){
-  return '<div class="rc-stat-cell"><div class="rc-stat-val '+cls+'">'+esc(String(val))+'</div>'+
-    '<div class="rc-stat-sub">'+esc(sub)+'</div></div>';
+function fpCell(val, sub, color){
+  return '<div class="fp-cell"><span class="fp-val" style="color:'+color+'">'+esc(String(val))+'</span><span class="fp-sub">'+esc(sub)+'</span></div>';
 }
 
 el('date-input').value=todayStr();
