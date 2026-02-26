@@ -489,13 +489,13 @@ function renderResult(fixture,ht,at,hm,am,P,predicted,maxP){
     // ROW 1: Fixture
     '<div class="rc-fixture">'+
       '<div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0">'+
-        (ht.logo?'<img class="rc-team-logo" src="'+esc(ht.logo)+'" alt="" onerror="this.style.display='none'">':'')+
+        (ht.logo?'<img class="rc-team-logo" src="'+esc(ht.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+
         '<span class="rc-team-name">'+esc(ht.name)+'</span>'+
       '</div>'+
       '<div class="rc-vs"><span class="rc-score">'+esc(sc)+'</span><span class="rc-date">'+esc(dt)+'</span></div>'+
       '<div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0;justify-content:flex-end">'+
         '<span class="rc-team-name r">'+esc(at.name)+'</span>'+
-        (at.logo?'<img class="rc-team-logo" src="'+esc(at.logo)+'" alt="" onerror="this.style.display='none'">':'')+
+        (at.logo?'<img class="rc-team-logo" src="'+esc(at.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+
       '</div>'+
     '</div>'+
 
@@ -543,7 +543,7 @@ function rcProbRow(lbl, pct, color){
 function rcStatsRow(team, m, xg){
   return '<div class="rc-stats-row">'+
     '<div class="rc-team-cell">'+
-      (team.logo?'<img src="'+esc(team.logo)+'" alt="" onerror="this.style.display='none'">':'')+
+      (team.logo?'<img src="'+esc(team.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+
       '<span>'+esc(team.name)+'</span>'+
     '</div>'+
     rcStatCell(xg.toFixed(2), 'xG', 'rc-xg')+
