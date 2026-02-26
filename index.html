@@ -104,49 +104,55 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 .err-box{padding:14px;background:rgba(255,64,64,.05);border:1px solid rgba(255,64,64,.2);margin-bottom:10px;border-radius:3px;}
 .err-title{font-family:var(--mono);color:var(--R);font-size:10px;letter-spacing:2px;margin-bottom:8px;}
 .err-body{color:rgba(255,150,150,.9);font-size:12px;line-height:1.6;font-family:var(--mono);word-break:break-all;}
-.match-banner{border-radius:3px;padding:20px 16px;margin-bottom:10px;background:var(--s1);border:1px solid var(--b1);position:relative;overflow:hidden;}
-.match-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,230,0,.4),transparent);}
-.banner-inner{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;}
-.t-side{display:flex;flex-direction:column;gap:6px;flex:1;}
-.t-side.r{align-items:flex-end;}
-.t-logo{width:50px;height:50px;object-fit:contain;}
-.t-name{font-size:14px;font-weight:700;line-height:1.2;color:#fff;}
-.t-tag{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--t3);}
-.vs-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 10px;flex-shrink:0;}
-.vs-txt{font-family:'Bebas Neue',sans-serif;font-size:22px;color:rgba(255,230,0,.18);letter-spacing:3px;}
-.match-dt{font-family:var(--mono);font-size:9px;color:var(--B);white-space:nowrap;}
-.pred-box{border-radius:3px;padding:24px 16px;margin-bottom:10px;text-align:center;background:var(--s1);border:1px solid var(--b1);position:relative;overflow:hidden;}
-.pred-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,230,0,.5),transparent);}
-.pred-eye{font-family:var(--mono);font-size:9px;letter-spacing:4px;color:var(--t3);margin-bottom:10px;text-transform:uppercase;}
-.pred-out{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,9vw,56px);letter-spacing:5px;line-height:1;color:var(--Y);margin-bottom:12px;}
-.conf-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:3px;font-family:var(--mono);font-size:10px;border:1px solid;letter-spacing:1px;}
-.conf-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;animation:blink 2s ease-in-out infinite;}
-.prob-sec{background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:16px;margin-bottom:10px;}
-.prob-title{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--t3);margin-bottom:12px;text-transform:uppercase;}
-.prob-row{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
-.prob-row:last-child{margin-bottom:0;}
-.prob-lbl{width:70px;font-family:var(--mono);font-size:9px;color:var(--t2);flex-shrink:0;text-transform:uppercase;}
-.bar-track{flex:1;height:7px;background:rgba(255,255,255,.05);overflow:hidden;border-radius:2px;}
-.bar-fill{height:100%;border-radius:2px;transition:width 1.4s cubic-bezier(.25,1,.5,1);}
-.prob-pct{width:44px;text-align:right;font-family:'Bebas Neue',sans-serif;font-size:17px;flex-shrink:0;}
-.xg-row{display:flex;gap:8px;margin-bottom:10px;}
-.xg-card{flex:1;background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:12px;text-align:center;position:relative;overflow:hidden;}
-.xg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;}
-.xg-h::before{background:linear-gradient(90deg,transparent,rgba(77,184,255,.5),transparent);}
-.xg-a::before{background:linear-gradient(90deg,transparent,rgba(255,154,31,.5),transparent);}
-.xg-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--t3);margin-bottom:3px;text-transform:uppercase;}
-.xg-val{font-size:34px;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;}
-.form-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
-@media(min-width:520px){.form-grid{flex-direction:row;}}
-.form-card{flex:1;background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:12px;}
-.form-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-.form-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
-.form-ttl{font-size:11px;font-weight:700;color:#fff;}
-.stat-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.05);}
-.stat-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-.stat-l{color:var(--t3);font-family:var(--mono);font-size:10px;}
-.stat-v{font-weight:700;color:var(--Y);font-size:14px;font-family:'Bebas Neue',sans-serif;}
-.model-note{font-family:var(--mono);font-size:8px;color:var(--t3);text-align:center;padding:5px;text-transform:uppercase;}
+/* ── RESULT CARD ── */
+.res-card{background:var(--s1);border:1px solid var(--b1);border-radius:4px;margin-bottom:10px;position:relative;overflow:hidden;}
+.res-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,230,0,.4),transparent);}
+
+/* ROW 1: fixture header */
+.rc-fixture{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;gap:8px;border-bottom:1px solid var(--b1);}
+.rc-team-name{font-size:15px;font-weight:700;color:#fff;letter-spacing:.3px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rc-team-name.r{text-align:right;}
+.rc-team-logo{width:28px;height:28px;object-fit:contain;flex-shrink:0;}
+.rc-vs{display:flex;flex-direction:column;align-items:center;padding:0 10px;flex-shrink:0;}
+.rc-score{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--Y);letter-spacing:3px;line-height:1;}
+.rc-date{font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:1px;margin-top:2px;}
+
+/* ROW 2: prediction */
+.rc-pred{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--b1);gap:10px;}
+.rc-pred-label{font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;flex-shrink:0;}
+.rc-pred-out{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--Y);line-height:1;}
+.rc-conf{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:2px;font-family:var(--mono);font-size:9px;border:1px solid;letter-spacing:1px;flex-shrink:0;}
+.rc-conf-dot{width:4px;height:4px;border-radius:50%;background:currentColor;animation:blink 2s ease-in-out infinite;}
+
+/* ROWS 3-5: probability bars */
+.rc-probs{padding:10px 16px;border-bottom:1px solid var(--b1);}
+.rc-prob-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.rc-prob-row:last-child{margin-bottom:0;}
+.rc-prob-lbl{font-family:var(--mono);font-size:9px;color:var(--t2);width:66px;flex-shrink:0;text-transform:uppercase;}
+.rc-bar-track{flex:1;height:6px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+.rc-bar-fill{height:100%;border-radius:2px;transition:width 1.3s cubic-bezier(.25,1,.5,1);}
+.rc-prob-pct{font-family:'Bebas Neue',sans-serif;font-size:15px;width:38px;text-align:right;flex-shrink:0;}
+
+/* STATS TABLE */
+.rc-stats{padding:0;}
+.rc-stats-hdr{display:grid;grid-template-columns:1fr repeat(5,1fr);padding:8px 16px;border-bottom:1px solid var(--b1);background:rgba(255,255,255,.02);}
+.rc-stats-hdr span{font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;text-align:center;}
+.rc-stats-hdr span:first-child{text-align:left;}
+.rc-stats-row{display:grid;grid-template-columns:1fr repeat(5,1fr);padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;}
+.rc-stats-row:last-child{border-bottom:none;}
+.rc-team-cell{display:flex;align-items:center;gap:7px;}
+.rc-team-cell img{width:18px;height:18px;object-fit:contain;flex-shrink:0;}
+.rc-team-cell span{font-size:12px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rc-stat-cell{text-align:center;}
+.rc-stat-val{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.5px;line-height:1;}
+.rc-stat-sub{font-family:var(--mono);font-size:7px;color:var(--t3);letter-spacing:.5px;margin-top:1px;}
+.rc-xg{color:var(--Y);}
+.rc-scored{color:#4db8ff;}
+.rc-conc{color:#ff9a1f;}
+.rc-pts{color:#39ff88;}
+.rc-cs{color:#aaa;}
+
+.model-note{font-family:var(--mono);font-size:8px;color:var(--t3);text-align:center;padding:8px;text-transform:uppercase;border-top:1px solid var(--b1);}
 .install-hint{background:rgba(77,184,255,.05);border:1px solid rgba(77,184,255,.15);border-radius:3px;padding:9px 14px;margin-bottom:12px;
   font-family:var(--mono);font-size:9px;color:var(--t3);line-height:1.7;text-align:center;letter-spacing:1px;}
 .install-hint strong{color:var(--Y)}
@@ -155,6 +161,22 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 .up{animation:up .25s both}.up2{animation:up .25s .04s both}
 .up3{animation:up .25s .08s both}.up4{animation:up .25s .12s both}
 .up5{animation:up .25s .16s both}.fadein{animation:up .2s both}
+@media(min-width:520px){.form-grid{flex-direction:row;}}
+
+/* Landscape phone / tablet — tighten layout */
+@media(orientation:landscape) and (max-height:500px){
+  .wrap{padding-top:8px;padding-bottom:40px;}
+  header{margin-bottom:10px;padding-top:4px;}
+  .site-title{font-size:36px;}
+  .tagline{display:none;}
+  .date-bar{padding:6px 0 5px;}
+  .quick-dates{display:none;}
+  .rc-fixture{padding:10px 14px;}
+  .rc-pred{padding:8px 14px;}
+  .rc-probs{padding:7px 14px;}
+  .rc-stats-hdr,.rc-stats-row{padding:8px 14px;}
+  .rc-stat-val{font-size:15px;}
+}
 </style>
 </head>
 <body>
@@ -450,44 +472,92 @@ function badge(f){
 }
 
 function renderResult(fixture,ht,at,hm,am,P,predicted,maxP){
-  var cf=conf(maxP), dt=new Date(fixture.fixture.date).toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
+  var cf=conf(maxP);
+  var dt=new Date(fixture.fixture.date).toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
+  var gH=fixture.goals&&fixture.goals.home!==null?fixture.goals.home:null;
+  var gA=fixture.goals&&fixture.goals.away!==null?fixture.goals.away:null;
+  var sc=(gH!==null&&gA!==null)?gH+' - '+gA:'vs';
   var sec=el('result-section');
+
+  // Determine label for form rows
+  var hLbl=hm.venue==='home'?'Last '+hm.n+' Home':'Last '+hm.n+' Games';
+  var aLbl=am.venue==='away'?'Last '+am.n+' Away':'Last '+am.n+' Games';
+
   sec.innerHTML=
-    '<div class="match-banner up"><div class="banner-inner">'+
-      '<div class="t-side">'+(ht.logo?'<img class="t-logo" src="'+esc(ht.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+
-        '<span class="t-name">'+esc(ht.name)+'</span><span class="t-tag">HOME</span></div>'+
-      '<div class="vs-wrap"><span class="vs-txt">VS</span><span class="match-dt">'+esc(dt)+'</span></div>'+
-      '<div class="t-side r">'+(at.logo?'<img class="t-logo" src="'+esc(at.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+
-        '<span class="t-name">'+esc(at.name)+'</span><span class="t-tag">AWAY</span></div>'+
-    '</div></div>'+
-    '<div class="pred-box up2"><div class="pred-eye">PREDICTED OUTCOME</div>'+
-      '<div class="pred-out">'+esc(predicted)+'</div>'+
-      '<span class="conf-pill" style="color:'+cf.c+';border-color:'+cf.c+'44;background:'+cf.c+'0d">'+
-        '<span class="conf-dot" style="background:'+cf.c+'"></span>'+esc(cf.l)+' &mdash; '+maxP.toFixed(1)+'%</span></div>'+
-    '<div class="prob-sec up3"><div class="prob-title">Win Probabilities</div>'+
-      pBar('Home Win',P.h,'#4db8ff')+pBar('Draw',P.d,'#ffe600')+pBar('Away Win',P.a,'#ff9a1f')+
+    '<div class="res-card up">'+
+
+    // ROW 1: Fixture
+    '<div class="rc-fixture">'+
+      '<div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0">'+
+        (ht.logo?'<img class="rc-team-logo" src="'+esc(ht.logo)+'" alt="" onerror="this.style.display='none'">':'')+
+        '<span class="rc-team-name">'+esc(ht.name)+'</span>'+
+      '</div>'+
+      '<div class="rc-vs"><span class="rc-score">'+esc(sc)+'</span><span class="rc-date">'+esc(dt)+'</span></div>'+
+      '<div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0;justify-content:flex-end">'+
+        '<span class="rc-team-name r">'+esc(at.name)+'</span>'+
+        (at.logo?'<img class="rc-team-logo" src="'+esc(at.logo)+'" alt="" onerror="this.style.display='none'">':'')+
+      '</div>'+
     '</div>'+
-    '<div class="xg-row up4">'+
-      '<div class="xg-card xg-h"><div class="xg-lbl">Home xG</div><div class="xg-val" style="color:#4db8ff">'+P.hL.toFixed(2)+'</div></div>'+
-      '<div class="xg-card xg-a"><div class="xg-lbl">Away xG</div><div class="xg-val" style="color:#ff9a1f">'+P.aL.toFixed(2)+'</div></div>'+
+
+    // ROW 2: Prediction
+    '<div class="rc-pred">'+
+      '<span class="rc-pred-label">Prediction</span>'+
+      '<span class="rc-pred-out">'+esc(predicted)+'</span>'+
+      '<span class="rc-conf" style="color:'+cf.c+';border-color:'+cf.c+'44;background:'+cf.c+'0d">'+
+        '<span class="rc-conf-dot" style="background:'+cf.c+'"></span>'+esc(cf.l)+' '+maxP.toFixed(1)+'%'+
+      '</span>'+
     '</div>'+
-    '<div class="form-grid up5">'+fCard(ht.name+' · Last '+hm.n+(hm.venue==='home'?' Home':' Games'),hm,'#4db8ff')+fCard(at.name+' · Last '+am.n+(am.venue==='away'?' Away':' Games'),am,'#ff9a1f')+'</div>'+
-    '<div class="model-note">Poisson Distribution · Home Advantage ×1.1 · Venue-Weighted Form</div>';
+
+    // ROWS 3-5: Probability bars (Home / Draw / Away)
+    '<div class="rc-probs">'+
+      rcProbRow('Home Win', P.h, '#4db8ff')+
+      rcProbRow('Draw',     P.d, '#ffe600')+
+      rcProbRow('Away Win', P.a, '#ff9a1f')+
+    '</div>'+
+
+    // STATS TABLE
+    '<div class="rc-stats">'+
+      '<div class="rc-stats-hdr">'+
+        '<span>Team ('+hLbl.replace('Last ','').replace(' Home',' H').replace(' Away',' A')+')</span>'+
+        '<span>xG</span><span>Scored</span><span>Conceded</span><span>Pts/G</span><span>CS%</span>'+
+      '</div>'+
+      rcStatsRow(ht, hm, P.hL)+
+      rcStatsRow(at, am, P.aL)+
+    '</div>'+
+
+    '<div class="model-note">Poisson · Home Advantage ×1.1 · Last 5 venue games</div>'+
+    '</div>';
+
   show('result-section');
   setTimeout(function(){ sec.scrollIntoView({behavior:'smooth',block:'start'}); },60);
 }
-function pBar(lbl,pct,color){
-  return '<div class="prob-row"><span class="prob-lbl">'+esc(lbl)+'</span>'+
-    '<div class="bar-track"><div class="bar-fill" style="width:'+pct.toFixed(1)+'%;background:linear-gradient(90deg,'+color+'55,'+color+')"></div></div>'+
-    '<span class="prob-pct" style="color:'+color+'">'+pct.toFixed(1)+'</span></div>';
+
+function rcProbRow(lbl, pct, color){
+  return '<div class="rc-prob-row">'+
+    '<span class="rc-prob-lbl">'+esc(lbl)+'</span>'+
+    '<div class="rc-bar-track"><div class="rc-bar-fill" style="width:'+pct.toFixed(1)+'%;background:linear-gradient(90deg,'+color+'44,'+color+')"></div></div>'+
+    '<span class="rc-prob-pct" style="color:'+color+'">'+pct.toFixed(1)+'</span>'+
+  '</div>';
 }
-function fCard(title,m,color){
-  return '<div class="form-card"><div class="form-head"><div class="form-dot" style="background:'+color+';box-shadow:0 0 8px '+color+'88"></div>'+
-    '<span class="form-ttl">'+esc(title)+'</span></div>'+
-    sRow('Goals / Game',m.avgGF.toFixed(2))+sRow('Conceded / Game',m.avgGA.toFixed(2))+
-    sRow('Points / Game',m.ppg.toFixed(2))+sRow('Clean Sheet Rate',Math.round(m.csRate*100)+'%')+'</div>';
+
+function rcStatsRow(team, m, xg){
+  return '<div class="rc-stats-row">'+
+    '<div class="rc-team-cell">'+
+      (team.logo?'<img src="'+esc(team.logo)+'" alt="" onerror="this.style.display='none'">':'')+
+      '<span>'+esc(team.name)+'</span>'+
+    '</div>'+
+    rcStatCell(xg.toFixed(2), 'xG', 'rc-xg')+
+    rcStatCell(m.avgGF.toFixed(2), 'scored', 'rc-scored')+
+    rcStatCell(m.avgGA.toFixed(2), 'conceded', 'rc-conc')+
+    rcStatCell(m.ppg.toFixed(2), 'pts/g', 'rc-pts')+
+    rcStatCell(Math.round(m.csRate*100)+'%', 'clean sh', 'rc-cs')+
+  '</div>';
 }
-function sRow(l,v){ return '<div class="stat-row"><span class="stat-l">'+esc(l)+'</span><span class="stat-v">'+esc(String(v))+'</span></div>'; }
+
+function rcStatCell(val, sub, cls){
+  return '<div class="rc-stat-cell"><div class="rc-stat-val '+cls+'">'+esc(String(val))+'</div>'+
+    '<div class="rc-stat-sub">'+esc(sub)+'</div></div>';
+}
 
 el('date-input').value=todayStr();
 el('save-key-btn').addEventListener('click',saveKey);
