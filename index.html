@@ -2,98 +2,504 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Match Oracle"/>
+<meta name="theme-color" content="#000"/>
 <title>Match Oracle</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
-input { width: 100%; padding: 14px; font-size: 16px; background: #111; border: 1px solid #333; color: #fff; border-radius: 4px; margin-bottom: 10px; }
-button { width: 100%; padding: 14px; font-size: 16px; background: #ffe600; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-.out { background: #111; border: 1px solid #333; padding: 12px; border-radius: 4px; font-family: monospace; font-size: 11px; white-space: pre-wrap; word-break: break-all; color: #aaa; min-height: 60px; margin-bottom: 10px; }
-.hidden { display: none; }
-h2 { margin-bottom: 14px; color: #ffe600; }
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#000;--s1:#0c0c0c;--b1:rgba(255,255,255,.08);--b2:rgba(255,255,255,.16);
+  --Y:#ffe600;--B:#4db8ff;--B2:#1a9fff;--G:#39ff88;--O:#ff9a1f;--R:#ff4040;
+  --t1:#fff;--t2:#aaa;--t3:#555;--mono:'Share Tech Mono',monospace;
+}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:#fff;font-family:'Barlow Condensed',system-ui,sans-serif;
+  min-height:100vh;overflow-x:hidden;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,20px);}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.05) 3px,rgba(0,0,0,.05) 4px);}
+.topline{position:fixed;top:0;left:0;right:0;height:2px;z-index:1000;
+  background:linear-gradient(90deg,transparent,var(--Y),transparent);
+  box-shadow:0 0 22px 3px rgba(255,230,0,.45);}
+.wrap{max-width:640px;margin:0 auto;padding:22px 14px 80px;position:relative;z-index:2}
+header{text-align:center;margin-bottom:20px;padding-top:10px}
+.hline{height:1px;background:linear-gradient(90deg,transparent,rgba(255,230,0,.4),transparent);margin-bottom:18px}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:4px}
+.logo-icon{width:40px;height:40px;background:var(--Y);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;
+  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px);
+  box-shadow:0 0 30px rgba(255,230,0,.5);}
+.site-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,9vw,64px);letter-spacing:6px;line-height:1;color:#fff;}
+.tagline{font-family:var(--mono);font-size:9px;letter-spacing:4px;color:var(--t3);text-transform:uppercase;
+  margin-top:7px;padding-top:7px;border-top:1px solid var(--b1);}
+.tagline .sep{color:var(--Y);margin:0 4px}
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:16px;margin-bottom:10px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(77,184,255,.3),transparent);}
+.slabel{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--t3);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.slabel::after{content:'';flex:1;height:1px;background:var(--b1)}
+input[type=password],input[type=date]{width:100%;background:rgba(0,0,0,.7);border:1px solid var(--b2);color:#fff;padding:13px 16px;font-size:16px;
+  font-family:'Barlow Condensed',sans-serif;font-weight:600;outline:none;border-radius:3px;-webkit-appearance:none;appearance:none;}
+input:focus{border-color:var(--Y);box-shadow:0 0 0 2px rgba(255,230,0,.1)}
+input[type=date]{color-scheme:dark}
+input::placeholder{color:var(--t3)}
+button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearance:none;appearance:none;touch-action:manipulation;border-radius:3px;}
+.btn-primary{display:block;width:100%;border:none;padding:14px;font-size:16px;letter-spacing:3px;font-weight:700;text-transform:uppercase;
+  margin-top:10px;min-height:50px;color:#000;background:var(--Y);box-shadow:0 4px 26px rgba(255,230,0,.32);}
+.btn-primary:active{opacity:.85}
+.btn-sm{background:transparent;border:1px solid var(--b2);color:var(--t2);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:6px 12px;min-height:32px;}
+.key-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(57,255,136,.05);border:1px solid rgba(57,255,136,.18);
+  border-radius:3px;padding:10px 16px;margin-bottom:10px;font-family:var(--mono);font-size:10px;color:var(--G);}
+.key-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--G);margin-right:8px;box-shadow:0 0 8px var(--G);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.date-bar{position:sticky;top:0;z-index:100;background:rgba(0,0,0,.96);border-bottom:1px solid var(--b1);
+  padding:10px 0 8px;margin-bottom:14px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+.date-row{display:flex;gap:6px;align-items:stretch}
+.date-row input{flex:1;min-width:0}
+.btn-arr{background:rgba(255,255,255,.04);border:1px solid var(--b1);color:var(--t2);width:44px;min-height:46px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.btn-arr:active{background:rgba(255,230,0,.1);color:var(--Y)}
+.btn-load{background:var(--B2);color:#fff;border:none;padding:0 16px;font-family:var(--mono);font-size:11px;letter-spacing:2px;
+  min-height:46px;flex-shrink:0;text-transform:uppercase;}
+.btn-load:active{opacity:.8}
+.btn-load:disabled{opacity:.4;cursor:not-allowed}
+.quick-dates{display:flex;gap:5px;margin-top:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.quick-dates::-webkit-scrollbar{display:none}
+.qd-btn{background:rgba(255,255,255,.04);border:1px solid var(--b1);color:var(--t3);font-family:var(--mono);font-size:9px;letter-spacing:1px;
+  padding:5px 10px;min-height:28px;white-space:nowrap;flex-shrink:0;text-transform:uppercase;}
+.qd-btn.active{background:rgba(255,230,0,.1);border-color:rgba(255,230,0,.4);color:var(--Y)}
+.prog-wrap{margin-bottom:12px;}
+.prog-label{font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:2px;text-align:center;margin-bottom:6px;text-transform:uppercase;}
+.prog-track{height:2px;background:rgba(255,255,255,.06);border-radius:1px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--Y);border-radius:1px;transition:width .3s ease;}
+.day-summary{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:2px;text-align:center;padding:6px 0 10px;text-transform:uppercase;}
+.day-summary b{color:#fff}
+.league-group{margin-bottom:8px;animation:up .2s both;}
+.lg-hdr{display:flex;align-items:center;gap:10px;padding:9px 14px;background:rgba(255,255,255,.03);
+  border:1px solid var(--b1);border-radius:3px 3px 0 0;border-bottom:1px solid rgba(255,230,0,.15);}
+.lg-flag{font-size:16px;flex-shrink:0;line-height:1}
+.lg-name{font-size:13px;font-weight:700;color:var(--Y);letter-spacing:.5px;flex:1;}
+.lg-count{font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:1px;}
+.lg-fixtures{display:flex;flex-direction:column;}
+.fx-row{padding:11px 14px;background:rgba(255,255,255,.025);border:1px solid var(--b1);border-top:none;
+  cursor:pointer;position:relative;overflow:hidden;}
+.fx-row:last-child{border-radius:0 0 3px 3px;}
+.fx-row::before{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;background:var(--B);transform:scaleY(0);transition:transform .2s;}
+.fx-row.active{background:rgba(77,184,255,.07);border-color:rgba(77,184,255,.25)!important;}
+.fx-row.active::before{transform:scaleY(1)}
+.fx-row:active{opacity:.8}
+.fx-teams{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px;}
+.fx-team{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
+.fx-team.r{justify-content:flex-end;}
+.fx-team img{width:20px;height:20px;object-fit:contain;flex-shrink:0;}
+.fx-name{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;}
+.fx-score{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--Y);
+  padding:1px 9px;background:rgba(255,230,0,.06);border:1px solid rgba(255,230,0,.14);flex-shrink:0;letter-spacing:2px;border-radius:3px;}
+.fx-meta{display:flex;justify-content:space-between;align-items:center;}
+.fx-status{font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:2px;}
+.fx-cta{font-family:var(--mono);font-size:9px;color:var(--B);letter-spacing:1px;}
+.fx-busy{font-family:var(--mono);font-size:9px;color:var(--O);letter-spacing:1px;}
+.no-fx{text-align:center;font-family:var(--mono);color:var(--t3);font-size:11px;padding:36px 20px;letter-spacing:2px;text-transform:uppercase;line-height:2;}
+.err-box{padding:14px;background:rgba(255,64,64,.05);border:1px solid rgba(255,64,64,.2);margin-bottom:10px;border-radius:3px;}
+.err-title{font-family:var(--mono);color:var(--R);font-size:10px;letter-spacing:2px;margin-bottom:8px;}
+.err-body{color:rgba(255,150,150,.9);font-size:12px;line-height:1.6;font-family:var(--mono);word-break:break-all;}
+.match-banner{border-radius:3px;padding:20px 16px;margin-bottom:10px;background:var(--s1);border:1px solid var(--b1);position:relative;overflow:hidden;}
+.match-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,230,0,.4),transparent);}
+.banner-inner{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;}
+.t-side{display:flex;flex-direction:column;gap:6px;flex:1;}
+.t-side.r{align-items:flex-end;}
+.t-logo{width:50px;height:50px;object-fit:contain;}
+.t-name{font-size:14px;font-weight:700;line-height:1.2;color:#fff;}
+.t-tag{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--t3);}
+.vs-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 10px;flex-shrink:0;}
+.vs-txt{font-family:'Bebas Neue',sans-serif;font-size:22px;color:rgba(255,230,0,.18);letter-spacing:3px;}
+.match-dt{font-family:var(--mono);font-size:9px;color:var(--B);white-space:nowrap;}
+.pred-box{border-radius:3px;padding:24px 16px;margin-bottom:10px;text-align:center;background:var(--s1);border:1px solid var(--b1);position:relative;overflow:hidden;}
+.pred-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,230,0,.5),transparent);}
+.pred-eye{font-family:var(--mono);font-size:9px;letter-spacing:4px;color:var(--t3);margin-bottom:10px;text-transform:uppercase;}
+.pred-out{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,9vw,56px);letter-spacing:5px;line-height:1;color:var(--Y);margin-bottom:12px;}
+.conf-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:3px;font-family:var(--mono);font-size:10px;border:1px solid;letter-spacing:1px;}
+.conf-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;animation:blink 2s ease-in-out infinite;}
+.prob-sec{background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:16px;margin-bottom:10px;}
+.prob-title{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--t3);margin-bottom:12px;text-transform:uppercase;}
+.prob-row{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+.prob-row:last-child{margin-bottom:0;}
+.prob-lbl{width:70px;font-family:var(--mono);font-size:9px;color:var(--t2);flex-shrink:0;text-transform:uppercase;}
+.bar-track{flex:1;height:7px;background:rgba(255,255,255,.05);overflow:hidden;border-radius:2px;}
+.bar-fill{height:100%;border-radius:2px;transition:width 1.4s cubic-bezier(.25,1,.5,1);}
+.prob-pct{width:44px;text-align:right;font-family:'Bebas Neue',sans-serif;font-size:17px;flex-shrink:0;}
+.xg-row{display:flex;gap:8px;margin-bottom:10px;}
+.xg-card{flex:1;background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:12px;text-align:center;position:relative;overflow:hidden;}
+.xg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;}
+.xg-h::before{background:linear-gradient(90deg,transparent,rgba(77,184,255,.5),transparent);}
+.xg-a::before{background:linear-gradient(90deg,transparent,rgba(255,154,31,.5),transparent);}
+.xg-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--t3);margin-bottom:3px;text-transform:uppercase;}
+.xg-val{font-size:34px;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;}
+.form-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+@media(min-width:520px){.form-grid{flex-direction:row;}}
+.form-card{flex:1;background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:12px;}
+.form-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.form-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+.form-ttl{font-size:11px;font-weight:700;color:#fff;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.05);}
+.stat-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.stat-l{color:var(--t3);font-family:var(--mono);font-size:10px;}
+.stat-v{font-weight:700;color:var(--Y);font-size:14px;font-family:'Bebas Neue',sans-serif;}
+.model-note{font-family:var(--mono);font-size:8px;color:var(--t3);text-align:center;padding:5px;text-transform:uppercase;}
+.install-hint{background:rgba(77,184,255,.05);border:1px solid rgba(77,184,255,.15);border-radius:3px;padding:9px 14px;margin-bottom:12px;
+  font-family:var(--mono);font-size:9px;color:var(--t3);line-height:1.7;text-align:center;letter-spacing:1px;}
+.install-hint strong{color:var(--Y)}
+.hidden{display:none!important}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.up{animation:up .25s both}.up2{animation:up .25s .04s both}
+.up3{animation:up .25s .08s both}.up4{animation:up .25s .12s both}
+.up5{animation:up .25s .16s both}.fadein{animation:up .2s both}
 </style>
 </head>
 <body>
+<div class="topline"></div>
+<div class="wrap">
+<div class="install-hint" id="install-hint">
+  📱 <strong>Add to Home Screen</strong> · tap Share in Safari → "Add to Home Screen"
+</div>
+<header>
+  <div class="hline"></div>
+  <div class="logo-row">
+    <div class="logo-icon">⚽</div>
+    <span class="site-title">Match Oracle</span>
+  </div>
+  <p class="tagline">Poisson<span class="sep">◆</span>Venue Form<span class="sep">◆</span>Last 5 Games</p>
+</header>
 
-<h2>Match Oracle — Debug</h2>
-
-<div id="step1">
-  <p style="color:#aaa;font-size:13px;margin-bottom:10px">Paste your API-Football key:</p>
-  <input type="text" id="key-input" placeholder="Your API key" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"/>
-  <button onclick="testKey()">Test Key</button>
-  <div class="out" id="key-out">Waiting...</div>
+<div id="key-section" class="card">
+  <span class="slabel">API-Football Key</span>
+  <input type="password" id="api-key-input" placeholder="Paste your API key here"
+    autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"/>
+  <button class="btn-primary" id="save-key-btn">Unlock Match Oracle</button>
 </div>
 
-<div id="step2" class="hidden">
-  <p style="color:#aaa;font-size:13px;margin-bottom:10px">Key works! Now test fixtures:</p>
-  <input type="date" id="date-input"/>
-  <button onclick="testFixtures()">Fetch Premier League Fixtures</button>
-  <div class="out" id="fx-out">Waiting...</div>
+<div id="key-bar" class="key-bar hidden">
+  <span><span class="key-dot"></span>Connected · API Key Active</span>
+  <button class="btn-sm" id="change-key-btn">Change Key</button>
+</div>
+
+<div id="main-app" class="hidden">
+  <div class="date-bar">
+    <div class="date-row">
+      <button class="btn-arr" id="prev-day">&#9664;</button>
+      <input type="date" id="date-input"/>
+      <button class="btn-arr" id="next-day">&#9654;</button>
+      <button class="btn-load" id="load-btn">Load</button>
+    </div>
+    <div class="quick-dates" id="quick-dates"></div>
+  </div>
+  <div id="prog-wrap" class="prog-wrap hidden">
+    <div class="prog-label" id="prog-label">Loading...</div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div id="main-error" class="err-box hidden">
+    <div class="err-title">&#9888; Error</div>
+    <div class="err-body" id="main-error-body"></div>
+  </div>
+  <div id="results-area"></div>
+  <div id="pred-err-box" class="err-box hidden">
+    <div class="err-title">&#9888; Prediction Failed</div>
+    <div class="err-body" id="pred-err-body"></div>
+  </div>
+  <div id="result-section" class="hidden"></div>
+</div>
 </div>
 
 <script>
-var KEY = '';
+/* ── LEAGUES ─────────────────────────────────────────────────────
+   CRITICAL FIX: season = year the season STARTED
+   We are currently in Feb 2026, so:
+   - Leagues that run Aug-May (PL, Bundesliga etc): started Aug 2025 → season:2025
+   - Leagues that run Apr-Nov (MLS, Scandinavian):  started 2025   → season:2025
+   - Norwegian/Swedish leagues haven't started 2026 yet             → season:2025
+   ─────────────────────────────────────────────────────────────── */
+var LEAGUES = [
+  {id:39,  name:'Premier League',   flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
+  {id:40,  name:'Championship',     flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
+  {id:41,  name:'League One',       flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
+  {id:42,  name:'League Two',       flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
+  {id:43,  name:'National League',  flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
+  {id:78,  name:'Bundesliga',       flag:'🇩🇪', season:2025},
+  {id:79,  name:'2. Bundesliga',    flag:'🇩🇪', season:2025},
+  {id:80,  name:'3. Liga',          flag:'🇩🇪', season:2025},
+  {id:88,  name:'Eredivisie',       flag:'🇳🇱', season:2025},
+  {id:89,  name:'Eerste Divisie',   flag:'🇳🇱', season:2025},
+  {id:103, name:'Eliteserien',      flag:'🇳🇴', season:2025},
+  {id:104, name:'1. divisjon',      flag:'🇳🇴', season:2025},
+  {id:140, name:'La Liga',          flag:'🇪🇸', season:2025},
+  {id:135, name:'Serie A',          flag:'🇮🇹', season:2025},
+  {id:61,  name:'Ligue 1',          flag:'🇫🇷', season:2025},
+  {id:94,  name:'Primeira Liga',    flag:'🇵🇹', season:2025},
+  {id:203, name:'Süper Lig',        flag:'🇹🇷', season:2025},
+  {id:113, name:'Allsvenskan',      flag:'🇸🇪', season:2025},
+  {id:119, name:'Superliga',        flag:'🇩🇰', season:2025},
+  {id:2,   name:'Champions League', flag:'🏆', season:2025},
+  {id:3,   name:'Europa League',    flag:'🏆', season:2025},
+  {id:848, name:'Conference League',flag:'🏆', season:2025},
+  {id:253, name:'MLS',              flag:'🇺🇸', season:2025},
+  {id:262, name:'Liga MX',          flag:'🇲🇽', season:2025},
+];
 
-function testKey() {
-  KEY = document.getElementById('key-input').value.trim();
-  var out = document.getElementById('key-out');
-  if (!KEY) { out.textContent = 'ERROR: No key entered'; return; }
-  out.textContent = 'Testing key: ' + KEY.substring(0,8) + '...\nCalling /status...';
+var API_KEY = '';
+var loadGen = 0;
+var activePredFixId = null;
+var predicting = false;
 
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'https://v3.football.api-sports.io/status', true);
-  xhr.setRequestHeader('x-apisports-key', KEY);
-  xhr.timeout = 10000;
-  xhr.onload = function() {
-    out.textContent = 'HTTP: ' + xhr.status + '\n\n' + xhr.responseText.substring(0, 600);
-    if (xhr.status === 200) {
-      try {
-        var j = JSON.parse(xhr.responseText);
-        if (j.response && j.response.account) {
-          document.getElementById('step2').classList.remove('hidden');
-          var d = new Date();
-          document.getElementById('date-input').value = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-        }
-      } catch(e) {}
-    }
-  };
-  xhr.onerror = function() { out.textContent = 'NETWORK ERROR - cannot reach api server'; };
-  xhr.ontimeout = function() { out.textContent = 'TIMEOUT after 10s'; };
-  xhr.send();
+function el(id){ return document.getElementById(id); }
+function show(id){ var e=el(id); if(e) e.classList.remove('hidden'); }
+function hide(id){ var e=el(id); if(e) e.classList.add('hidden'); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function addDays(str,n){ var p=str.split('-'); var d=new Date(+p[0],+p[1]-1,+p[2]+n); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function dateLabel(str){
+  var diff=Math.round((new Date(str+'T12:00:00')-new Date(todayStr()+'T12:00:00'))/864e5);
+  if(diff===0) return 'Today'; if(diff===1) return 'Tomorrow'; if(diff===-1) return 'Yesterday';
+  return new Date(str+'T12:00:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
 }
 
-function testFixtures() {
-  var date = document.getElementById('date-input').value;
-  var out = document.getElementById('fx-out');
-  out.textContent = 'Fetching PL fixtures for ' + date + '...';
+function xhr(url){
+  return new Promise(function(resolve){
+    var x=new XMLHttpRequest();
+    x.open('GET',url,true);
+    x.setRequestHeader('x-apisports-key',API_KEY);
+    x.setRequestHeader('x-rapidapi-key',API_KEY);
+    x.setRequestHeader('x-rapidapi-host','v3.football.api-sports.io');
+    x.timeout=12000;
+    x.onload=function(){ try{ resolve(JSON.parse(x.responseText)); }catch(e){ resolve({errors:{},results:0,response:[]}); } };
+    x.onerror=x.ontimeout=function(){ resolve({errors:{},results:0,response:[]}); };
+    x.send();
+  });
+}
 
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'https://v3.football.api-sports.io/fixtures?league=39&season=2024&date=' + date, true);
-  xhr.setRequestHeader('x-apisports-key', KEY);
-  xhr.timeout = 10000;
-  xhr.onload = function() {
-    try {
-      var j = JSON.parse(xhr.responseText);
-      out.textContent = 'HTTP: ' + xhr.status + '\n'
-        + 'results: ' + j.results + '\n'
-        + 'errors: ' + JSON.stringify(j.errors) + '\n'
-        + 'fixtures found: ' + (Array.isArray(j.response) ? j.response.length : 'n/a') + '\n\n';
-      if (Array.isArray(j.response) && j.response.length > 0) {
-        j.response.forEach(function(f) {
-          out.textContent += f.teams.home.name + ' vs ' + f.teams.away.name + ' (' + f.fixture.status.short + ')\n';
-        });
-      } else {
-        out.textContent += 'RAW:\n' + xhr.responseText.substring(0, 500);
+function saveKey(){
+  var k=el('api-key-input').value.trim();
+  if(!k){ alert('Please paste your API key first.'); return; }
+  API_KEY=k;
+  try{ localStorage.setItem('mo_key',k); }catch(e){}
+  hide('key-section'); show('key-bar'); show('main-app');
+  buildQuickDates();
+  loadAll();
+}
+function changeKey(){
+  API_KEY=''; try{ localStorage.removeItem('mo_key'); }catch(e){}
+  hide('key-bar'); hide('main-app'); el('api-key-input').value=''; show('key-section');
+}
+
+function buildQuickDates(){
+  var today=todayStr(), c=el('quick-dates'); c.innerHTML='';
+  [-2,-1,0,1,2,3,4,5,6].forEach(function(i){
+    var d=addDays(today,i), btn=document.createElement('button');
+    btn.className='qd-btn'+(d===today?' active':''); btn.setAttribute('data-date',d);
+    btn.textContent=i===0?'Today':i===1?'Tomorrow':i===-1?'Yesterday'
+      :new Date(d+'T12:00:00').toLocaleDateString([],{weekday:'short',day:'numeric'});
+    btn.addEventListener('click',function(){ el('date-input').value=d; setQD(d); loadAll(); });
+    c.appendChild(btn);
+  });
+}
+function setQD(date){ document.querySelectorAll('.qd-btn').forEach(function(b){ b.classList.toggle('active',b.getAttribute('data-date')===date); }); }
+
+function loadAll(){
+  var date=el('date-input').value||todayStr();
+  var gen=++loadGen;
+  setQD(date);
+  el('results-area').innerHTML='';
+  hide('main-error'); hide('pred-err-box'); hide('result-section');
+  activePredFixId=null;
+  el('load-btn').disabled=true;
+  show('prog-wrap');
+  el('prog-fill').style.width='0%';
+  el('prog-label').textContent='Loading 0 / '+LEAGUES.length+' leagues...';
+
+  var total=LEAGUES.length, done=0, found=0, totalFx=0, sumEl=null;
+
+  function next(i){
+    if(gen!==loadGen) return;
+    if(i>=total){
+      hide('prog-wrap'); el('load-btn').disabled=false;
+      if(found===0){
+        el('results-area').innerHTML='<div class="no-fx">No fixtures found for '+esc(dateLabel(date))+'<br><span style="color:var(--t3);font-size:9px">Try the ◀ ▶ arrows or pick another date</span></div>';
+      } else if(sumEl){
+        sumEl.innerHTML='<b>'+totalFx+'</b> fixtures · <b>'+found+'</b> league'+(found!==1?'s':'')+' · '+esc(dateLabel(date));
       }
-    } catch(e) {
-      out.textContent = 'Parse error: ' + e + '\n' + xhr.responseText.substring(0,400);
+      return;
     }
-  };
-  xhr.onerror = function() { out.textContent = 'NETWORK ERROR'; };
-  xhr.ontimeout = function() { out.textContent = 'TIMEOUT'; };
-  xhr.send();
+    var lg=LEAGUES[i];
+    xhr('https://v3.football.api-sports.io/fixtures?league='+lg.id+'&season='+lg.season+'&date='+date)
+    .then(function(json){
+      if(gen!==loadGen) return;
+      done++;
+      el('prog-fill').style.width=Math.round(done/total*100)+'%';
+      el('prog-label').textContent='Loading '+done+' / '+total+' leagues...';
+      var fx=Array.isArray(json.response)?json.response:[];
+      if(fx.length>0){
+        fx.sort(function(a,b){ return new Date(a.fixture.date)-new Date(b.fixture.date); });
+        found++; totalFx+=fx.length;
+        if(!sumEl){
+          sumEl=document.createElement('div'); sumEl.className='day-summary';
+          el('results-area').insertBefore(sumEl,el('results-area').firstChild);
+        }
+        sumEl.innerHTML='<b>'+totalFx+'</b> fixtures · <b>'+found+'</b> league'+(found!==1?'s':'')+' · '+esc(dateLabel(date))+' <span style="color:var(--t3)">· loading...</span>';
+        var g=document.createElement('div'); g.className='league-group fadein';
+        var h=document.createElement('div'); h.className='lg-hdr';
+        h.innerHTML='<span class="lg-flag">'+lg.flag+'</span><span class="lg-name">'+esc(lg.name)+'</span><span class="lg-count">'+fx.length+' game'+(fx.length!==1?'s':'')+'</span>';
+        g.appendChild(h);
+        var w=document.createElement('div'); w.className='lg-fixtures';
+        fx.forEach(function(f){ w.appendChild(buildRow(f,lg)); });
+        g.appendChild(w); el('results-area').appendChild(g);
+      }
+      next(i+1);
+    });
+  }
+  next(0);
 }
+
+function buildRow(f,lg){
+  var sb=badge(f);
+  var gH=f.goals&&f.goals.home!==null?f.goals.home:null;
+  var gA=f.goals&&f.goals.away!==null?f.goals.away:null;
+  var sc=(gH!==null&&gA!==null)?gH+' - '+gA:'vs';
+  var row=document.createElement('div');
+  row.className='fx-row'; row.id='fx-'+f.fixture.id;
+  row.innerHTML=
+    '<div class="fx-teams">'+
+      '<div class="fx-team">'+(f.teams.home.logo?'<img src="'+esc(f.teams.home.logo)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+
+        '<span class="fx-name">'+esc(f.teams.home.name)+'</span></div>'+
+      '<div class="fx-score">'+esc(sc)+'</div>'+
+      '<div class="fx-team r"><span class="fx-name">'+esc(f.teams.away.name)+'</span>'+
+        (f.teams.away.logo?'<img src="'+esc(f.teams.away.logo)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+
+      '</div>'+
+    '</div>'+
+    '<div class="fx-meta"><span class="fx-status" style="color:'+sb.c+';background:'+sb.c+'18">'+esc(sb.t)+'</span>'+
+      '<span class="fx-cta" id="cta-'+f.fixture.id+'">Predict &#9656;</span></div>';
+  row.addEventListener('click',function(){ if(!predicting) predict(f,lg); });
+  return row;
+}
+
+function predict(f,lg){
+  hide('pred-err-box'); hide('result-section'); predicting=true;
+  if(activePredFixId){ var o=el('fx-'+activePredFixId); if(o) o.classList.remove('active'); }
+  activePredFixId=f.fixture.id;
+  var row=el('fx-'+f.fixture.id); if(row) row.classList.add('active');
+  var ht=f.teams.home, at=f.teams.away;
+  var season=(f.league&&f.league.season)||lg.season;
+  function cta(cls,msg){ var c=el('cta-'+f.fixture.id); if(c){c.className=cls;c.textContent=msg;} }
+  cta('fx-busy','Loading...');
+  Promise.all([
+    xhr('https://v3.football.api-sports.io/fixtures?team='+ht.id+'&season='+season+'&last=20'),
+    xhr('https://v3.football.api-sports.io/fixtures?team='+at.id+'&season='+season+'&last=20')
+  ]).then(function(res){
+    cta('fx-busy','Calculating...');
+    var hR=Array.isArray(res[0].response)?res[0].response:[];
+    var aR=Array.isArray(res[1].response)?res[1].response:[];
+    var hm=form(hR,ht.id,'home'); var am=form(aR,at.id,'away');
+    if(!hm||hm.n<3) hm=form(hR,ht.id,'all')||hm;
+    if(!am||am.n<3) am=form(aR,at.id,'all')||am;
+    if(!hm||!am) throw {message:'Not enough match data yet this season.'};
+    var L=lambdas(hm,am), P=probs(L.h,L.a);
+    var mx=Math.max(P.h,P.d,P.a);
+    var pred=mx===P.h?'Home Win':mx===P.d?'Draw':'Away Win';
+    renderResult(f,ht,at,hm,am,P,pred,mx);
+    cta('fx-cta','&#10003; Done');
+  }).catch(function(e){
+    el('pred-err-body').textContent=e.message||String(e); show('pred-err-box'); cta('fx-cta','Predict &#9656;');
+  }).then(function(){ predicting=false; });
+}
+
+function poisPMF(l,k){ if(l<=0) return k===0?1:0; var r=-l+k*Math.log(l); for(var i=1;i<=k;i++) r-=Math.log(i); return Math.exp(r); }
+function probs(hL,aL){
+  var h=0,d=0,a=0;
+  for(var i=0;i<=8;i++) for(var j=0;j<=8;j++){ var p=poisPMF(hL,i)*poisPMF(aL,j); if(i>j)h+=p; else if(i===j)d+=p; else a+=p; }
+  var t=h+d+a||1; return {h:h/t*100,d:d/t*100,a:a/t*100,hL:hL,aL:aL};
+}
+function form(fx,tid,venue){
+  if(!fx||!fx.length) return null;
+  var rel=[];
+  for(var i=0;i<fx.length;i++){
+    var f=fx[i]; if(!f||!f.fixture||!f.teams||!f.goals) continue;
+    var st=f.fixture.status&&f.fixture.status.short;
+    if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
+    var isH=f.teams.home&&f.teams.home.id===tid, isA=f.teams.away&&f.teams.away.id===tid;
+    if(venue==='home'&&!isH) continue; if(venue==='away'&&!isA) continue; if(venue==='all'&&!isH&&!isA) continue;
+    rel.push(f); if(rel.length===5) break;
+  }
+  if(!rel.length) return null;
+  var gf=0,ga=0,pts=0,cs=0;
+  rel.forEach(function(f){
+    var ih=f.teams.home.id===tid;
+    var sc=ih?(f.goals.home||0):(f.goals.away||0), cc=ih?(f.goals.away||0):(f.goals.home||0);
+    var win=ih?f.teams.home.winner:f.teams.away.winner, los=ih?f.teams.away.winner:f.teams.home.winner;
+    gf+=sc;ga+=cc; if(win)pts+=3; else if(!los)pts+=1; if(cc===0)cs++;
+  });
+  var n=rel.length; return {avgGF:gf/n,avgGA:ga/n,ppg:pts/n,csRate:cs/n,n:n,venue:venue};
+}
+function lambdas(hm,am){ var avg=1.35; return {h:Math.max(0.3,(hm.avgGF/avg)*(am.avgGA/avg)*avg*1.1),a:Math.max(0.3,(am.avgGF/avg)*(hm.avgGA/avg)*avg)}; }
+function conf(p){ if(p>=70) return {l:'Strong Signal',c:'#39ff88'}; if(p>=55) return {l:'Good Edge',c:'#ffe600'}; if(p>=42) return {l:'Slight Edge',c:'#ff9a1f'}; return {l:'Too Close',c:'#ff4040'}; }
+function badge(f){
+  var s=f.fixture.status.short,e=f.fixture.status.elapsed;
+  if(['1H','2H','HT','ET','P'].indexOf(s)>-1) return {t:e?e+"' LIVE":'LIVE',c:'#39ff88'};
+  if(s==='FT') return {t:'Full Time',c:'#555'};
+  if(s==='NS') return {t:new Date(f.fixture.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),c:'#4db8ff'};
+  return {t:s,c:'#ff9a1f'};
+}
+
+function renderResult(fixture,ht,at,hm,am,P,predicted,maxP){
+  var cf=conf(maxP), dt=new Date(fixture.fixture.date).toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
+  var sec=el('result-section');
+  sec.innerHTML=
+    '<div class="match-banner up"><div class="banner-inner">'+
+      '<div class="t-side">'+(ht.logo?'<img class="t-logo" src="'+esc(ht.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+
+        '<span class="t-name">'+esc(ht.name)+'</span><span class="t-tag">HOME</span></div>'+
+      '<div class="vs-wrap"><span class="vs-txt">VS</span><span class="match-dt">'+esc(dt)+'</span></div>'+
+      '<div class="t-side r">'+(at.logo?'<img class="t-logo" src="'+esc(at.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+
+        '<span class="t-name">'+esc(at.name)+'</span><span class="t-tag">AWAY</span></div>'+
+    '</div></div>'+
+    '<div class="pred-box up2"><div class="pred-eye">PREDICTED OUTCOME</div>'+
+      '<div class="pred-out">'+esc(predicted)+'</div>'+
+      '<span class="conf-pill" style="color:'+cf.c+';border-color:'+cf.c+'44;background:'+cf.c+'0d">'+
+        '<span class="conf-dot" style="background:'+cf.c+'"></span>'+esc(cf.l)+' &mdash; '+maxP.toFixed(1)+'%</span></div>'+
+    '<div class="prob-sec up3"><div class="prob-title">Win Probabilities</div>'+
+      pBar('Home Win',P.h,'#4db8ff')+pBar('Draw',P.d,'#ffe600')+pBar('Away Win',P.a,'#ff9a1f')+
+    '</div>'+
+    '<div class="xg-row up4">'+
+      '<div class="xg-card xg-h"><div class="xg-lbl">Home xG</div><div class="xg-val" style="color:#4db8ff">'+P.hL.toFixed(2)+'</div></div>'+
+      '<div class="xg-card xg-a"><div class="xg-lbl">Away xG</div><div class="xg-val" style="color:#ff9a1f">'+P.aL.toFixed(2)+'</div></div>'+
+    '</div>'+
+    '<div class="form-grid up5">'+fCard(ht.name+' · Last '+hm.n+(hm.venue==='home'?' Home':' Games'),hm,'#4db8ff')+fCard(at.name+' · Last '+am.n+(am.venue==='away'?' Away':' Games'),am,'#ff9a1f')+'</div>'+
+    '<div class="model-note">Poisson Distribution · Home Advantage ×1.1 · Venue-Weighted Form</div>';
+  show('result-section');
+  setTimeout(function(){ sec.scrollIntoView({behavior:'smooth',block:'start'}); },60);
+}
+function pBar(lbl,pct,color){
+  return '<div class="prob-row"><span class="prob-lbl">'+esc(lbl)+'</span>'+
+    '<div class="bar-track"><div class="bar-fill" style="width:'+pct.toFixed(1)+'%;background:linear-gradient(90deg,'+color+'55,'+color+')"></div></div>'+
+    '<span class="prob-pct" style="color:'+color+'">'+pct.toFixed(1)+'</span></div>';
+}
+function fCard(title,m,color){
+  return '<div class="form-card"><div class="form-head"><div class="form-dot" style="background:'+color+';box-shadow:0 0 8px '+color+'88"></div>'+
+    '<span class="form-ttl">'+esc(title)+'</span></div>'+
+    sRow('Goals / Game',m.avgGF.toFixed(2))+sRow('Conceded / Game',m.avgGA.toFixed(2))+
+    sRow('Points / Game',m.ppg.toFixed(2))+sRow('Clean Sheet Rate',Math.round(m.csRate*100)+'%')+'</div>';
+}
+function sRow(l,v){ return '<div class="stat-row"><span class="stat-l">'+esc(l)+'</span><span class="stat-v">'+esc(String(v))+'</span></div>'; }
+
+el('date-input').value=todayStr();
+el('save-key-btn').addEventListener('click',saveKey);
+el('change-key-btn').addEventListener('click',changeKey);
+el('api-key-input').addEventListener('keydown',function(e){ if(e.key==='Enter') saveKey(); });
+el('prev-day').addEventListener('click',function(){ var d=addDays(el('date-input').value||todayStr(),-1); el('date-input').value=d; setQD(d); loadAll(); });
+el('next-day').addEventListener('click',function(){ var d=addDays(el('date-input').value||todayStr(),1); el('date-input').value=d; setQD(d); loadAll(); });
+el('load-btn').addEventListener('click',function(){ setQD(el('date-input').value||todayStr()); loadAll(); });
+el('date-input').addEventListener('change',function(){ setQD(el('date-input').value); loadAll(); });
+
+try{ var s=localStorage.getItem('mo_key'); if(s){ API_KEY=s; hide('key-section'); show('key-bar'); show('main-app'); buildQuickDates(); loadAll(); } }catch(e){}
+if(!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) hide('install-hint');
 </script>
 </body>
 </html>
