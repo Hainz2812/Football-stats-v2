@@ -310,6 +310,11 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;
     <div class="err-body" id="main-error-body"></div>
   </div>
 
+  <!-- DEBUG -->
+  <div id="dbg-wrap" style="margin-bottom:10px">
+    <button id="dbg-btn" style="width:100%;background:rgba(255,230,0,.07);border:1px solid rgba(255,230,0,.25);color:#ffe600;font-family:monospace;font-size:10px;letter-spacing:2px;padding:10px;border-radius:3px;cursor:pointer">&#9658; DEBUG: TEST ONE API CALL</button>
+    <pre id="dbg-out" style="display:none;margin-top:6px;padding:12px;background:#080808;border:1px solid rgba(255,230,0,.15);border-radius:3px;font-family:monospace;font-size:9px;color:#aaa;line-height:1.6;word-break:break-all;white-space:pre-wrap;max-height:260px;overflow-y:auto"></pre>
+  </div>
   <div id="results-area"></div>
 
   <div id="pred-err-box" class="err-box hidden">
@@ -837,6 +842,50 @@ el('test-btn').addEventListener('click', function(){
     el('test-result').innerHTML='&#10003; Connected · Plan: '+esc(plan)+'<br>Requests: '+used+' / '+lim+' today';
     show('test-result');
   }).then(function(){ btn.textContent='Test Connection'; btn.disabled=false; });
+});
+
+el('dbg-btn').addEventListener('click', function(){
+  var out = el('dbg-out');
+  out.style.display = 'block';
+  out.textContent = 'Firing request...';
+  var date = el('date-input') && el('date-input').value ? el('date-input').value : '2026-02-22';
+  var url = 'https://v3.football.api-sports.io/fixtures?league=39&season=2024&date=' + date;
+  out.textContent += '
+URL: ' + url;
+  out.textContent += '
+Key (first 8): ' + API_KEY.substring(0,8) + '...';
+  
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.setRequestHeader('x-apisports-key', API_KEY);
+  xhr.setRequestHeader('x-rapidapi-key', API_KEY);
+  xhr.setRequestHeader('x-rapidapi-host', 'v3.football.api-sports.io');
+  xhr.timeout = 15000;
+  xhr.onload = function(){
+    out.textContent = 'HTTP Status: ' + xhr.status + '
+';
+    out.textContent += 'Response length: ' + xhr.responseText.length + '
+
+';
+    try{
+      var j = JSON.parse(xhr.responseText);
+      out.textContent += 'errors: ' + JSON.stringify(j.errors) + '
+';
+      out.textContent += 'results: ' + j.results + '
+';
+      out.textContent += 'response.length: ' + (Array.isArray(j.response) ? j.response.length : 'NOT ARRAY') + '
+
+';
+      out.textContent += 'FULL RESPONSE (first 800 chars):
+' + xhr.responseText.substring(0,800);
+    }catch(e){ out.textContent += 'Parse error: ' + e + '
+' + xhr.responseText.substring(0,400); }
+  };
+  xhr.onerror = function(){ out.textContent += '
+NETWORK ERROR - xhr.onerror fired'; };
+  xhr.ontimeout = function(){ out.textContent += '
+TIMEOUT after 15s'; };
+  xhr.send();
 });
 
 try{
