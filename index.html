@@ -92,8 +92,9 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 .lg-body.open{display:flex;}
 
 /* ── FIXTURE + INLINE PANEL ── */
-.fx-wrap{display:flex;flex-direction:column;}
-.fx-row{padding:10px 14px;background:rgba(255,255,255,.025);border:1px solid var(--b1);border-top:none;
+.fx-wrap{display:flex;flex-direction:column;border:1px solid rgba(77,184,255,.35);border-radius:4px;
+  margin-bottom:6px;overflow:hidden;box-shadow:0 0 12px rgba(77,184,255,.08);}
+.fx-row{padding:10px 14px;background:rgba(77,184,255,.04);border-bottom:1px solid rgba(77,184,255,.15);
   position:relative;overflow:hidden;}
 .fx-teams{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:5px;}
 .fx-team{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
@@ -526,8 +527,7 @@ function buildFixtureEl(f, lg, formStore, h2hStore, isLast){
 
   // Fixture row
   var row = document.createElement('div');
-  row.className = 'fx-row' + (isLast ? ' fx-last' : '');
-  if(isLast) row.style.borderRadius = '0 0 3px 3px';
+  row.className = 'fx-row';
 
   row.innerHTML =
     '<div class="fx-teams">'+
