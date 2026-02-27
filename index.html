@@ -132,6 +132,17 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 .td-val{font-family:'Bebas Neue',sans-serif;font-size:17px;line-height:1;display:block;}
 .td-sub{font-family:var(--mono);font-size:7px;color:var(--t3);display:block;margin-top:1px;}
 
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;padding:8px 0 4px;margin-bottom:6px;}
+.f-btn{background:rgba(255,255,255,.04);border:1px solid var(--b1);color:var(--t3);
+  font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 11px;min-height:28px;
+  text-transform:uppercase;flex-shrink:0;transition:all .15s;}
+.f-btn.on{border-color:currentColor;opacity:1;}
+.f-btn.off{opacity:.35;}
+.f-btn[data-conf="Strong Signal"].on{color:#39ff88;background:rgba(57,255,136,.08);}
+.f-btn[data-conf="Good Edge"].on{color:#ffe600;background:rgba(255,230,0,.08);}
+.f-btn[data-conf="Slight Edge"].on{color:#ff9a1f;background:rgba(255,154,31,.08);}
+.f-btn[data-conf="Too Close"].on{color:#ff4040;background:rgba(255,64,64,.08);}
+.f-btn[data-conf="all"].on{color:#fff;background:rgba(255,255,255,.06);}
 .no-fx{text-align:center;font-family:var(--mono);color:var(--t3);font-size:11px;padding:36px 20px;letter-spacing:2px;text-transform:uppercase;line-height:2;}
 .err-box{padding:14px;background:rgba(255,64,64,.05);border:1px solid rgba(255,64,64,.2);margin-bottom:10px;border-radius:3px;}
 .err-title{font-family:var(--mono);color:var(--R);font-size:10px;letter-spacing:2px;margin-bottom:6px;}
@@ -208,6 +219,13 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
     <div class="err-body" id="main-error-body"></div>
   </div>
 
+  <div id="filter-bar" class="filter-bar hidden">
+    <button class="f-btn on" data-conf="all">All</button>
+    <button class="f-btn on" data-conf="Strong Signal">Strong</button>
+    <button class="f-btn on" data-conf="Good Edge">Good Edge</button>
+    <button class="f-btn on" data-conf="Slight Edge">Slight Edge</button>
+    <button class="f-btn on" data-conf="Too Close">Too Close</button>
+  </div>
   <div id="results-area"></div>
 </div>
 </div>
@@ -311,7 +329,7 @@ function xhr(url){
 }
 
 /* ── CACHE (localStorage, keyed by date) ── */
-function cacheKey(date){ return 'mo_day_v4_' + date; }
+function cacheKey(date){ return 'mo_day_v6_' + date; }
 function cacheGet(date){
   try{
     var raw = localStorage.getItem(cacheKey(date));
@@ -380,6 +398,7 @@ function loadAll(){
   el('results-area').innerHTML = '';
   hide('main-error');
   hide('cached-note');
+  hide('filter-bar');
 
   // ── Check cache first ──
   var cached = cacheGet(date);
@@ -446,17 +465,20 @@ function fetchFormData(gen, groups, date){
   });});
   var teamIds=Object.keys(teamMap);
   var h2hKeys=Object.keys(h2hMap);
-  var totalCalls=teamIds.length+h2hKeys.length;
   var doneCalls=0;
   var formStore={};
   var h2hStore={};
+  var eventsStore={};   // fixtureId -> events[]
+  // totalCalls updated after phase 1 when we know fixture IDs
+  var totalCalls=teamIds.length+h2hKeys.length; // +event calls added later
 
-  el('prog-label').textContent='Form data 0 / '+totalCalls+'...';
-  function tick(){
+  function tick(label){
     doneCalls++;
+    el('prog-label').textContent=label||('Loading '+doneCalls+' / '+totalCalls+'...');
     el('prog-fill').style.width=(50+Math.round(doneCalls/totalCalls*50))+'%';
-    el('prog-label').textContent='Form data '+doneCalls+' / '+totalCalls+'...';
   }
+
+  // ── Phase A: fetch team form (last 20, no events yet) ─────────────────────
   function fetchTeams(i){
     if(gen!==loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
     if(i>=teamIds.length){ fetchH2H(0); return; }
@@ -464,34 +486,97 @@ function fetchFormData(gen, groups, date){
     xhr('https://v3.football.api-sports.io/fixtures?team='+tid+'&season='+teamMap[tid]+'&last=20')
     .then(function(json){
       if(gen!==loadGen) return;
-      tick();
+      tick('Form '+doneCalls+' / '+teamIds.length+'...');
       formStore[tid]=Array.isArray(json.response)?json.response:[];
       fetchTeams(i+1);
     });
   }
+
+  // ── Phase B: fetch H2H ────────────────────────────────────────────────────
   function fetchH2H(i){
     if(gen!==loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
-    if(i>=h2hKeys.length){
-      hide('prog-wrap'); el('load-btn').disabled=false;
-      var payload={groups:groups,formStore:formStore,h2hStore:h2hStore};
-      cacheSet(date,payload);
-      renderAll(groups,date,false,formStore,h2hStore);
-      return;
-    }
+    if(i>=h2hKeys.length){ buildEventIds(); return; }
     var key=h2hKeys[i], pair=h2hMap[key];
     xhr('https://v3.football.api-sports.io/fixtures/headtohead?h2h='+pair.hid+'-'+pair.aid+'&last=10')
     .then(function(json){
       if(gen!==loadGen) return;
-      tick();
+      tick('H2H '+doneCalls+' / '+(teamIds.length+h2hKeys.length)+'...');
       h2hStore[key]=Array.isArray(json.response)?json.response:[];
       fetchH2H(i+1);
     });
   }
+
+  // ── Phase C: collect unique fixture IDs for venue-specific last 5 games ───
+  // For each fixture on the current date we need:
+  //   home team: last 5 home games -> fixture IDs
+  //   away team: last 5 away games -> fixture IDs
+  // We deduplicate so shared fixtures are only fetched once
+  function buildEventIds(){
+    if(gen!==loadGen) return;
+    var fxIdSet={};  // fixtureId -> true
+
+    groups.forEach(function(g){
+      g.fixtures.forEach(function(f){
+        var viewDate=el('date-input').value||todayStr();
+        var htFx=formStore[f.teams.home.id]||[];
+        var atFx=formStore[f.teams.away.id]||[];
+
+        // collect last 5 venue-specific completed games for each team
+        function collect(fx, tid, venue){
+          var count=0;
+          for(var i=0;i<fx.length;i++){
+            var g2=fx[i];
+            if(!g2||!g2.fixture||!g2.teams||!g2.goals) continue;
+            var st=g2.fixture.status&&g2.fixture.status.short;
+            if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
+            if(viewDate&&g2.fixture.date&&g2.fixture.date.slice(0,10)===viewDate) continue;
+            var isH=g2.teams.home&&g2.teams.home.id===tid;
+            var isA=g2.teams.away&&g2.teams.away.id===tid;
+            if(venue==='home'&&!isH) continue;
+            if(venue==='away'&&!isA) continue;
+            fxIdSet[g2.fixture.id]=true;
+            count++;
+            if(count===5) break;
+          }
+        }
+        collect(htFx, f.teams.home.id, 'home');
+        collect(atFx, f.teams.away.id, 'away');
+      });
+    });
+
+    var fxIds=Object.keys(fxIdSet);
+    // Update total now we know how many event calls
+    totalCalls=doneCalls+fxIds.length;
+    el('prog-label').textContent='Events 0 / '+fxIds.length+'...';
+    fetchEvents(fxIds, 0);
+  }
+
+  // ── Phase D: fetch events for each unique fixture ID ──────────────────────
+  function fetchEvents(ids, i){
+    if(gen!==loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
+    if(i>=ids.length){
+      // All done
+      hide('prog-wrap'); el('load-btn').disabled=false;
+      var payload={groups:groups,formStore:formStore,h2hStore:h2hStore,eventsStore:eventsStore};
+      cacheSet(date,payload);
+      renderAll(groups,date,false,formStore,h2hStore,eventsStore);
+      return;
+    }
+    var fid=ids[i];
+    xhr('https://v3.football.api-sports.io/fixtures/events?fixture='+fid)
+    .then(function(json){
+      if(gen!==loadGen) return;
+      tick('Events '+(i+1)+' / '+ids.length+'...');
+      eventsStore[fid]=Array.isArray(json.response)?json.response:[];
+      fetchEvents(ids,i+1);
+    });
+  }
+
   fetchTeams(0);
 }
 
 /* ── RENDER ALL ── */
-function renderAll(groups, date, fromCache, formStore, h2hStore){
+function renderAll(groups, date, fromCache, formStore, h2hStore, eventsStore){
   var area = el('results-area');
   area.innerHTML = '';
 
@@ -500,8 +585,12 @@ function renderAll(groups, date, fromCache, formStore, h2hStore){
 
   // Resolve stores (works for both fresh fetch and cache read)
   var cached = fromCache ? cacheGet(date) : null;
-  var fs = formStore || (cached ? cached.formStore : {});
-  var hs = h2hStore  || (cached ? cached.h2hStore  : {});
+  var fs = formStore   || (cached ? cached.formStore   : {});
+  var hs = h2hStore    || (cached ? cached.h2hStore    : {});
+  var es = eventsStore || (cached ? cached.eventsStore : {});
+
+  // Show filter bar
+  if(totalFx>0) show('filter-bar'); else hide('filter-bar');
 
   // Summary line
   var sum = document.createElement('div');
@@ -529,7 +618,7 @@ function renderAll(groups, date, fromCache, formStore, h2hStore){
 
     // Build fixture rows (DOM ready, just hidden)
     g.fixtures.forEach(function(f, fi){
-      var fxEl = buildFixtureEl(f, g.lg, fs, hs, fi === g.fixtures.length-1);
+      var fxEl = buildFixtureEl(f, g.lg, fs, hs, es, fi === g.fixtures.length-1);
       body.appendChild(fxEl);
     });
 
@@ -552,7 +641,7 @@ function renderAll(groups, date, fromCache, formStore, h2hStore){
 }
 
 /* ── BUILD FIXTURE ELEMENT (with inline prediction + stats) ── */
-function buildFixtureEl(f, lg, formStore, h2hStore, isLast){
+function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, isLast){
   var sb  = badge(f);
   var gH  = f.goals && f.goals.home !== null ? f.goals.home : null;
   var gA  = f.goals && f.goals.away !== null ? f.goals.away : null;
@@ -562,6 +651,7 @@ function buildFixtureEl(f, lg, formStore, h2hStore, isLast){
 
   var div = document.createElement('div');
   div.className = 'fx-wrap';
+  div.setAttribute('data-conf','');  // filled after prediction calculated
 
   // Fixture row
   var row = document.createElement('div');
@@ -591,11 +681,11 @@ function buildFixtureEl(f, lg, formStore, h2hStore, isLast){
   // Fallback chain: venue-specific → all games → neutral baseline
   // viewDate ensures same-day completed games are excluded so predictions stay pre-match
   var viewDate = el('date-input').value || todayStr();
-  var hm = calcForm(hR, ht.id, 'home', viewDate)
-        || calcForm(hR, ht.id, 'all',  viewDate)
+  var hm = calcForm(hR, ht.id, 'home', viewDate, eventsStore)
+        || calcForm(hR, ht.id, 'all',  viewDate, eventsStore)
         || neutralForm();
-  var am = calcForm(aR, at.id, 'away', viewDate)
-        || calcForm(aR, at.id, 'all',  viewDate)
+  var am = calcForm(aR, at.id, 'away', viewDate, eventsStore)
+        || calcForm(aR, at.id, 'all',  viewDate, eventsStore)
         || neutralForm();
 
   {
@@ -605,6 +695,7 @@ function buildFixtureEl(f, lg, formStore, h2hStore, isLast){
     var mx  = Math.max(P.h, P.d, P.a);
     var pred = mx===P.h ? 'Home Win' : mx===P.d ? 'Draw' : 'Away Win';
     var cf  = conf(mx);
+    div.setAttribute('data-conf', cf.l);
 
     var panel = document.createElement('div');
     panel.innerHTML =
@@ -631,6 +722,7 @@ function buildFixtureEl(f, lg, formStore, h2hStore, isLast){
           '<th>Conc\'d</th>'+
           '<th>Pts/G</th>'+
           '<th>CS%</th>'+
+          '<th>L15</th>'+
         '</tr>'+
         statsRow(ht, hm, L.h)+
         statsRow(at, am, L.a)+
@@ -652,6 +744,7 @@ function statsRow(team, m, xg){
     statCell(m.avgGA.toFixed(2), '#ff9a1f')+
     statCell(m.ppg.toFixed(2), '#39ff88')+
     statCell(Math.round(m.csRate*100)+'%', '#aaa')+
+    statCell(m.lateGF!==null ? m.lateGF.toFixed(2) : '-', '#c084fc')+
   '</tr>';
 }
 function statCell(val, color){
@@ -662,7 +755,7 @@ function statCell(val, color){
 // Neutral baseline used when no form data available at all
 // Assumes league-average scoring both ways — gives a fair 50/50 starting point
 function neutralForm(){
-  return {avgGF:1.35, avgGA:1.35, ppg:1.3, csRate:0.25, n:0, venue:'neutral'};
+  return {avgGF:1.35, avgGA:1.35, ppg:1.3, csRate:0.25, lateGF:null, lateGA:null, n:0, venue:'neutral'};
 }
 
 function poisPMF(l,k){
@@ -687,7 +780,7 @@ function probs(hL,aL){
   each prior game multiplied by 0.85.
   Returns weighted averages for goals, conceded, pts, clean sheets.
 */
-function calcForm(fx, tid, venue, viewDate){
+function calcForm(fx, tid, venue, viewDate, eventsStore){
   if(!fx||!fx.length) return null;
   var rel=[];
   for(var i=0;i<fx.length;i++){
@@ -723,13 +816,37 @@ function calcForm(fx, tid, venue, viewDate){
     wCS  += w*(cc===0?1:0);
     wTot += w;
   });
+  // Late goals 75-90 min: look up real events from eventsStore
+  var lateGF=0, lateGA=0, lateW=0;
+  rel.forEach(function(f, idx){
+    var w=Math.pow(DECAY,idx);
+    var ih=f.teams.home.id===tid;
+    var fid=f.fixture&&f.fixture.id;
+    // Use eventsStore if available for this fixture
+    var evts=(eventsStore&&fid&&eventsStore[fid]) ? eventsStore[fid] : [];
+    var lgf=0, lga=0;
+    evts.forEach(function(e){
+      if(e.type!=='Goal') return;
+      if(e.detail==='Own Goal') return;
+      var min=e.time&&e.time.elapsed ? e.time.elapsed : 0;
+      if(min>=75){
+        var scorerTeamId=e.team&&e.team.id;
+        if(scorerTeamId===tid) lgf++;
+        else lga++;
+      }
+    });
+    // Only count this game towards late stats if we actually had events for it
+    if(evts.length>0){ lateGF+=w*lgf; lateGA+=w*lga; lateW+=w; }
+  });
   return {
-    avgGF:  wGF/wTot,
-    avgGA:  wGA/wTot,
-    ppg:    wPts/wTot,
-    csRate: wCS/wTot,
-    n:      rel.length,
-    venue:  venue
+    avgGF:    wGF/wTot,
+    avgGA:    wGA/wTot,
+    ppg:      wPts/wTot,
+    csRate:   wCS/wTot,
+    lateGF:   lateW>0 ? lateGF/lateW : null,
+    lateGA:   lateW>0 ? lateGA/lateW : null,
+    n:        rel.length,
+    venue:    venue
   };
 }
 
@@ -814,6 +931,48 @@ el('prev-day').addEventListener('click', function(){ var d=addDays(el('date-inpu
 el('next-day').addEventListener('click', function(){ var d=addDays(el('date-input').value||todayStr(),1); el('date-input').value=d; setQD(d); loadAll(); });
 el('load-btn').addEventListener('click', function(){ setQD(el('date-input').value||todayStr()); loadAll(); });
 el('date-input').addEventListener('change', function(){ setQD(el('date-input').value); loadAll(); });
+
+/* ── FILTER ── */
+var activeFilters = {all:true,'Strong Signal':true,'Good Edge':true,'Slight Edge':true,'Too Close':true};
+
+document.querySelectorAll('.f-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var conf = btn.getAttribute('data-conf');
+    if(conf==='all'){
+      // Toggle all on/off
+      var anyOff = Object.keys(activeFilters).some(function(k){ return k!=='all' && !activeFilters[k]; });
+      var newState = anyOff;
+      Object.keys(activeFilters).forEach(function(k){ activeFilters[k]=newState; });
+      document.querySelectorAll('.f-btn').forEach(function(b){ b.classList.toggle('on',newState); b.classList.toggle('off',!newState); });
+    } else {
+      activeFilters[conf] = !activeFilters[conf];
+      btn.classList.toggle('on', activeFilters[conf]);
+      btn.classList.toggle('off', !activeFilters[conf]);
+      // Update "all" btn state
+      var allOn = Object.keys(activeFilters).filter(function(k){return k!=='all';}).every(function(k){return activeFilters[k];});
+      var allBtn = document.querySelector('.f-btn[data-conf="all"]');
+      if(allBtn){ allBtn.classList.toggle('on',allOn); allBtn.classList.toggle('off',!allOn); }
+    }
+    applyFilter();
+  });
+});
+
+function applyFilter(){
+  document.querySelectorAll('.fx-wrap').forEach(function(wrap){
+    var c = wrap.getAttribute('data-conf');
+    // No conf yet (neutral/loading) — always show
+    if(!c){ wrap.style.display=''; return; }
+    var show = activeFilters[c] !== false;
+    wrap.style.display = show ? '' : 'none';
+  });
+  // Hide league groups that have no visible fixtures
+  document.querySelectorAll('.league-group').forEach(function(g){
+    var body = g.querySelector('.lg-body');
+    if(!body) return;
+    var visible = Array.from(body.querySelectorAll('.fx-wrap')).some(function(w){ return w.style.display!=='none'; });
+    g.style.display = visible ? '' : 'none';
+  });
+}
 
 /* ── BOOT ── */
 try{
