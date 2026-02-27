@@ -551,16 +551,17 @@ function buildFixtureEl(f, lg, formStore, h2hStore, isLast){
   var h2h = h2hStore  && h2hStore[ht.id+'_'+at.id] ? h2hStore[ht.id+'_'+at.id] : [];
 
   // Fallback chain: venue-specific → all games → neutral baseline
-  // This ensures EVERY fixture gets a prediction
-  var hm = calcForm(hR, ht.id, 'home')
-        || calcForm(hR, ht.id, 'all')
+  // viewDate ensures same-day completed games are excluded so predictions stay pre-match
+  var viewDate = el('date-input').value || todayStr();
+  var hm = calcForm(hR, ht.id, 'home', viewDate)
+        || calcForm(hR, ht.id, 'all',  viewDate)
         || neutralForm();
-  var am = calcForm(aR, at.id, 'away')
-        || calcForm(aR, at.id, 'all')
+  var am = calcForm(aR, at.id, 'away', viewDate)
+        || calcForm(aR, at.id, 'all',  viewDate)
         || neutralForm();
 
   {
-    var h2hStat = calcH2H(h2h, ht.id, at.id);
+    var h2hStat = calcH2H(h2h, ht.id, at.id, viewDate);
     var L   = lambdas(hm, am, h2hStat);
     var P   = probs(L.h, L.a);
     var mx  = Math.max(P.h, P.d, P.a);
@@ -648,7 +649,7 @@ function probs(hL,aL){
   each prior game multiplied by 0.85.
   Returns weighted averages for goals, conceded, pts, clean sheets.
 */
-function calcForm(fx, tid, venue){
+function calcForm(fx, tid, venue, viewDate){
   if(!fx||!fx.length) return null;
   var rel=[];
   for(var i=0;i<fx.length;i++){
@@ -656,6 +657,8 @@ function calcForm(fx, tid, venue){
     if(!f||!f.fixture||!f.teams||!f.goals) continue;
     var st=f.fixture.status&&f.fixture.status.short;
     if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
+    // Exclude games played on the same date we are viewing — keeps predictions pre-match
+    if(viewDate && f.fixture.date && f.fixture.date.slice(0,10)===viewDate) continue;
     var isH=f.teams.home&&f.teams.home.id===tid;
     var isA=f.teams.away&&f.teams.away.id===tid;
     if(venue==='home'&&!isH) continue;
@@ -697,7 +700,7 @@ function calcForm(fx, tid, venue){
   Returns home wins, draws, away wins, and a scoring rate adjustment.
   Only counts games where home team was home and away was away (venue-specific).
 */
-function calcH2H(fx, hid, aid){
+function calcH2H(fx, hid, aid, viewDate){
   if(!fx||!fx.length) return null;
   var rel=[];
   for(var i=0;i<fx.length;i++){
@@ -705,6 +708,7 @@ function calcH2H(fx, hid, aid){
     if(!f||!f.fixture||!f.teams||!f.goals) continue;
     var st=f.fixture.status&&f.fixture.status.short;
     if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
+    if(viewDate && f.fixture.date && f.fixture.date.slice(0,10)===viewDate) continue;
     // Only count fixtures at this venue (home team matches)
     if(f.teams.home.id===hid && f.teams.away.id===aid) rel.push(f);
     if(rel.length===6) break;
