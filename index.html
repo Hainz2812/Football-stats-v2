@@ -214,30 +214,68 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 
 <script>
 var LEAGUES = [
-  {id:39,  name:'Premier League',   flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
-  {id:40,  name:'Championship',     flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
-  {id:41,  name:'League One',       flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
-  {id:42,  name:'League Two',       flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
-  {id:43,  name:'National League',  flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
-  {id:78,  name:'Bundesliga',       flag:'🇩🇪', season:2025},
-  {id:79,  name:'2. Bundesliga',    flag:'🇩🇪', season:2025},
-  {id:80,  name:'3. Liga',          flag:'🇩🇪', season:2025},
-  {id:88,  name:'Eredivisie',       flag:'🇳🇱', season:2025},
-  {id:89,  name:'Eerste Divisie',   flag:'🇳🇱', season:2025},
-  {id:103, name:'Eliteserien',      flag:'🇳🇴', season:2025},
-  {id:104, name:'1. divisjon',      flag:'🇳🇴', season:2025},
-  {id:140, name:'La Liga',          flag:'🇪🇸', season:2025},
-  {id:135, name:'Serie A',          flag:'🇮🇹', season:2025},
-  {id:61,  name:'Ligue 1',          flag:'🇫🇷', season:2025},
-  {id:94,  name:'Primeira Liga',    flag:'🇵🇹', season:2025},
-  {id:203, name:'Süper Lig',        flag:'🇹🇷', season:2025},
-  {id:113, name:'Allsvenskan',      flag:'🇸🇪', season:2025},
-  {id:119, name:'Superliga',        flag:'🇩🇰', season:2025},
-  {id:2,   name:'Champions League', flag:'🏆', season:2025},
-  {id:3,   name:'Europa League',    flag:'🏆', season:2025},
-  {id:848, name:'Conference League',flag:'🏆', season:2025},
-  {id:253, name:'MLS',              flag:'🇺🇸', season:2025},
-  {id:262, name:'Liga MX',          flag:'🇲🇽', season:2025},
+  // ── England ──
+  {id:39,  name:'Premier League',      flag:'🏴‍', season:2025},
+  {id:40,  name:'Championship',        flag:'🏴‍', season:2025},
+  {id:41,  name:'League One',          flag:'🏴‍', season:2025},
+  {id:42,  name:'League Two',          flag:'🏴‍', season:2025},
+  {id:43,  name:'National League',     flag:'🏴‍', season:2025},
+  // ── Germany ──
+  {id:78,  name:'Bundesliga',          flag:'🇩🇪', season:2025},
+  {id:79,  name:'2. Bundesliga',       flag:'🇩🇪', season:2025},
+  {id:80,  name:'3. Liga',             flag:'🇩🇪', season:2025},
+  // ── Spain ──
+  {id:140, name:'La Liga',             flag:'🇪🇸', season:2025},
+  {id:141, name:'La Liga 2',           flag:'🇪🇸', season:2025},
+  // ── Italy ──
+  {id:135, name:'Serie A',             flag:'🇮🇹', season:2025},
+  {id:136, name:'Serie B',             flag:'🇮🇹', season:2025},
+  // ── France ──
+  {id:61,  name:'Ligue 1',             flag:'🇫🇷', season:2025},
+  {id:62,  name:'Ligue 2',             flag:'🇫🇷', season:2025},
+  {id:63,  name:'National',            flag:'🇫🇷', season:2025},
+  // ── Netherlands ──
+  {id:88,  name:'Eredivisie',          flag:'🇳🇱', season:2025},
+  {id:89,  name:'Eerste Divisie',      flag:'🇳🇱', season:2025},
+  // ── Portugal ──
+  {id:94,  name:'Primeira Liga',       flag:'🇵🇹', season:2025},
+  {id:95,  name:'Liga Portugal 2',     flag:'🇵🇹', season:2025},
+  // ── Belgium ──
+  {id:144, name:'Pro League',          flag:'🇧🇪', season:2025},
+  {id:145, name:'Eerste Nationale',    flag:'🇧🇪', season:2025},
+  // ── Turkey ──
+  {id:203, name:'Süper Lig',           flag:'🇹🇷', season:2025},
+  {id:204, name:'1. Lig',              flag:'🇹🇷', season:2025},
+  // ── Norway ──
+  {id:103, name:'Eliteserien',         flag:'🇳🇴', season:2025},
+  {id:104, name:'1. divisjon',         flag:'🇳🇴', season:2025},
+  {id:105, name:'2. divisjon',         flag:'🇳🇴', season:2025},
+  // ── Sweden ──
+  {id:113, name:'Allsvenskan',         flag:'🇸🇪', season:2025},
+  {id:114, name:'Superettan',          flag:'🇸🇪', season:2025},
+  // ── Denmark ──
+  {id:119, name:'Superliga',           flag:'🇩🇰', season:2025},
+  {id:120, name:'1. Division',         flag:'🇩🇰', season:2025},
+  // ── Switzerland ──
+  {id:207, name:'Super League',        flag:'🇨🇭', season:2025},
+  {id:208, name:'Challenge League',    flag:'🇨🇭', season:2025},
+  // ── Austria ──
+  {id:218, name:'Bundesliga',          flag:'🇦🇹', season:2025},
+  {id:219, name:'2. Liga',             flag:'🇦🇹', season:2025},
+  // ── Poland ──
+  {id:106, name:'Ekstraklasa',         flag:'🇵🇱', season:2025},
+  {id:107, name:'I liga',              flag:'🇵🇱', season:2025},
+  // ── MLS / CONCACAF ──
+  {id:253, name:'MLS',                 flag:'🇺🇸', season:2025},
+  {id:254, name:'USL Championship',    flag:'🇺🇸', season:2025},
+  {id:262, name:'Liga MX',             flag:'🇲🇽', season:2025},
+  // ── South America ──
+  {id:265, name:'Primera Division',    flag:'🇨🇱', season:2025},
+  {id:266, name:'Primera B',           flag:'🇨🇱', season:2025},
+  // ── Europe ──
+  {id:2,   name:'Champions League',    flag:'🏆', season:2025},
+  {id:3,   name:'Europa League',       flag:'🏆', season:2025},
+  {id:848, name:'Conference League',   flag:'🏆', season:2025},
 ];
 
 var API_KEY = '';
@@ -273,7 +311,7 @@ function xhr(url){
 }
 
 /* ── CACHE (localStorage, keyed by date) ── */
-function cacheKey(date){ return 'mo_day_v3_' + date; }
+function cacheKey(date){ return 'mo_day_v4_' + date; }
 function cacheGet(date){
   try{
     var raw = localStorage.getItem(cacheKey(date));
