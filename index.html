@@ -41,7 +41,7 @@ header{text-align:center;margin-bottom:20px;padding-top:10px}
 .slabel::after{content:'';flex:1;height:1px;background:var(--b1)}
 input[type=password],input[type=date]{width:100%;background:rgba(0,0,0,.7);border:1px solid var(--b2);color:#fff;padding:13px 16px;font-size:16px;
   font-family:'Barlow Condensed',sans-serif;font-weight:600;outline:none;border-radius:3px;-webkit-appearance:none;appearance:none;}
-input:focus{border-color:var(--Y);box-shadow:0 0 0 2px rgba(255,230,0,.1)}
+input:focus{border-color:var(--Y);}
 input[type=date]{color-scheme:dark}
 input::placeholder{color:var(--t3)}
 button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearance:none;appearance:none;touch-action:manipulation;border-radius:3px;}
@@ -72,7 +72,9 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 .prog-wrap{margin-bottom:12px;}
 .prog-label{font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:2px;text-align:center;margin-bottom:6px;text-transform:uppercase;}
 .prog-track{height:2px;background:rgba(255,255,255,.06);border-radius:1px;overflow:hidden;}
-.prog-fill{height:100%;background:var(--Y);border-radius:1px;transition:width .3s ease;}
+.prog-fill{height:100%;background:var(--Y);border-radius:1px;transition:width .2s ease;}
+.cached-note{font-family:var(--mono);font-size:9px;color:var(--G);letter-spacing:1px;text-align:center;
+  padding:4px;margin-bottom:8px;opacity:.7;}
 .day-summary{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:2px;text-align:center;padding:6px 0 10px;text-transform:uppercase;}
 .day-summary b{color:#fff}
 .league-group{margin-bottom:8px;animation:up .2s both;}
@@ -81,150 +83,78 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 .lg-flag{font-size:16px;flex-shrink:0;line-height:1}
 .lg-name{font-size:13px;font-weight:700;color:var(--Y);letter-spacing:.5px;flex:1;}
 .lg-count{font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:1px;}
-.lg-fixtures{display:flex;flex-direction:column;}
-.fx-row{padding:11px 14px;background:rgba(255,255,255,.025);border:1px solid var(--b1);border-top:none;
-  cursor:pointer;position:relative;overflow:hidden;}
-.fx-row:last-child{border-radius:0 0 3px 3px;}
-.fx-row::before{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;background:var(--B);transform:scaleY(0);transition:transform .2s;}
-.fx-row.active{background:rgba(77,184,255,.07);border-color:rgba(77,184,255,.25)!important;}
-.fx-row.active::before{transform:scaleY(1)}
-.fx-row:active{opacity:.8}
-.fx-teams{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px;}
+
+/* ── FIXTURE + INLINE PANEL ── */
+.fx-wrap{display:flex;flex-direction:column;}
+.fx-row{padding:10px 14px;background:rgba(255,255,255,.025);border:1px solid var(--b1);border-top:none;
+  position:relative;overflow:hidden;}
+.fx-teams{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:5px;}
 .fx-team{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
 .fx-team.r{justify-content:flex-end;}
 .fx-team img{width:20px;height:20px;object-fit:contain;flex-shrink:0;}
 .fx-name{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;}
 .fx-score{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--Y);
   padding:1px 9px;background:rgba(255,230,0,.06);border:1px solid rgba(255,230,0,.14);flex-shrink:0;letter-spacing:2px;border-radius:3px;}
-.fx-meta{display:flex;justify-content:space-between;align-items:center;}
 .fx-status{font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:2px;}
-.fx-cta{font-family:var(--mono);font-size:9px;color:var(--B);letter-spacing:1px;}
-.fx-busy{font-family:var(--mono);font-size:9px;color:var(--O);letter-spacing:1px;}
+
+/* ── PREDICTION STRIP ── */
+.fp-strip{display:flex;align-items:center;flex-wrap:wrap;gap:3px 8px;
+  padding:6px 14px;border-top:1px solid rgba(255,230,0,.08);background:rgba(255,230,0,.015);}
+.fp-pred{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;flex-shrink:0;line-height:1;}
+.fp-div{color:var(--t3);font-size:9px;flex-shrink:0;}
+.fp-h{font-family:var(--mono);font-size:10px;font-weight:700;color:#4db8ff;flex-shrink:0;}
+.fp-d{font-family:var(--mono);font-size:10px;font-weight:700;color:#ffe600;flex-shrink:0;}
+.fp-a{font-family:var(--mono);font-size:10px;font-weight:700;color:#ff9a1f;flex-shrink:0;}
+.fp-verdict{font-family:var(--mono);font-size:9px;font-weight:700;flex-shrink:0;letter-spacing:.5px;}
+
+/* ── STATS TABLE ── */
+.fp-tbl{width:100%;border-collapse:collapse;border-top:1px solid rgba(255,255,255,.05);}
+.fp-tbl th{font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;
+  padding:5px 6px;text-align:center;background:rgba(255,255,255,.02);font-weight:400;}
+.fp-tbl th:first-child{text-align:left;padding-left:14px;}
+.fp-tbl th:last-child{padding-right:14px;}
+.fp-tbl td{padding:7px 6px;text-align:center;border-top:1px solid rgba(255,255,255,.03);}
+.fp-tbl td:first-child{padding-left:14px;text-align:left;}
+.fp-tbl td:last-child{padding-right:14px;}
+.fp-tbl tr:last-child td{padding-bottom:10px;}
+.td-team{display:flex;align-items:center;gap:6px;}
+.td-team img{width:16px;height:16px;object-fit:contain;flex-shrink:0;}
+.td-team span{font-size:11px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px;}
+.td-val{font-family:'Bebas Neue',sans-serif;font-size:17px;line-height:1;display:block;}
+.td-sub{font-family:var(--mono);font-size:7px;color:var(--t3);display:block;margin-top:1px;}
+
 .no-fx{text-align:center;font-family:var(--mono);color:var(--t3);font-size:11px;padding:36px 20px;letter-spacing:2px;text-transform:uppercase;line-height:2;}
 .err-box{padding:14px;background:rgba(255,64,64,.05);border:1px solid rgba(255,64,64,.2);margin-bottom:10px;border-radius:3px;}
-.err-title{font-family:var(--mono);color:var(--R);font-size:10px;letter-spacing:2px;margin-bottom:8px;}
+.err-title{font-family:var(--mono);color:var(--R);font-size:10px;letter-spacing:2px;margin-bottom:6px;}
 .err-body{color:rgba(255,150,150,.9);font-size:12px;line-height:1.6;font-family:var(--mono);word-break:break-all;}
-/* ── RESULT CARD ── */
-.res-card{background:var(--s1);border:1px solid var(--b1);border-radius:4px;margin-bottom:10px;position:relative;overflow:hidden;}
-.res-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,230,0,.4),transparent);}
-
-/* ROW 1: fixture header */
-.rc-fixture{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;gap:8px;border-bottom:1px solid var(--b1);}
-.rc-team-name{font-size:15px;font-weight:700;color:#fff;letter-spacing:.3px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.rc-team-name.r{text-align:right;}
-.rc-team-logo{width:28px;height:28px;object-fit:contain;flex-shrink:0;}
-.rc-vs{display:flex;flex-direction:column;align-items:center;padding:0 10px;flex-shrink:0;}
-.rc-score{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--Y);letter-spacing:3px;line-height:1;}
-.rc-date{font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:1px;margin-top:2px;}
-
-/* ROW 2: prediction */
-.rc-pred{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid var(--b1);gap:8px;flex-wrap:wrap;}
-.rc-pred-out{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--Y);line-height:1;flex-shrink:0;}
-.rc-pred-probs{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;font-weight:700;flex:1;}
-.rc-pred-sep{color:var(--t3);font-size:9px;}
-.rc-conf{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;border:1px solid;letter-spacing:1px;flex-shrink:0;white-space:nowrap;}
-.rc-conf-dot{width:4px;height:4px;border-radius:50%;background:currentColor;animation:blink 2s ease-in-out infinite;}
-
-
-/* STATS TABLE */
-.rc-stats{padding:0;}
-.rc-stats-hdr{display:grid;grid-template-columns:1fr repeat(5,1fr);padding:8px 16px;border-bottom:1px solid var(--b1);background:rgba(255,255,255,.02);}
-.rc-stats-hdr span{font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;text-align:center;}
-.rc-stats-hdr span:first-child{text-align:left;}
-.rc-stats-row{display:grid;grid-template-columns:1fr repeat(5,1fr);padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;}
-.rc-stats-row:last-child{border-bottom:none;}
-.rc-team-cell{display:flex;align-items:center;gap:7px;}
-.rc-team-cell img{width:18px;height:18px;object-fit:contain;flex-shrink:0;}
-.rc-team-cell span{font-size:12px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.rc-stat-cell{text-align:center;}
-.rc-stat-val{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.5px;line-height:1;}
-.rc-stat-sub{font-family:var(--mono);font-size:7px;color:var(--t3);letter-spacing:.5px;margin-top:1px;}
-.rc-xg{color:var(--Y);}
-.rc-scored{color:#4db8ff;}
-.rc-conc{color:#ff9a1f;}
-.rc-pts{color:#39ff88;}
-.rc-cs{color:#aaa;}
-
-.model-note{font-family:var(--mono);font-size:8px;color:var(--t3);text-align:center;padding:8px;text-transform:uppercase;border-top:1px solid var(--b1);}
 .install-hint{background:rgba(77,184,255,.05);border:1px solid rgba(77,184,255,.15);border-radius:3px;padding:9px 14px;margin-bottom:12px;
   font-family:var(--mono);font-size:9px;color:var(--t3);line-height:1.7;text-align:center;letter-spacing:1px;}
 .install-hint strong{color:var(--Y)}
 .hidden{display:none!important}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.up{animation:up .25s both}.up2{animation:up .25s .04s both}
-.up3{animation:up .25s .08s both}.up4{animation:up .25s .12s both}
-.up5{animation:up .25s .16s both}.fadein{animation:up .2s both}
-@media(min-width:520px){.form-grid{flex-direction:row;}}
+.fadein{animation:up .2s both;}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.8}}
+.pulsing{animation:pulse 1.4s ease-in-out infinite;}
 
-/* Landscape phone / tablet — tighten layout */
+/* Landscape */
 @media(orientation:landscape) and (max-height:500px){
-  .wrap{padding-top:8px;padding-bottom:40px;}
-  header{margin-bottom:10px;padding-top:4px;}
-  .site-title{font-size:36px;}
+  .wrap{padding-top:6px;padding-bottom:30px;}
+  header{margin-bottom:8px;padding-top:2px;}
+  .site-title{font-size:32px;}
   .tagline{display:none;}
-  .date-bar{padding:6px 0 5px;}
+  .date-bar{padding:5px 0 4px;}
   .quick-dates{display:none;}
-  .rc-fixture{padding:10px 14px;}
-  .rc-pred{padding:8px 14px;}
-  .rc-probs{padding:7px 14px;}
-  .rc-stats-hdr,.rc-stats-row{padding:8px 14px;}
-  .rc-stat-val{font-size:15px;}
 }
-
-/* ── INLINE PREDICTION PANEL ─────────────────────────── */
-.fx-wrap{ display:flex; flex-direction:column; }
-.fx-loading{ font-family:var(--mono); font-size:9px; color:var(--t3); letter-spacing:1px; animation:pulse 1.4s ease-in-out infinite; }
-@keyframes pulse{ 0%,100%{opacity:.4} 50%{opacity:1} }
-
-.fx-panel{ border-top:1px solid rgba(255,230,0,.1); background:rgba(255,230,0,.02); }
-
-/* Single-line prediction strip */
-.fp-pred-strip{
-  display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px;
-  padding:8px 14px; border-bottom:1px solid rgba(255,255,255,.05);
-}
-.fp-lbl{ font-family:var(--mono); font-size:9px; color:var(--t3); letter-spacing:2px; text-transform:uppercase; flex-shrink:0; }
-.fp-out{ font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:2px; flex-shrink:0; line-height:1; }
-.fp-divider{ color:var(--t3); font-size:9px; flex-shrink:0; }
-.fp-prob{ font-family:var(--mono); font-size:10px; font-weight:700; flex-shrink:0; letter-spacing:.5px; }
-.fp-conf{ font-family:var(--mono); font-size:9px; letter-spacing:1px; flex-shrink:0; font-weight:700; }
-
-/* Stats table */
-.fp-stats{ padding:0; }
-.fp-stats-hdr{
-  display:grid; grid-template-columns:1fr repeat(5,52px);
-  padding:6px 14px; background:rgba(255,255,255,.02);
-  border-bottom:1px solid rgba(255,255,255,.05);
-}
-.fp-stats-hdr span{ font-family:var(--mono); font-size:8px; color:var(--t3); letter-spacing:1px; text-transform:uppercase; text-align:center; }
-.fp-stats-hdr span:first-child{ text-align:left; }
-.fp-stats-row{
-  display:grid; grid-template-columns:1fr repeat(5,52px);
-  padding:9px 14px; align-items:center;
-  border-bottom:1px solid rgba(255,255,255,.03);
-}
-.fp-stats-row:last-child{ border-bottom:none; }
-.fp-team-cell{ display:flex; align-items:center; gap:6px; overflow:hidden; }
-.fp-team-cell img{ width:16px; height:16px; object-fit:contain; flex-shrink:0; }
-.fp-team-cell span{ font-size:11px; font-weight:700; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.fp-cell{ text-align:center; }
-.fp-val{ font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:.5px; display:block; line-height:1; }
-.fp-sub{ font-family:var(--mono); font-size:7px; color:var(--t3); display:block; margin-top:1px; }
-
-/* Landscape: tighter stats columns */
-@media(orientation:landscape) and (max-height:500px){
-  .fp-stats-hdr, .fp-stats-row{ grid-template-columns:1fr repeat(5,44px); padding:6px 10px; }
-  .fp-pred-strip{ padding:6px 10px; }
-}
-
 </style>
 </head>
 <body>
 <div class="topline"></div>
 <div class="wrap">
+
 <div class="install-hint" id="install-hint">
   📱 <strong>Add to Home Screen</strong> · tap Share in Safari → "Add to Home Screen"
 </div>
+
 <header>
   <div class="hline"></div>
   <div class="logo-row">
@@ -256,31 +186,24 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
     </div>
     <div class="quick-dates" id="quick-dates"></div>
   </div>
+
   <div id="prog-wrap" class="prog-wrap hidden">
     <div class="prog-label" id="prog-label">Loading...</div>
     <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   </div>
+
+  <div id="cached-note" class="cached-note hidden">⚡ Loaded from cache</div>
+
   <div id="main-error" class="err-box hidden">
     <div class="err-title">&#9888; Error</div>
     <div class="err-body" id="main-error-body"></div>
   </div>
+
   <div id="results-area"></div>
-  <div id="pred-err-box" class="err-box hidden">
-    <div class="err-title">&#9888; Prediction Failed</div>
-    <div class="err-body" id="pred-err-body"></div>
-  </div>
-  <div id="result-section" class="hidden"></div>
 </div>
 </div>
 
 <script>
-/* ── LEAGUES ─────────────────────────────────────────────────────
-   CRITICAL FIX: season = year the season STARTED
-   We are currently in Feb 2026, so:
-   - Leagues that run Aug-May (PL, Bundesliga etc): started Aug 2025 → season:2025
-   - Leagues that run Apr-Nov (MLS, Scandinavian):  started 2025   → season:2025
-   - Norwegian/Swedish leagues haven't started 2026 yet             → season:2025
-   ─────────────────────────────────────────────────────────────── */
 var LEAGUES = [
   {id:39,  name:'Premier League',   flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
   {id:40,  name:'Championship',     flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', season:2025},
@@ -309,10 +232,9 @@ var LEAGUES = [
 ];
 
 var API_KEY = '';
-var loadGen = 0;
-var activePredFixId = null;
-var predicting = false;
+var loadGen  = 0;
 
+/* ── HELPERS ── */
 function el(id){ return document.getElementById(id); }
 function show(id){ var e=el(id); if(e) e.classList.remove('hidden'); }
 function hide(id){ var e=el(id); if(e) e.classList.add('hidden'); }
@@ -326,195 +248,337 @@ function dateLabel(str){
   return new Date(str+'T12:00:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
 }
 
+/* ── XHR ── */
 function xhr(url){
   return new Promise(function(resolve){
-    var x=new XMLHttpRequest();
-    x.open('GET',url,true);
-    x.setRequestHeader('x-apisports-key',API_KEY);
-    x.setRequestHeader('x-rapidapi-key',API_KEY);
-    x.setRequestHeader('x-rapidapi-host','v3.football.api-sports.io');
-    x.timeout=12000;
-    x.onload=function(){ try{ resolve(JSON.parse(x.responseText)); }catch(e){ resolve({errors:{},results:0,response:[]}); } };
-    x.onerror=x.ontimeout=function(){ resolve({errors:{},results:0,response:[]}); };
+    var x = new XMLHttpRequest();
+    x.open('GET', url, true);
+    x.setRequestHeader('x-apisports-key', API_KEY);
+    x.setRequestHeader('x-rapidapi-key',  API_KEY);
+    x.setRequestHeader('x-rapidapi-host', 'v3.football.api-sports.io');
+    x.timeout = 15000;
+    x.onload = function(){ try{ resolve(JSON.parse(x.responseText)); }catch(e){ resolve({errors:{},results:0,response:[]}); } };
+    x.onerror = x.ontimeout = function(){ resolve({errors:{},results:0,response:[]}); };
     x.send();
   });
 }
 
+/* ── CACHE (localStorage, keyed by date) ── */
+function cacheKey(date){ return 'mo_day_' + date; }
+function cacheGet(date){
+  try{
+    var raw = localStorage.getItem(cacheKey(date));
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+function cacheSet(date, data){
+  try{
+    // Keep only last 3 days to avoid filling storage
+    var keep = [date, addDays(date,-1), addDays(date,-2)];
+    for(var i=0; i<localStorage.length; i++){
+      var k = localStorage.key(i);
+      if(k && k.indexOf('mo_day_')===0 && keep.indexOf(k.replace('mo_day_',''))===-1){
+        localStorage.removeItem(k); i--;
+      }
+    }
+    localStorage.setItem(cacheKey(date), JSON.stringify(data));
+  }catch(e){}
+}
+
+/* ── KEY ── */
 function saveKey(){
-  var k=el('api-key-input').value.trim();
+  var k = el('api-key-input').value.trim();
   if(!k){ alert('Please paste your API key first.'); return; }
-  API_KEY=k;
-  try{ localStorage.setItem('mo_key',k); }catch(e){}
+  API_KEY = k;
+  try{ localStorage.setItem('mo_key', k); }catch(e){}
   hide('key-section'); show('key-bar'); show('main-app');
   buildQuickDates();
   loadAll();
 }
 function changeKey(){
-  API_KEY=''; try{ localStorage.removeItem('mo_key'); }catch(e){}
-  hide('key-bar'); hide('main-app'); el('api-key-input').value=''; show('key-section');
+  API_KEY = '';
+  try{ localStorage.removeItem('mo_key'); }catch(e){}
+  hide('key-bar'); hide('main-app');
+  el('api-key-input').value = '';
+  show('key-section');
 }
 
+/* ── QUICK DATE PILLS ── */
 function buildQuickDates(){
-  var today=todayStr(), c=el('quick-dates'); c.innerHTML='';
+  var today = todayStr(), c = el('quick-dates');
+  c.innerHTML = '';
   [-2,-1,0,1,2,3,4,5,6].forEach(function(i){
-    var d=addDays(today,i), btn=document.createElement('button');
-    btn.className='qd-btn'+(d===today?' active':''); btn.setAttribute('data-date',d);
-    btn.textContent=i===0?'Today':i===1?'Tomorrow':i===-1?'Yesterday'
+    var d = addDays(today, i);
+    var btn = document.createElement('button');
+    btn.className = 'qd-btn' + (d===today?' active':'');
+    btn.setAttribute('data-date', d);
+    btn.textContent = i===0?'Today':i===1?'Tomorrow':i===-1?'Yesterday'
       :new Date(d+'T12:00:00').toLocaleDateString([],{weekday:'short',day:'numeric'});
-    btn.addEventListener('click',function(){ el('date-input').value=d; setQD(d); loadAll(); });
+    btn.addEventListener('click', function(){ el('date-input').value=d; setQD(d); loadAll(); });
     c.appendChild(btn);
   });
 }
-function setQD(date){ document.querySelectorAll('.qd-btn').forEach(function(b){ b.classList.toggle('active',b.getAttribute('data-date')===date); }); }
-
-function loadAll(){
-  var date=el('date-input').value||todayStr();
-  var gen=++loadGen;
-  setQD(date);
-  el('results-area').innerHTML='';
-  hide('main-error'); hide('pred-err-box'); hide('result-section');
-  activePredFixId=null;
-  el('load-btn').disabled=true;
-  show('prog-wrap');
-  el('prog-fill').style.width='0%';
-  el('prog-label').textContent='Loading 0 / '+LEAGUES.length+' leagues...';
-
-  var total=LEAGUES.length, done=0, found=0, totalFx=0, sumEl=null;
-
-  function next(i){
-    if(gen!==loadGen) return;
-    if(i>=total){
-      hide('prog-wrap'); el('load-btn').disabled=false;
-      if(found===0){
-        el('results-area').innerHTML='<div class="no-fx">No fixtures found for '+esc(dateLabel(date))+'<br><span style="color:var(--t3);font-size:9px">Try the ◀ ▶ arrows or pick another date</span></div>';
-      } else if(sumEl){
-        sumEl.innerHTML='<b>'+totalFx+'</b> fixtures · <b>'+found+'</b> league'+(found!==1?'s':'')+' · '+esc(dateLabel(date));
-      }
-      return;
-    }
-    var lg=LEAGUES[i];
-    xhr('https://v3.football.api-sports.io/fixtures?league='+lg.id+'&season='+lg.season+'&date='+date)
-    .then(function(json){
-      if(gen!==loadGen) return;
-      done++;
-      el('prog-fill').style.width=Math.round(done/total*100)+'%';
-      el('prog-label').textContent='Loading '+done+' / '+total+' leagues...';
-      var fx=Array.isArray(json.response)?json.response:[];
-      if(fx.length>0){
-        fx.sort(function(a,b){ return new Date(a.fixture.date)-new Date(b.fixture.date); });
-        found++; totalFx+=fx.length;
-        if(!sumEl){
-          sumEl=document.createElement('div'); sumEl.className='day-summary';
-          el('results-area').insertBefore(sumEl,el('results-area').firstChild);
-        }
-        sumEl.innerHTML='<b>'+totalFx+'</b> fixtures · <b>'+found+'</b> league'+(found!==1?'s':'')+' · '+esc(dateLabel(date))+' <span style="color:var(--t3)">· loading...</span>';
-        var g=document.createElement('div'); g.className='league-group fadein';
-        var h=document.createElement('div'); h.className='lg-hdr';
-        h.innerHTML='<span class="lg-flag">'+lg.flag+'</span><span class="lg-name">'+esc(lg.name)+'</span><span class="lg-count">'+fx.length+' game'+(fx.length!==1?'s':'')+'</span>';
-        g.appendChild(h);
-        var w=document.createElement('div'); w.className='lg-fixtures';
-        fx.forEach(function(f){ w.appendChild(buildRow(f,lg)); });
-        g.appendChild(w); el('results-area').appendChild(g);
-        // Auto-predict first fixture of first league found
-        if(found===1 && !activePredFixId){
-          var firstF=fx[0], firstLg=lg;
-          setTimeout(function(){ predict(firstF,firstLg); },50);
-        }
-      }
-      next(i+1);
-    });
-  }
-  next(0);
-}
-
-function buildRow(f,lg){
-  var sb=badge(f);
-  var gH=f.goals&&f.goals.home!==null?f.goals.home:null;
-  var gA=f.goals&&f.goals.away!==null?f.goals.away:null;
-  var sc=(gH!==null&&gA!==null)?gH+' - '+gA:'vs';
-
-  // Outer wrapper holds fixture row + prediction panel
-  var wrap=document.createElement('div');
-  wrap.className='fx-wrap';
-
-  var row=document.createElement('div');
-  row.className='fx-row'; row.id='fx-'+f.fixture.id;
-  row.innerHTML=
-    '<div class="fx-teams">'+
-      '<div class="fx-team">'+(f.teams.home.logo?'<img src="'+esc(f.teams.home.logo)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+
-        '<span class="fx-name">'+esc(f.teams.home.name)+'</span></div>'+
-      '<div class="fx-score">'+esc(sc)+'</div>'+
-      '<div class="fx-team r"><span class="fx-name">'+esc(f.teams.away.name)+'</span>'+
-        (f.teams.away.logo?'<img src="'+esc(f.teams.away.logo)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+
-      '</div>'+
-    '</div>'+
-    '<div class="fx-meta"><span class="fx-status" style="color:'+sb.c+';background:'+sb.c+'18">'+esc(sb.t)+'</span>'+
-      '<span class="fx-loading" id="fxl-'+f.fixture.id+'">calculating...</span></div>';
-
-  var panel=document.createElement('div');
-  panel.className='fx-panel hidden'; panel.id='fxp-'+f.fixture.id;
-
-  wrap.appendChild(row);
-  wrap.appendChild(panel);
-  autoPredictRow(f, lg, panel);
-  return wrap;
-}
-
-function autoPredictRow(f, lg, panel){
-  var ht=f.teams.home, at=f.teams.away;
-  var season=(f.league&&f.league.season)||lg.season;
-  Promise.all([
-    xhr('https://v3.football.api-sports.io/fixtures?team='+ht.id+'&season='+season+'&last=20'),
-    xhr('https://v3.football.api-sports.io/fixtures?team='+at.id+'&season='+season+'&last=20')
-  ]).then(function(res){
-    var hR=Array.isArray(res[0].response)?res[0].response:[];
-    var aR=Array.isArray(res[1].response)?res[1].response:[];
-    var hm=form(hR,ht.id,'home'); var am=form(aR,at.id,'away');
-    if(!hm||hm.n<3) hm=form(hR,ht.id,'all')||hm;
-    if(!am||am.n<3) am=form(aR,at.id,'all')||am;
-    if(!hm||!am) throw {message:'n/a'};
-    var L=lambdas(hm,am), P=probs(L.h,L.a);
-    var mx=Math.max(P.h,P.d,P.a);
-    var pred=mx===P.h?'Home Win':mx===P.d?'Draw':'Away Win';
-    var cf=conf(mx);
-    // Hide loading text
-    var loadEl=document.getElementById('fxl-'+f.fixture.id);
-    if(loadEl) loadEl.style.display='none';
-    // Build inline prediction + stats
-    panel.innerHTML=
-      '<div class="fp-pred-strip">'+
-        '<span class="fp-lbl">Prediction</span>'+
-        '<span class="fp-out" style="color:'+cf.c+'">'+esc(pred)+'</span>'+
-        '<span class="fp-divider">·</span>'+
-        '<span style="color:#4db8ff" class="fp-prob">H&nbsp;'+P.h.toFixed(1)+'%</span>'+
-        '<span class="fp-divider">·</span>'+
-        '<span style="color:#ffe600" class="fp-prob">D&nbsp;'+P.d.toFixed(1)+'%</span>'+
-        '<span class="fp-divider">·</span>'+
-        '<span style="color:#ff9a1f" class="fp-prob">A&nbsp;'+P.a.toFixed(1)+'%</span>'+
-        '<span class="fp-divider">·</span>'+
-        '<span class="fp-conf" style="color:'+cf.c+'">'+esc(cf.l)+'</span>'+
-      '</div>'+
-      '<div class="fp-stats">'+
-        '<div class="fp-stats-hdr">'+
-          '<span>Team</span><span>xG</span><span>Scored</span><span>Conceded</span><span>Pts/G</span><span>CS%</span>'+
-        '</div>'+
-        fpStatsRow(ht, hm, P.hL, '#4db8ff')+
-        fpStatsRow(at, am, P.aL, '#ff9a1f')+
-      '</div>';
-    panel.classList.remove('hidden');
-  }).catch(function(){
-    var loadEl=document.getElementById('fxl-'+f.fixture.id);
-    if(loadEl) loadEl.style.display='none';
+function setQD(date){
+  document.querySelectorAll('.qd-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-date')===date);
   });
 }
 
+/* ── MAIN LOAD ── */
+function loadAll(){
+  var date = el('date-input').value || todayStr();
+  var gen  = ++loadGen;
+  setQD(date);
+  el('results-area').innerHTML = '';
+  hide('main-error');
+  hide('cached-note');
+
+  // ── Check cache first ──
+  var cached = cacheGet(date);
+  if(cached){
+    show('cached-note');
+    renderAll(cached.groups, date, true);
+    return;
+  }
+
+  // ── Full fetch ──
+  el('load-btn').disabled = true;
+  show('prog-wrap');
+  el('prog-fill').style.width = '0%';
+
+  var total     = LEAGUES.length;
+  var done      = 0;
+  var groups    = [];   // [{lg, fixtures}]
+
+  // Phase 1: fetch all fixture lists sequentially
+  function fetchLeagues(i){
+    if(gen !== loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
+    if(i >= total){
+      // Move to phase 2: fetch form data
+      fetchFormData(gen, groups, date);
+      return;
+    }
+    var lg = LEAGUES[i];
+    xhr('https://v3.football.api-sports.io/fixtures?league='+lg.id+'&season='+lg.season+'&date='+date)
+    .then(function(json){
+      if(gen !== loadGen) return;
+      done++;
+      el('prog-fill').style.width = Math.round(done/total*50)+'%'; // first 50% = fixture lists
+      el('prog-label').textContent = 'Fixtures '+done+' / '+total+'...';
+      var fx = Array.isArray(json.response) ? json.response : [];
+      if(fx.length > 0){
+        fx.sort(function(a,b){ return new Date(a.fixture.date)-new Date(b.fixture.date); });
+        groups.push({lg:lg, fixtures:fx});
+      }
+      fetchLeagues(i+1);
+    });
+  }
+  fetchLeagues(0);
+}
+
+/* ── PHASE 2: collect unique team IDs, fetch form for each, then render ── */
+function fetchFormData(gen, groups, date){
+  if(gen !== loadGen) return;
+
+  if(groups.length === 0){
+    hide('prog-wrap');
+    el('load-btn').disabled = false;
+    el('results-area').innerHTML =
+      '<div class="no-fx">No fixtures found for '+esc(dateLabel(date))+'<br>'
+      +'<span style="color:var(--t3);font-size:9px">Try the ◀ ▶ arrows or pick another date</span></div>';
+    return;
+  }
+
+  // Collect unique team IDs and their season
+  var teamMap = {}; // teamId -> season
+  groups.forEach(function(g){
+    g.fixtures.forEach(function(f){
+      var s = (f.league && f.league.season) || g.lg.season;
+      teamMap[f.teams.home.id] = s;
+      teamMap[f.teams.away.id] = s;
+    });
+  });
+  var teamIds = Object.keys(teamMap);
+  var total2  = teamIds.length;
+  var done2   = 0;
+  var formStore = {}; // teamId -> raw response array
+
+  el('prog-label').textContent = 'Form data 0 / '+total2+'...';
+
+  function fetchTeams(i){
+    if(gen !== loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
+    if(i >= total2){
+      // All done — render and cache
+      hide('prog-wrap');
+      el('load-btn').disabled = false;
+      var payload = {groups: groups, formStore: formStore};
+      cacheSet(date, payload);
+      renderAll(payload.groups, date, false, payload.formStore);
+      return;
+    }
+    var tid = teamIds[i];
+    var season = teamMap[tid];
+    xhr('https://v3.football.api-sports.io/fixtures?team='+tid+'&season='+season+'&last=20')
+    .then(function(json){
+      if(gen !== loadGen) return;
+      done2++;
+      // Progress bar 50-100% during form fetch
+      el('prog-fill').style.width = (50 + Math.round(done2/total2*50))+'%';
+      el('prog-label').textContent = 'Form data '+done2+' / '+total2+'...';
+      formStore[tid] = Array.isArray(json.response) ? json.response : [];
+      fetchTeams(i+1);
+    });
+  }
+  fetchTeams(0);
+}
+
+/* ── RENDER ALL ── */
+function renderAll(groups, date, fromCache, formStore){
+  var area = el('results-area');
+  area.innerHTML = '';
+
+  var totalFx = 0;
+  groups.forEach(function(g){ totalFx += g.fixtures.length; });
+
+  // Summary line
+  var sum = document.createElement('div');
+  sum.className = 'day-summary';
+  sum.innerHTML = '<b>'+totalFx+'</b> fixtures · <b>'+groups.length+'</b> league'+(groups.length!==1?'s':'')+' · '+esc(dateLabel(date));
+  area.appendChild(sum);
+
+  groups.forEach(function(g, gi){
+    var groupEl = document.createElement('div');
+    groupEl.className = 'league-group fadein';
+    groupEl.style.animationDelay = (gi*0.03)+'s';
+
+    var hdr = document.createElement('div');
+    hdr.className = 'lg-hdr';
+    hdr.innerHTML = '<span class="lg-flag">'+g.lg.flag+'</span>'
+      +'<span class="lg-name">'+esc(g.lg.name)+'</span>'
+      +'<span class="lg-count">'+g.fixtures.length+' game'+(g.fixtures.length!==1?'s':'')+'</span>';
+    groupEl.appendChild(hdr);
+
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;';
+
+    g.fixtures.forEach(function(f, fi){
+      var fxEl = buildFixtureEl(f, g.lg, formStore || (fromCache ? cacheGet(el('date-input').value||todayStr()).formStore : {}), fi === g.fixtures.length-1);
+      wrap.appendChild(fxEl);
+    });
+
+    groupEl.appendChild(wrap);
+    area.appendChild(groupEl);
+  });
+}
+
+/* ── BUILD FIXTURE ELEMENT (with inline prediction + stats) ── */
+function buildFixtureEl(f, lg, formStore, isLast){
+  var sb  = badge(f);
+  var gH  = f.goals && f.goals.home !== null ? f.goals.home : null;
+  var gA  = f.goals && f.goals.away !== null ? f.goals.away : null;
+  var sc  = (gH !== null && gA !== null) ? gH+' - '+gA : 'vs';
+  var ht  = f.teams.home, at = f.teams.away;
+  var season = (f.league && f.league.season) || lg.season;
+
+  var div = document.createElement('div');
+  div.className = 'fx-wrap';
+
+  // Fixture row
+  var row = document.createElement('div');
+  row.className = 'fx-row' + (isLast ? ' fx-last' : '');
+  if(isLast) row.style.borderRadius = '0 0 3px 3px';
+
+  row.innerHTML =
+    '<div class="fx-teams">'+
+      '<div class="fx-team">'+
+        (ht.logo ? '<img src="'+esc(ht.logo)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '')+
+        '<span class="fx-name">'+esc(ht.name)+'</span>'+
+      '</div>'+
+      '<div class="fx-score">'+esc(sc)+'</div>'+
+      '<div class="fx-team r">'+
+        '<span class="fx-name">'+esc(at.name)+'</span>'+
+        (at.logo ? '<img src="'+esc(at.logo)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '')+
+      '</div>'+
+    '</div>'+
+    '<div><span class="fx-status" style="color:'+sb.c+';background:'+sb.c+'18">'+esc(sb.t)+'</span></div>';
+
+  div.appendChild(row);
+
+  // Prediction + stats panel
+  var hR = formStore && formStore[ht.id] ? formStore[ht.id] : [];
+  var aR = formStore && formStore[at.id] ? formStore[at.id] : [];
+
+  var hm = calcForm(hR, ht.id, 'home');
+  var am = calcForm(aR, at.id, 'away');
+  if(!hm || hm.n < 3) hm = calcForm(hR, ht.id, 'all') || hm;
+  if(!am || am.n < 3) am = calcForm(aR, at.id, 'all') || am;
+
+  if(hm && am){
+    var L   = lambdas(hm, am);
+    var P   = probs(L.h, L.a);
+    var mx  = Math.max(P.h, P.d, P.a);
+    var pred = mx===P.h ? 'Home Win' : mx===P.d ? 'Draw' : 'Away Win';
+    var cf  = conf(mx);
+
+    var panel = document.createElement('div');
+    panel.innerHTML =
+      // Prediction strip
+      '<div class="fp-strip">'+
+        '<span class="fp-pred" style="color:'+cf.c+'">'+esc(pred)+'</span>'+
+        '<span class="fp-div">·</span>'+
+        '<span class="fp-h">H '+P.h.toFixed(1)+'%</span>'+
+        '<span class="fp-div">·</span>'+
+        '<span class="fp-d">D '+P.d.toFixed(1)+'%</span>'+
+        '<span class="fp-div">·</span>'+
+        '<span class="fp-a">A '+P.a.toFixed(1)+'%</span>'+
+        '<span class="fp-div">·</span>'+
+        '<span class="fp-verdict" style="color:'+cf.c+'">'+esc(cf.l)+'</span>'+
+      '</div>'+
+      // Stats table
+      '<table class="fp-tbl">'+
+        '<tr>'+
+          '<th>Team</th>'+
+          '<th>xG</th>'+
+          '<th>Scored</th>'+
+          '<th>Conc\'d</th>'+
+          '<th>Pts/G</th>'+
+          '<th>CS%</th>'+
+        '</tr>'+
+        statsRow(ht, hm, L.h)+
+        statsRow(at, am, L.a)+
+      '</table>';
+    div.appendChild(panel);
+  }
+
+  return div;
+}
+
+function statsRow(team, m, xg){
+  return '<tr>'+
+    '<td><div class="td-team">'+
+      (team.logo ? '<img src="'+esc(team.logo)+'" alt="" onerror="this.style.display=\'none\'">' : '')+
+      '<span>'+esc(team.name)+'</span>'+
+    '</div></td>'+
+    statCell(xg.toFixed(2), '#ffe600')+
+    statCell(m.avgGF.toFixed(2), '#4db8ff')+
+    statCell(m.avgGA.toFixed(2), '#ff9a1f')+
+    statCell(m.ppg.toFixed(2), '#39ff88')+
+    statCell(Math.round(m.csRate*100)+'%', '#aaa')+
+  '</tr>';
+}
+function statCell(val, color){
+  return '<td><span class="td-val" style="color:'+color+'">'+esc(String(val))+'</span></td>';
+}
+
+/* ── MATHS ── */
 function poisPMF(l,k){ if(l<=0) return k===0?1:0; var r=-l+k*Math.log(l); for(var i=1;i<=k;i++) r-=Math.log(i); return Math.exp(r); }
 function probs(hL,aL){
   var h=0,d=0,a=0;
   for(var i=0;i<=8;i++) for(var j=0;j<=8;j++){ var p=poisPMF(hL,i)*poisPMF(aL,j); if(i>j)h+=p; else if(i===j)d+=p; else a+=p; }
   var t=h+d+a||1; return {h:h/t*100,d:d/t*100,a:a/t*100,hL:hL,aL:aL};
 }
-function form(fx,tid,venue){
+function calcForm(fx, tid, venue){
   if(!fx||!fx.length) return null;
   var rel=[];
   for(var i=0;i<fx.length;i++){
@@ -522,7 +586,9 @@ function form(fx,tid,venue){
     var st=f.fixture.status&&f.fixture.status.short;
     if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
     var isH=f.teams.home&&f.teams.home.id===tid, isA=f.teams.away&&f.teams.away.id===tid;
-    if(venue==='home'&&!isH) continue; if(venue==='away'&&!isA) continue; if(venue==='all'&&!isH&&!isA) continue;
+    if(venue==='home'&&!isH) continue;
+    if(venue==='away'&&!isA) continue;
+    if(venue==='all'&&!isH&&!isA) continue;
     rel.push(f); if(rel.length===5) break;
   }
   if(!rel.length) return null;
@@ -531,44 +597,35 @@ function form(fx,tid,venue){
     var ih=f.teams.home.id===tid;
     var sc=ih?(f.goals.home||0):(f.goals.away||0), cc=ih?(f.goals.away||0):(f.goals.home||0);
     var win=ih?f.teams.home.winner:f.teams.away.winner, los=ih?f.teams.away.winner:f.teams.home.winner;
-    gf+=sc;ga+=cc; if(win)pts+=3; else if(!los)pts+=1; if(cc===0)cs++;
+    gf+=sc; ga+=cc; if(win)pts+=3; else if(!los)pts+=1; if(cc===0)cs++;
   });
   var n=rel.length; return {avgGF:gf/n,avgGA:ga/n,ppg:pts/n,csRate:cs/n,n:n,venue:venue};
 }
 function lambdas(hm,am){ var avg=1.35; return {h:Math.max(0.3,(hm.avgGF/avg)*(am.avgGA/avg)*avg*1.1),a:Math.max(0.3,(am.avgGF/avg)*(hm.avgGA/avg)*avg)}; }
 function conf(p){ if(p>=70) return {l:'Strong Signal',c:'#39ff88'}; if(p>=55) return {l:'Good Edge',c:'#ffe600'}; if(p>=42) return {l:'Slight Edge',c:'#ff9a1f'}; return {l:'Too Close',c:'#ff4040'}; }
 function badge(f){
-  var s=f.fixture.status.short,e=f.fixture.status.elapsed;
+  var s=f.fixture.status.short, e=f.fixture.status.elapsed;
   if(['1H','2H','HT','ET','P'].indexOf(s)>-1) return {t:e?e+"' LIVE":'LIVE',c:'#39ff88'};
   if(s==='FT') return {t:'Full Time',c:'#555'};
   if(s==='NS') return {t:new Date(f.fixture.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),c:'#4db8ff'};
   return {t:s,c:'#ff9a1f'};
 }
 
-function fpStatsRow(team, m, xg, color){
-  return '<div class="fp-stats-row">'+
-    '<div class="fp-team-cell">'+(team.logo?'<img src="'+esc(team.logo)+'" alt="" onerror="this.style.display=\'none\'">':'')+'<span>'+esc(team.name)+'</span></div>'+
-    fpCell(xg.toFixed(2), 'xG', color)+
-    fpCell(m.avgGF.toFixed(2), 'Scored', '#4db8ff')+
-    fpCell(m.avgGA.toFixed(2), 'Conceded', '#ff9a1f')+
-    fpCell(m.ppg.toFixed(2), 'Pts/G', '#39ff88')+
-    fpCell(Math.round(m.csRate*100)+'%', 'CS%', '#aaa')+
-  '</div>';
-}
-function fpCell(val, sub, color){
-  return '<div class="fp-cell"><span class="fp-val" style="color:'+color+'">'+esc(String(val))+'</span><span class="fp-sub">'+esc(sub)+'</span></div>';
-}
+/* ── EVENT LISTENERS ── */
+el('date-input').value = todayStr();
+el('save-key-btn').addEventListener('click', saveKey);
+el('change-key-btn').addEventListener('click', changeKey);
+el('api-key-input').addEventListener('keydown', function(e){ if(e.key==='Enter') saveKey(); });
+el('prev-day').addEventListener('click', function(){ var d=addDays(el('date-input').value||todayStr(),-1); el('date-input').value=d; setQD(d); loadAll(); });
+el('next-day').addEventListener('click', function(){ var d=addDays(el('date-input').value||todayStr(),1); el('date-input').value=d; setQD(d); loadAll(); });
+el('load-btn').addEventListener('click', function(){ setQD(el('date-input').value||todayStr()); loadAll(); });
+el('date-input').addEventListener('change', function(){ setQD(el('date-input').value); loadAll(); });
 
-el('date-input').value=todayStr();
-el('save-key-btn').addEventListener('click',saveKey);
-el('change-key-btn').addEventListener('click',changeKey);
-el('api-key-input').addEventListener('keydown',function(e){ if(e.key==='Enter') saveKey(); });
-el('prev-day').addEventListener('click',function(){ var d=addDays(el('date-input').value||todayStr(),-1); el('date-input').value=d; setQD(d); loadAll(); });
-el('next-day').addEventListener('click',function(){ var d=addDays(el('date-input').value||todayStr(),1); el('date-input').value=d; setQD(d); loadAll(); });
-el('load-btn').addEventListener('click',function(){ setQD(el('date-input').value||todayStr()); loadAll(); });
-el('date-input').addEventListener('change',function(){ setQD(el('date-input').value); loadAll(); });
-
-try{ var s=localStorage.getItem('mo_key'); if(s){ API_KEY=s; hide('key-section'); show('key-bar'); show('main-app'); buildQuickDates(); loadAll(); } }catch(e){}
+/* ── BOOT ── */
+try{
+  var s = localStorage.getItem('mo_key');
+  if(s){ API_KEY=s; hide('key-section'); show('key-bar'); show('main-app'); buildQuickDates(); loadAll(); }
+}catch(e){}
 if(!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) hide('install-hint');
 </script>
 </body>
