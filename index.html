@@ -272,7 +272,7 @@ function xhr(url){
 }
 
 /* ── CACHE (localStorage, keyed by date) ── */
-function cacheKey(date){ return 'mo_day_' + date; }
+function cacheKey(date){ return 'mo_day_v3_' + date; }
 function cacheGet(date){
   try{
     var raw = localStorage.getItem(cacheKey(date));
@@ -550,12 +550,16 @@ function buildFixtureEl(f, lg, formStore, h2hStore, isLast){
   var aR  = formStore && formStore[at.id] ? formStore[at.id] : [];
   var h2h = h2hStore  && h2hStore[ht.id+'_'+at.id] ? h2hStore[ht.id+'_'+at.id] : [];
 
-  var hm = calcForm(hR, ht.id, 'home');
-  var am = calcForm(aR, at.id, 'away');
-  if(!hm || hm.n < 3) hm = calcForm(hR, ht.id, 'all') || hm;
-  if(!am || am.n < 3) am = calcForm(aR, at.id, 'all') || am;
+  // Fallback chain: venue-specific → all games → neutral baseline
+  // This ensures EVERY fixture gets a prediction
+  var hm = calcForm(hR, ht.id, 'home')
+        || calcForm(hR, ht.id, 'all')
+        || neutralForm();
+  var am = calcForm(aR, at.id, 'away')
+        || calcForm(aR, at.id, 'all')
+        || neutralForm();
 
-  if(hm && am){
+  {
     var h2hStat = calcH2H(h2h, ht.id, at.id);
     var L   = lambdas(hm, am, h2hStat);
     var P   = probs(L.h, L.a);
@@ -577,6 +581,7 @@ function buildFixtureEl(f, lg, formStore, h2hStore, isLast){
         '<span class="fp-div">·</span>'+
         '<span class="fp-verdict" style="color:'+cf.c+'">'+esc(cf.l)+'</span>'+
         (h2hStat ? '<span class="fp-div">·</span><span class="fp-h2h">H2H: '+h2hStat.hw+'W '+h2hStat.d+'D '+h2hStat.aw+'L</span>' : '')+
+        (hm.n===0||am.n===0 ? '<span class="fp-div">·</span><span style="color:var(--t3);font-family:var(--mono);font-size:8px">est</span>' : '')+
       '</div>'+
       // Stats table
       '<table class="fp-tbl">'+
@@ -615,6 +620,12 @@ function statCell(val, color){
 }
 
 /* ── MATHS ── */
+// Neutral baseline used when no form data available at all
+// Assumes league-average scoring both ways — gives a fair 50/50 starting point
+function neutralForm(){
+  return {avgGF:1.35, avgGA:1.35, ppg:1.3, csRate:0.25, n:0, venue:'neutral'};
+}
+
 function poisPMF(l,k){
   if(l<=0) return k===0?1:0;
   var r=-l+k*Math.log(l);
