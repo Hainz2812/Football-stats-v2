@@ -580,8 +580,17 @@ function fetchFormData(gen, groups, date){
     if(gen!==loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
     if(i>=ids.length){
       // Phase D done — now fetch odds for today's fixtures
+      // Build richer fixture context for odds fetch: {id, league, season}
       var todayFxIds=[];
-      groups.forEach(function(g){ g.fixtures.forEach(function(f){ todayFxIds.push(f.fixture.id); }); });
+      groups.forEach(function(g){
+        g.fixtures.forEach(function(f){
+          todayFxIds.push({
+            id:     f.fixture.id,
+            league: (f.league&&f.league.id)   || g.lg.id,
+            season: (f.league&&f.league.season)|| g.lg.season
+          });
+        });
+      });
       fetchOdds(todayFxIds, 0);
       return;
     }
@@ -600,40 +609,39 @@ function fetchFormData(gen, groups, date){
     if(gen!==loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
     if(i>=ids.length){
       hide('prog-wrap'); el('load-btn').disabled=false;
+      dbg('Odds complete. Found for '+Object.keys(oddsStore).length+' of '+ids.length+' fixtures.');
       var payload={groups:groups,formStore:formStore,h2hStore:h2hStore,eventsStore:eventsStore,oddsStore:oddsStore};
       cacheSet(date,payload);
       renderAll(groups,date,false,formStore,h2hStore,eventsStore,oddsStore);
       return;
     }
-    var fid=ids[i];
-    if(i===0) dbg('Fetching odds for '+ids.length+' fixtures...');
-    // Fetch odds — no bookmaker filter so we get whatever is available
-    xhr('https://v3.football.api-sports.io/odds?fixture='+fid)
-    .then(function(json){
+    var fx=ids[i];
+    var fid=fx.id, lgid=fx.league, season=fx.season;
+    if(i===0) dbg('Fetching odds for '+ids.length+' fixtures. First: fixture='+fid+' league='+lgid+' season='+season);
+    var url='https://v3.football.api-sports.io/odds?fixture='+fid+'&league='+lgid+'&season='+season;
+    xhr(url).then(function(json){
       if(gen!==loadGen) return;
-      // Debug: log raw response for first fixture
       if(i===0){
-        dbg('--- FIXTURE '+fid+' ---');
-dbg('errors: '+JSON.stringify(json.errors));
-dbg('results: '+json.results);
-dbg('resp len: '+(Array.isArray(json.response)?json.response.length:0));
-if(Array.isArray(json.response)&&json.response.length>0){
-  var bm0=json.response[0].bookmakers||[];
-  dbg('bookmakers: '+bm0.map(function(b){return b.name+'('+b.id+')';}).join(', '));
-  if(bm0.length>0) dbg('bets: '+bm0[0].bets.map(function(b){return b.name;}).join(', '));
-}
-        
-        
+        dbg('errors: '+JSON.stringify(json.errors));
+        dbg('results: '+json.results+' paging: '+JSON.stringify(json.paging));
+        dbg('resp len: '+(Array.isArray(json.response)?json.response.length:0));
+        if(Array.isArray(json.response)&&json.response.length>0){
+          var f0=json.response[0];
+          dbg('resp[0] fixture id: '+(f0.fixture&&f0.fixture.id));
+          var bm0=f0.bookmakers||[];
+          dbg('bookmakers ('+bm0.length+'): '+bm0.slice(0,4).map(function(b){return b.name+'('+b.id+')';}).join(', '));
+          if(bm0.length>0){
+            dbg('bets available: '+bm0[0].bets.map(function(b){return b.name;}).join(' | '));
+          }
+        }
       }
       var resp=Array.isArray(json.response)?json.response:[];
-      // Try each bookmaker until we find Match Winner (1x2) odds
       var found=false;
       for(var b=0;b<resp.length&&!found;b++){
         var bookmakers=resp[b].bookmakers||[];
         for(var bk=0;bk<bookmakers.length&&!found;bk++){
           var bets=bookmakers[bk].bets||[];
           for(var bt=0;bt<bets.length&&!found;bt++){
-            // Match Winner bet has various names depending on bookmaker
             var betName=(bets[bt].name||'').toLowerCase();
             if(betName.indexOf('match winner')>-1||betName.indexOf('1x2')>-1||betName==='match result'){
               var vals=bets[bt].values||[];
@@ -647,17 +655,15 @@ if(Array.isArray(json.response)&&json.response.length>0){
               if(o.home&&o.draw&&o.away){
                 oddsStore[fid]=o;
                 found=true;
-                dbg('FOUND: '+JSON.stringify(o)+' via '+bookmakers[bk].name);
+                if(i===0) dbg('FOUND via '+bookmakers[bk].name+': H='+o.home+' D='+o.draw+' A='+o.away);
               }
             }
           }
         }
       }
-      if(!found) dbg('NOT FOUND for '+fid+', bookmakers checked: '+resp.reduce(function(a,r){return a+(r.bookmakers||[]).length;},0));
       fetchOdds(ids, i+1);
     });
   }
-
   fetchTeams(0);
 }
 
