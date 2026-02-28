@@ -351,7 +351,7 @@ function xhr(url){
 }
 
 /* ── CACHE (localStorage, keyed by date) ── */
-function cacheKey(date){ return 'mo_day_v9_' + date; }
+function cacheKey(date){ return 'mo_day_v10_' + date; }
 function cacheGet(date){
   try{
     var raw = localStorage.getItem(cacheKey(date));
@@ -521,7 +521,7 @@ function fetchFormData(gen, groups, date){
     if(gen!==loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
     if(i>=h2hKeys.length){ buildEventIds(); return; }
     var key=h2hKeys[i], pair=h2hMap[key];
-    xhr('https://v3.football.api-sports.io/fixtures/headtohead?h2h='+pair.hid+'-'+pair.aid+'&last=10')
+    xhr('https://v3.football.api-sports.io/fixtures/headtohead?h2h='+pair.hid+'-'+pair.aid+'&last=20')
     .then(function(json){
       if(gen!==loadGen) return;
       tick('H2H '+doneCalls+' / '+(teamIds.length+h2hKeys.length)+'...');
@@ -653,7 +653,7 @@ function fetchFormData(gen, groups, date){
                 else if(v.value==='Away'||v.value==='2') o.away=val;
               });
               if(o.home&&o.draw&&o.away){
-                oddsStore[fid]=o;
+                oddsStore[String(fid)]=o;
                 found=true;
                 if(i===0) dbg('FOUND via '+bookmakers[bk].name+': H='+o.home+' D='+o.draw+' A='+o.away);
               }
@@ -792,7 +792,7 @@ function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, oddsStore, isLa
 
     // ── Odds & value calculation ──────────────────────────────────────────
     var fid = f.fixture.id;
-    var odds = (oddsStore && oddsStore[fid]) ? oddsStore[fid] : null;
+    var odds = (oddsStore && oddsStore[String(fid)]) ? oddsStore[String(fid)] : null;
     var valueHtml = '';
     var oddsRowHtml = '';
 
@@ -1018,9 +1018,9 @@ function calcH2H(fx, hid, aid, viewDate){
     if(viewDate && f.fixture.date && f.fixture.date.slice(0,10)===viewDate) continue;
     // Only count fixtures at this venue (home team matches)
     if(f.teams.home.id===hid && f.teams.away.id===aid) rel.push(f);
-    if(rel.length===6) break;
+    if(rel.length===10) break;
   }
-  if(rel.length < 2) return null; // need at least 2 H2H games to be useful
+  if(rel.length < 1) return null; // need at least 1 H2H game at this venue
   var DECAY=0.85;
   var hw=0, d=0, aw=0, wHG=0, wAG=0, wTot=0;
   rel.forEach(function(f, idx){
