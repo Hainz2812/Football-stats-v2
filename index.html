@@ -161,13 +161,14 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
   font-family:var(--mono);font-size:9px;color:var(--t3);line-height:1.7;text-align:center;letter-spacing:1px;}
 .install-hint strong{color:var(--Y)}
 .hidden{display:none!important}
-.debug-panel{position:fixed;bottom:0;left:0;right:0;max-height:40vh;overflow-y:auto;
-  background:#000;border-top:2px solid var(--Y);z-index:9999;padding:10px 14px;
-  font-family:var(--mono);font-size:10px;color:#0f0;line-height:1.6;
+
+.debug-toggle{background:rgba(255,230,0,.12);border:1px solid rgba(255,230,0,.3);color:var(--Y);
+  font-family:var(--mono);font-size:9px;font-weight:700;padding:5px 12px;
+  letter-spacing:1px;cursor:pointer;margin:8px 0 4px;border-radius:3px;}
+.debug-panel{background:rgba(0,0,0,.95);border:1px solid rgba(255,230,0,.2);border-radius:3px;
+  max-height:50vh;overflow-y:auto;padding:10px 14px;margin-bottom:8px;
+  font-family:var(--mono);font-size:10px;color:#0f0;line-height:1.7;
   white-space:pre-wrap;word-break:break-all;}
-.debug-toggle{position:fixed;bottom:0;right:14px;z-index:10000;background:var(--Y);
-  color:#000;border:none;font-family:var(--mono);font-size:10px;font-weight:700;
-  padding:4px 10px;letter-spacing:1px;border-radius:4px 4px 0 0;cursor:pointer;}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .fadein{animation:up .2s both;}
 @keyframes pulse{0%,100%{opacity:.3}50%{opacity:.8}}
@@ -245,11 +246,11 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
     <button class="f-btn off" id="value-toggle" data-value="1">⚡ Value Only</button>
   </div>
   <div id="results-area"></div>
+  <button class="debug-toggle hidden" id="debug-toggle">🔍 DEBUG</button>
+  <div class="debug-panel hidden" id="debug-panel"></div>
 </div>
 </div>
 
-<button class="debug-toggle" id="debug-toggle">🔍 DEBUG</button>
-<div class="debug-panel hidden" id="debug-panel"></div>
 
 <script>
 var LEAGUES = [
@@ -379,6 +380,7 @@ function saveKey(){
   API_KEY = k;
   try{ localStorage.setItem('mo_key', k); }catch(e){}
   hide('key-section'); show('key-bar'); show('main-app');
+  show('debug-toggle');
   buildQuickDates();
   loadAll();
 }
@@ -1148,7 +1150,7 @@ el('debug-toggle').addEventListener('click', function(){
 /* ── BOOT ── */
 try{
   var s = localStorage.getItem('mo_key');
-  if(s){ API_KEY=s; hide('key-section'); show('key-bar'); show('main-app'); buildQuickDates(); loadAll(); }
+  if(s){ API_KEY=s; hide('key-section'); show('key-bar'); show('main-app'); show('debug-toggle'); buildQuickDates(); loadAll(); }
 }catch(e){}
 if(!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) hide('install-hint');
 </script>
