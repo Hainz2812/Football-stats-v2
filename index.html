@@ -1082,7 +1082,7 @@ el('date-input').addEventListener('change', function(){ setQD(el('date-input').v
 var activeFilters = {all:true,'Strong Signal':true,'Good Edge':true,'Slight Edge':true,'Too Close':true};
 var valueOnly = false;
 
-document.querySelectorAll('.f-btn').forEach(function(btn){
+document.querySelectorAll('.f-btn[data-conf]').forEach(function(btn){
   btn.addEventListener('click', function(){
     var conf = btn.getAttribute('data-conf');
     if(conf==='all'){
@@ -1141,11 +1141,14 @@ function dbg(msg){
 ';
   panel.scrollTop = panel.scrollHeight;
 }
-el('debug-toggle').addEventListener('click', function(){
-  var panel = el('debug-panel');
-  panel.classList.toggle('hidden');
-  el('debug-toggle').textContent = panel.classList.contains('hidden') ? '🔍 DEBUG' : '✕ DEBUG';
-});
+var dbgBtn = el('debug-toggle');
+if(dbgBtn){
+  dbgBtn.addEventListener('click', function(){
+    var panel = el('debug-panel');
+    if(panel) panel.classList.toggle('hidden');
+    dbgBtn.textContent = (panel&&panel.classList.contains('hidden')) ? '🔍 DEBUG' : '✕ DEBUG';
+  });
+}
 
 /* ── BOOT ── */
 try{
