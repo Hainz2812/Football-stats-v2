@@ -115,6 +115,14 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 .fp-a{font-family:var(--mono);font-size:10px;font-weight:700;color:#ff9a1f;flex-shrink:0;}
 .fp-verdict{font-family:var(--mono);font-size:9px;font-weight:700;flex-shrink:0;letter-spacing:.5px;}
 .fp-h2h{font-family:var(--mono);font-size:9px;color:var(--t2);flex-shrink:0;letter-spacing:.5px;}
+.fp-value{font-family:var(--mono);font-size:9px;font-weight:700;flex-shrink:0;letter-spacing:.5px;
+  padding:2px 6px;border-radius:2px;border:1px solid currentColor;}
+.fp-odds-row{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;
+  padding:5px 14px 7px;border-top:1px solid rgba(255,255,255,.04);}
+.fp-odds-item{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;}
+.fp-odds-label{color:var(--t3);letter-spacing:1px;text-transform:uppercase;}
+.fp-odds-price{color:#fff;font-weight:700;}
+.fp-odds-edge{font-weight:700;font-size:9px;}
 
 /* ── STATS TABLE ── */
 .fp-tbl{width:100%;border-collapse:collapse;border-top:1px solid rgba(255,255,255,.05);}
@@ -143,6 +151,8 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 .f-btn[data-conf="Slight Edge"].on{color:#ff9a1f;background:rgba(255,154,31,.08);}
 .f-btn[data-conf="Too Close"].on{color:#ff4040;background:rgba(255,64,64,.08);}
 .f-btn[data-conf="all"].on{color:#fff;background:rgba(255,255,255,.06);}
+.f-btn[data-value="1"].on{color:#39ff88;background:rgba(57,255,136,.1);border-color:#39ff88;}
+.f-btn[data-value="1"].off{opacity:.35;}
 .no-fx{text-align:center;font-family:var(--mono);color:var(--t3);font-size:11px;padding:36px 20px;letter-spacing:2px;text-transform:uppercase;line-height:2;}
 .err-box{padding:14px;background:rgba(255,64,64,.05);border:1px solid rgba(255,64,64,.2);margin-bottom:10px;border-radius:3px;}
 .err-title{font-family:var(--mono);color:var(--R);font-size:10px;letter-spacing:2px;margin-bottom:6px;}
@@ -225,6 +235,7 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
     <button class="f-btn on" data-conf="Good Edge">Good Edge</button>
     <button class="f-btn on" data-conf="Slight Edge">Slight Edge</button>
     <button class="f-btn on" data-conf="Too Close">Too Close</button>
+    <button class="f-btn off" id="value-toggle" data-value="1">⚡ Value Only</button>
   </div>
   <div id="results-area"></div>
 </div>
@@ -329,7 +340,7 @@ function xhr(url){
 }
 
 /* ── CACHE (localStorage, keyed by date) ── */
-function cacheKey(date){ return 'mo_day_v7_' + date; }
+function cacheKey(date){ return 'mo_day_v8_' + date; }
 function cacheGet(date){
   try{
     var raw = localStorage.getItem(cacheKey(date));
@@ -404,7 +415,7 @@ function loadAll(){
   var cached = cacheGet(date);
   if(cached && cached.groups && cached.formStore){
     show('cached-note');
-    renderAll(cached.groups, date, false, cached.formStore, cached.h2hStore, cached.eventsStore);
+    renderAll(cached.groups, date, false, cached.formStore, cached.h2hStore, cached.eventsStore, cached.oddsStore);
     return;
   }
 
@@ -469,6 +480,7 @@ function fetchFormData(gen, groups, date){
   var formStore={};
   var h2hStore={};
   var eventsStore={};   // fixtureId -> events[]
+  var oddsStore={};     // fixtureId -> {home, draw, away} decimal odds
   // totalCalls updated after phase 1 when we know fixture IDs
   var totalCalls=teamIds.length+h2hKeys.length; // +event calls added later
 
@@ -555,11 +567,10 @@ function fetchFormData(gen, groups, date){
   function fetchEvents(ids, i){
     if(gen!==loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
     if(i>=ids.length){
-      // All done
-      hide('prog-wrap'); el('load-btn').disabled=false;
-      var payload={groups:groups,formStore:formStore,h2hStore:h2hStore,eventsStore:eventsStore};
-      cacheSet(date,payload);
-      renderAll(groups,date,false,formStore,h2hStore,eventsStore);
+      // Phase D done — now fetch odds for today's fixtures
+      var todayFxIds=[];
+      groups.forEach(function(g){ g.fixtures.forEach(function(f){ todayFxIds.push(f.fixture.id); }); });
+      fetchOdds(todayFxIds, 0);
       return;
     }
     var fid=ids[i];
@@ -572,11 +583,48 @@ function fetchFormData(gen, groups, date){
     });
   }
 
+  // ── Phase E: fetch odds for each fixture on today's card ─────────────────
+  function fetchOdds(ids, i){
+    if(gen!==loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
+    if(i>=ids.length){
+      hide('prog-wrap'); el('load-btn').disabled=false;
+      var payload={groups:groups,formStore:formStore,h2hStore:h2hStore,eventsStore:eventsStore,oddsStore:oddsStore};
+      cacheSet(date,payload);
+      renderAll(groups,date,false,formStore,h2hStore,eventsStore,oddsStore);
+      return;
+    }
+    var fid=ids[i];
+    // Bookmaker 6 = Bet365 (best coverage), market: Match Winner
+    xhr('https://v3.football.api-sports.io/odds?fixture='+fid+'&bookmaker=6&bet=1')
+    .then(function(json){
+      if(gen!==loadGen) return;
+      var resp=Array.isArray(json.response)?json.response:[];
+      if(resp.length>0){
+        var bms=resp[0].bookmakers||[];
+        if(bms.length>0){
+          var bets=bms[0].bets||[];
+          if(bets.length>0){
+            var vals=bets[0].values||[];
+            var o={home:null,draw:null,away:null};
+            vals.forEach(function(v){
+              var val=parseFloat(v.odd);
+              if(v.value==='Home') o.home=val;
+              else if(v.value==='Draw') o.draw=val;
+              else if(v.value==='Away') o.away=val;
+            });
+            if(o.home&&o.draw&&o.away) oddsStore[fid]=o;
+          }
+        }
+      }
+      fetchOdds(ids, i+1);
+    });
+  }
+
   fetchTeams(0);
 }
 
 /* ── RENDER ALL ── */
-function renderAll(groups, date, fromCache, formStore, h2hStore, eventsStore){
+function renderAll(groups, date, fromCache, formStore, h2hStore, eventsStore, oddsStore){
   var area = el('results-area');
   area.innerHTML = '';
 
@@ -587,6 +635,7 @@ function renderAll(groups, date, fromCache, formStore, h2hStore, eventsStore){
   var fs = formStore   || {};
   var hs = h2hStore    || {};
   var es = eventsStore || {};
+  var os = oddsStore   || {};
 
   // Show filter bar
   if(totalFx>0) show('filter-bar'); else hide('filter-bar');
@@ -617,7 +666,7 @@ function renderAll(groups, date, fromCache, formStore, h2hStore, eventsStore){
 
     // Build fixture rows (DOM ready, just hidden)
     g.fixtures.forEach(function(f, fi){
-      var fxEl = buildFixtureEl(f, g.lg, fs, hs, es, fi === g.fixtures.length-1);
+      var fxEl = buildFixtureEl(f, g.lg, fs, hs, es, os, fi === g.fixtures.length-1);
       body.appendChild(fxEl);
     });
 
@@ -640,7 +689,7 @@ function renderAll(groups, date, fromCache, formStore, h2hStore, eventsStore){
 }
 
 /* ── BUILD FIXTURE ELEMENT (with inline prediction + stats) ── */
-function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, isLast){
+function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, oddsStore, isLast){
   var sb  = badge(f);
   var gH  = f.goals && f.goals.home !== null ? f.goals.home : null;
   var gA  = f.goals && f.goals.away !== null ? f.goals.away : null;
@@ -695,6 +744,64 @@ function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, isLast){
     var pred = mx===P.h ? 'Home Win' : mx===P.d ? 'Draw' : 'Away Win';
     var cf  = conf(mx);
     div.setAttribute('data-conf', cf.l);
+    div.setAttribute('data-value', '0'); // updated below if value found
+
+    // ── Odds & value calculation ──────────────────────────────────────────
+    var fid = f.fixture.id;
+    var odds = (oddsStore && oddsStore[fid]) ? oddsStore[fid] : null;
+    var valueHtml = '';
+    var oddsRowHtml = '';
+
+    if(odds){
+      // Implied probabilities (decimal odds -> implied prob, no vig removal for simplicity)
+      var iH = 1/odds.home*100;
+      var iD = 1/odds.draw*100;
+      var iA = 1/odds.away*100;
+
+      // Edge = our model prob minus implied prob
+      var eH = P.h - iH;
+      var eD = P.d - iD;
+      var eA = P.a - iA;
+
+      // Find best value edge (must be 4%+ to show)
+      var MIN_EDGE = 4;
+      var edges = [
+        {label:'H', outcome:'Home Win', edge:eH, odds:odds.home, prob:P.h, imp:iH},
+        {label:'D', outcome:'Draw',     edge:eD, odds:odds.draw, prob:P.d, imp:iD},
+        {label:'A', outcome:'Away Win', edge:eA, odds:odds.away, prob:P.a, imp:iA}
+      ].filter(function(e){ return e.edge >= MIN_EDGE; })
+       .sort(function(a,b){ return b.edge - a.edge; });
+
+      if(edges.length > 0){
+        var best = edges[0];
+        var edgeColor = best.edge >= 12 ? '#39ff88' : best.edge >= 7 ? '#ffe600' : '#ff9a1f';
+        valueHtml =
+          '<span class="fp-div">·</span>'+
+          '<span class="fp-value" style="color:'+edgeColor+'">'+
+            'VALUE: '+best.label+' +'+best.edge.toFixed(1)+'%'+
+          '</span>';
+        div.setAttribute('data-value', '1');
+      }
+
+      // Odds row — show all three prices with edge indicator
+      function oddsCell(label, o, edge){
+        var eStr = edge>=MIN_EDGE
+          ? '<span class="fp-odds-edge" style="color:'+(edge>=12?'#39ff88':edge>=7?'#ffe600':'#ff9a1f')+'"> +'+edge.toFixed(1)+'%</span>'
+          : (edge<=-4 ? '<span class="fp-odds-edge" style="color:#ff4040"> '+edge.toFixed(1)+'%</span>' : '');
+        return '<span class="fp-odds-item">'+
+          '<span class="fp-odds-label">'+label+'</span>'+
+          '<span class="fp-odds-price">'+o.toFixed(2)+'</span>'+
+          eStr+
+        '</span>';
+      }
+      oddsRowHtml =
+        '<div class="fp-odds-row">'+
+          '<span class="fp-odds-label" style="margin-right:2px">BET365</span>'+
+          oddsCell('H', odds.home, eH)+
+          oddsCell('D', odds.draw, eD)+
+          oddsCell('A', odds.away, eA)+
+        '</div>';
+    }
 
     var panel = document.createElement('div');
     panel.innerHTML =
@@ -711,7 +818,9 @@ function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, isLast){
         '<span class="fp-verdict" style="color:'+cf.c+'">'+esc(cf.l)+'</span>'+
         (h2hStat ? '<span class="fp-div">·</span><span class="fp-h2h">H2H: '+h2hStat.hw+'W '+h2hStat.d+'D '+h2hStat.aw+'L</span>' : '')+
         (hm.n===0||am.n===0 ? '<span class="fp-div">·</span><span style="color:var(--t3);font-family:var(--mono);font-size:8px">est</span>' : '')+
+        valueHtml+
       '</div>'+
+      oddsRowHtml+
       // Stats table
       '<table class="fp-tbl">'+
         '<tr>'+
@@ -933,6 +1042,7 @@ el('date-input').addEventListener('change', function(){ setQD(el('date-input').v
 
 /* ── FILTER ── */
 var activeFilters = {all:true,'Strong Signal':true,'Good Edge':true,'Slight Edge':true,'Too Close':true};
+var valueOnly = false;
 
 document.querySelectorAll('.f-btn').forEach(function(btn){
   btn.addEventListener('click', function(){
@@ -956,13 +1066,25 @@ document.querySelectorAll('.f-btn').forEach(function(btn){
   });
 });
 
+// Value toggle
+var valueToggleBtn = document.getElementById('value-toggle');
+if(valueToggleBtn){
+  valueToggleBtn.addEventListener('click', function(){
+    valueOnly = !valueOnly;
+    valueToggleBtn.classList.toggle('on', valueOnly);
+    valueToggleBtn.classList.toggle('off', !valueOnly);
+    applyFilter();
+  });
+}
+
 function applyFilter(){
   document.querySelectorAll('.fx-wrap').forEach(function(wrap){
     var c = wrap.getAttribute('data-conf');
-    // No conf yet (neutral/loading) — always show
+    var v = wrap.getAttribute('data-value');
     if(!c){ wrap.style.display=''; return; }
-    var show = activeFilters[c] !== false;
-    wrap.style.display = show ? '' : 'none';
+    var confOk = activeFilters[c] !== false;
+    var valueOk = !valueOnly || v==='1';
+    wrap.style.display = (confOk && valueOk) ? '' : 'none';
   });
   // Hide league groups that have no visible fixtures
   document.querySelectorAll('.league-group').forEach(function(g){
