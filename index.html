@@ -161,6 +161,13 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
   font-family:var(--mono);font-size:9px;color:var(--t3);line-height:1.7;text-align:center;letter-spacing:1px;}
 .install-hint strong{color:var(--Y)}
 .hidden{display:none!important}
+.debug-panel{position:fixed;bottom:0;left:0;right:0;max-height:40vh;overflow-y:auto;
+  background:#000;border-top:2px solid var(--Y);z-index:9999;padding:10px 14px;
+  font-family:var(--mono);font-size:10px;color:#0f0;line-height:1.6;
+  white-space:pre-wrap;word-break:break-all;}
+.debug-toggle{position:fixed;bottom:0;right:14px;z-index:10000;background:var(--Y);
+  color:#000;border:none;font-family:var(--mono);font-size:10px;font-weight:700;
+  padding:4px 10px;letter-spacing:1px;border-radius:4px 4px 0 0;cursor:pointer;}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .fadein{animation:up .2s both;}
 @keyframes pulse{0%,100%{opacity:.3}50%{opacity:.8}}
@@ -240,6 +247,9 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
   <div id="results-area"></div>
 </div>
 </div>
+
+<button class="debug-toggle" id="debug-toggle">🔍 DEBUG</button>
+<div class="debug-panel hidden" id="debug-panel"></div>
 
 <script>
 var LEAGUES = [
@@ -340,7 +350,7 @@ function xhr(url){
 }
 
 /* ── CACHE (localStorage, keyed by date) ── */
-function cacheKey(date){ return 'mo_day_v8_' + date; }
+function cacheKey(date){ return 'mo_day_v9_' + date; }
 function cacheGet(date){
   try{
     var raw = localStorage.getItem(cacheKey(date));
@@ -594,28 +604,54 @@ function fetchFormData(gen, groups, date){
       return;
     }
     var fid=ids[i];
-    // Bookmaker 6 = Bet365 (best coverage), market: Match Winner
-    xhr('https://v3.football.api-sports.io/odds?fixture='+fid+'&bookmaker=6&bet=1')
+    if(i===0) dbg('Fetching odds for '+ids.length+' fixtures...');
+    // Fetch odds — no bookmaker filter so we get whatever is available
+    xhr('https://v3.football.api-sports.io/odds?fixture='+fid)
     .then(function(json){
       if(gen!==loadGen) return;
+      // Debug: log raw response for first fixture
+      if(i===0){
+        dbg('--- FIXTURE '+fid+' ---');
+dbg('errors: '+JSON.stringify(json.errors));
+dbg('results: '+json.results);
+dbg('resp len: '+(Array.isArray(json.response)?json.response.length:0));
+if(Array.isArray(json.response)&&json.response.length>0){
+  var bm0=json.response[0].bookmakers||[];
+  dbg('bookmakers: '+bm0.map(function(b){return b.name+'('+b.id+')';}).join(', '));
+  if(bm0.length>0) dbg('bets: '+bm0[0].bets.map(function(b){return b.name;}).join(', '));
+}
+        
+        
+      }
       var resp=Array.isArray(json.response)?json.response:[];
-      if(resp.length>0){
-        var bms=resp[0].bookmakers||[];
-        if(bms.length>0){
-          var bets=bms[0].bets||[];
-          if(bets.length>0){
-            var vals=bets[0].values||[];
-            var o={home:null,draw:null,away:null};
-            vals.forEach(function(v){
-              var val=parseFloat(v.odd);
-              if(v.value==='Home') o.home=val;
-              else if(v.value==='Draw') o.draw=val;
-              else if(v.value==='Away') o.away=val;
-            });
-            if(o.home&&o.draw&&o.away) oddsStore[fid]=o;
+      // Try each bookmaker until we find Match Winner (1x2) odds
+      var found=false;
+      for(var b=0;b<resp.length&&!found;b++){
+        var bookmakers=resp[b].bookmakers||[];
+        for(var bk=0;bk<bookmakers.length&&!found;bk++){
+          var bets=bookmakers[bk].bets||[];
+          for(var bt=0;bt<bets.length&&!found;bt++){
+            // Match Winner bet has various names depending on bookmaker
+            var betName=(bets[bt].name||'').toLowerCase();
+            if(betName.indexOf('match winner')>-1||betName.indexOf('1x2')>-1||betName==='match result'){
+              var vals=bets[bt].values||[];
+              var o={home:null,draw:null,away:null};
+              vals.forEach(function(v){
+                var val=parseFloat(v.odd);
+                if(v.value==='Home'||v.value==='1') o.home=val;
+                else if(v.value==='Draw'||v.value==='X') o.draw=val;
+                else if(v.value==='Away'||v.value==='2') o.away=val;
+              });
+              if(o.home&&o.draw&&o.away){
+                oddsStore[fid]=o;
+                found=true;
+                dbg('FOUND: '+JSON.stringify(o)+' via '+bookmakers[bk].name);
+              }
+            }
           }
         }
       }
+      if(!found) dbg('NOT FOUND for '+fid+', bookmakers checked: '+resp.reduce(function(a,r){return a+(r.bookmakers||[]).length;},0));
       fetchOdds(ids, i+1);
     });
   }
@@ -1094,6 +1130,20 @@ function applyFilter(){
     g.style.display = visible ? '' : 'none';
   });
 }
+
+/* ── DEBUG ── */
+function dbg(msg){
+  var panel = el('debug-panel');
+  if(!panel) return;
+  panel.textContent += msg + '
+';
+  panel.scrollTop = panel.scrollHeight;
+}
+el('debug-toggle').addEventListener('click', function(){
+  var panel = el('debug-panel');
+  panel.classList.toggle('hidden');
+  el('debug-toggle').textContent = panel.classList.contains('hidden') ? '🔍 DEBUG' : '✕ DEBUG';
+});
 
 /* ── BOOT ── */
 try{
