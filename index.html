@@ -1137,8 +1137,7 @@ function applyFilter(){
 function dbg(msg){
   var panel = el('debug-panel');
   if(!panel) return;
-  panel.textContent += msg + '
-';
+  panel.textContent += msg + '\n';
   panel.scrollTop = panel.scrollHeight;
 }
 var dbgBtn = el('debug-toggle');
