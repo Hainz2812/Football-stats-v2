@@ -329,7 +329,7 @@ function xhr(url){
 }
 
 /* ── CACHE (localStorage, keyed by date) ── */
-function cacheKey(date){ return 'mo_day_v6_' + date; }
+function cacheKey(date){ return 'mo_day_v7_' + date; }
 function cacheGet(date){
   try{
     var raw = localStorage.getItem(cacheKey(date));
@@ -339,12 +339,12 @@ function cacheGet(date){
 }
 function cacheSet(date, data){
   try{
-    // Keep only last 3 days to avoid filling storage
-    var keep = [date, addDays(date,-1), addDays(date,-2)];
-    for(var i=0; i<localStorage.length; i++){
+    // Prune old cache entries — keep only last 3 days for this version
+    var keep = [cacheKey(date), cacheKey(addDays(date,-1)), cacheKey(addDays(date,-2))];
+    for(var i=localStorage.length-1; i>=0; i--){
       var k = localStorage.key(i);
-      if(k && k.indexOf('mo_day_')===0 && keep.indexOf(k.replace('mo_day_',''))===-1){
-        localStorage.removeItem(k); i--;
+      if(k && k.indexOf('mo_day_')===0 && keep.indexOf(k)===-1){
+        localStorage.removeItem(k);
       }
     }
     localStorage.setItem(cacheKey(date), JSON.stringify(data));
@@ -402,9 +402,9 @@ function loadAll(){
 
   // ── Check cache first ──
   var cached = cacheGet(date);
-  if(cached){
+  if(cached && cached.groups && cached.formStore){
     show('cached-note');
-    renderAll(cached.groups, date, true);
+    renderAll(cached.groups, date, false, cached.formStore, cached.h2hStore, cached.eventsStore);
     return;
   }
 
@@ -583,11 +583,10 @@ function renderAll(groups, date, fromCache, formStore, h2hStore, eventsStore){
   var totalFx = 0;
   groups.forEach(function(g){ totalFx += g.fixtures.length; });
 
-  // Resolve stores (works for both fresh fetch and cache read)
-  var cached = fromCache ? cacheGet(date) : null;
-  var fs = formStore   || (cached ? cached.formStore   : {});
-  var hs = h2hStore    || (cached ? cached.h2hStore    : {});
-  var es = eventsStore || (cached ? cached.eventsStore : {});
+  // Stores always passed in directly — no secondary cache read needed
+  var fs = formStore   || {};
+  var hs = h2hStore    || {};
+  var es = eventsStore || {};
 
   // Show filter bar
   if(totalFx>0) show('filter-bar'); else hide('filter-bar');
