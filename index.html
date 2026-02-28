@@ -427,7 +427,23 @@ function loadAll(){
   var cached = cacheGet(date);
   if(cached && cached.groups && cached.formStore){
     show('cached-note');
-    renderAll(cached.groups, date, false, cached.formStore, cached.h2hStore, cached.eventsStore, cached.oddsStore);
+    // Render immediately from cache (no odds yet)
+    renderAll(cached.groups, date, false, cached.formStore, cached.h2hStore, cached.eventsStore, {});
+    // Then fetch odds fresh in background — never cached so always current
+    var todayFxIds=[];
+    cached.groups.forEach(function(g){
+      g.fixtures.forEach(function(f){
+        todayFxIds.push({
+          id:     f.fixture.id,
+          league: (f.league&&f.league.id)||g.lg.id,
+          season: (f.league&&f.league.season)||g.lg.season
+        });
+      });
+    });
+    show('prog-wrap');
+    el('prog-fill').style.width='90%';
+    el('prog-label').textContent='Refreshing odds...';
+    fetchOddsLive(todayFxIds, 0, gen);
     return;
   }
 
@@ -608,11 +624,17 @@ function fetchFormData(gen, groups, date){
   function fetchOdds(ids, i){
     if(gen!==loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
     if(i>=ids.length){
-      hide('prog-wrap'); el('load-btn').disabled=false;
       dbg('Odds complete. Found for '+Object.keys(oddsStore).length+' of '+ids.length+' fixtures.');
-      var payload={groups:groups,formStore:formStore,h2hStore:h2hStore,eventsStore:eventsStore,oddsStore:oddsStore};
+      hide('prog-wrap'); el('load-btn').disabled=false;
+      // Cache everything except odds — odds are always fetched fresh to avoid stale prices
+      var payload={groups:groups,formStore:formStore,h2hStore:h2hStore,eventsStore:eventsStore};
       cacheSet(date,payload);
-      renderAll(groups,date,false,formStore,h2hStore,eventsStore,oddsStore);
+      // If groups defined (fresh fetch), do full render; else patch odds into existing DOM
+      if(groups && groups.length){
+        renderAll(groups,date,false,formStore,h2hStore,eventsStore,oddsStore);
+      } else {
+        applyOddsToDOM(oddsStore);
+      }
       return;
     }
     var fx=ids[i];
@@ -664,7 +686,121 @@ function fetchFormData(gen, groups, date){
       fetchOdds(ids, i+1);
     });
   }
+
   fetchTeams(0);
+}
+
+/* ── LIVE ODDS FETCH (top-level, used on cache-hit path) ── */
+function fetchOddsLive(ids, i, gen){
+  if(gen!==loadGen){ hide('prog-wrap'); return; }
+  if(i>=ids.length){
+    hide('prog-wrap');
+    dbg('Live odds done. Found for '+Object.keys(window._liveOddsStore||{}).length+' of '+ids.length);
+    applyOddsToDOM(window._liveOddsStore||{});
+    window._liveOddsStore={};
+    return;
+  }
+  if(!window._liveOddsStore) window._liveOddsStore={};
+  var fx=ids[i], fid=fx.id, lgid=fx.league, season=fx.season;
+  var url='https://v3.football.api-sports.io/odds?fixture='+fid+'&league='+lgid+'&season='+season;
+  xhr(url).then(function(json){
+    if(gen!==loadGen) return;
+    var resp=Array.isArray(json.response)?json.response:[];
+    var found=false;
+    for(var b=0;b<resp.length&&!found;b++){
+      var bookmakers=resp[b].bookmakers||[];
+      for(var bk=0;bk<bookmakers.length&&!found;bk++){
+        var bets=bookmakers[bk].bets||[];
+        for(var bt=0;bt<bets.length&&!found;bt++){
+          var betName=(bets[bt].name||'').toLowerCase();
+          if(betName.indexOf('match winner')>-1||betName.indexOf('1x2')>-1||betName==='match result'){
+            var vals=bets[bt].values||[];
+            var o={home:null,draw:null,away:null};
+            vals.forEach(function(v){
+              var val=parseFloat(v.odd);
+              if(v.value==='Home'||v.value==='1') o.home=val;
+              else if(v.value==='Draw'||v.value==='X') o.draw=val;
+              else if(v.value==='Away'||v.value==='2') o.away=val;
+            });
+            if(o.home&&o.draw&&o.away){
+              window._liveOddsStore[String(fid)]=o;
+              found=true;
+            }
+          }
+        }
+      }
+    }
+    fetchOddsLive(ids, i+1, gen);
+  });
+}
+
+/* ── PATCH ODDS INTO EXISTING DOM (used on cache-hit path) ── */
+function applyOddsToDOM(oddsStore){
+  hide('prog-wrap');
+  // Re-render just the odds/value parts of each visible fixture
+  // We store fid on fx-wrap as data-fid during buildFixtureEl
+  document.querySelectorAll('.fx-wrap[data-fid]').forEach(function(wrap){
+    var fid = wrap.getAttribute('data-fid');
+    var odds = oddsStore && oddsStore[String(fid)];
+    if(!odds) return;
+    // Remove existing odds row if any
+    var existing = wrap.querySelector('.fp-odds-row');
+    if(existing) existing.remove();
+    // Get stored probabilities from data attributes
+    var ph = parseFloat(wrap.getAttribute('data-ph')||0);
+    var pd = parseFloat(wrap.getAttribute('data-pd')||0);
+    var pa = parseFloat(wrap.getAttribute('data-pa')||0);
+    if(!ph) return;
+    var iH=1/odds.home*100, iD=1/odds.draw*100, iA=1/odds.away*100;
+    var eH=ph-iH, eD=pd-iD, eA=pa-iA;
+    var MIN_EDGE=4;
+    // Update or add value badge on strip
+    var strip = wrap.querySelector('.fp-strip');
+    if(strip){
+      var oldVal = strip.querySelector('.fp-value');
+      if(oldVal) oldVal.previousSibling && oldVal.previousSibling.remove(), oldVal.remove();
+      var edges=[
+        {label:'H',edge:eH},{label:'D',edge:eD},{label:'A',edge:eA}
+      ].filter(function(e){return e.edge>=MIN_EDGE;}).sort(function(a,b){return b.edge-a.edge;});
+      if(edges.length>0){
+        var best=edges[0];
+        var ec=best.edge>=12?'#39ff88':best.edge>=7?'#ffe600':'#ff9a1f';
+        var dot=document.createElement('span'); dot.className='fp-div'; dot.textContent='·';
+        var badge=document.createElement('span'); badge.className='fp-value';
+        badge.style.color=ec; badge.textContent='VALUE: '+best.label+' +'+best.edge.toFixed(1)+'%';
+        strip.appendChild(dot); strip.appendChild(badge);
+        wrap.setAttribute('data-value','1');
+      }
+    }
+    // Add odds row
+    function mkOddsCell(label,o,edge){
+      var span=document.createElement('span'); span.className='fp-odds-item';
+      var lbl=document.createElement('span'); lbl.className='fp-odds-label'; lbl.textContent=label;
+      var prc=document.createElement('span'); prc.className='fp-odds-price'; prc.textContent=o.toFixed(2);
+      span.appendChild(lbl); span.appendChild(prc);
+      if(edge>=MIN_EDGE){
+        var es=document.createElement('span'); es.className='fp-odds-edge';
+        es.style.color=edge>=12?'#39ff88':edge>=7?'#ffe600':'#ff9a1f';
+        es.textContent=' +'+edge.toFixed(1)+'%'; span.appendChild(es);
+      } else if(edge<=-4){
+        var es=document.createElement('span'); es.className='fp-odds-edge';
+        es.style.color='#ff4040'; es.textContent=' '+edge.toFixed(1)+'%'; span.appendChild(es);
+      }
+      return span;
+    }
+    var row=document.createElement('div'); row.className='fp-odds-row';
+    var src=document.createElement('span'); src.className='fp-odds-label';
+    src.style.marginRight='2px'; src.textContent='BET365';
+    row.appendChild(src);
+    row.appendChild(mkOddsCell('H',odds.home,eH));
+    row.appendChild(mkOddsCell('D',odds.draw,eD));
+    row.appendChild(mkOddsCell('A',odds.away,eA));
+    // Insert after strip, before table
+    var tbl=wrap.querySelector('.fp-tbl');
+    if(tbl) wrap.querySelector('.fp-strip').parentNode.insertBefore(row, tbl);
+    else wrap.querySelector('.fp-strip').parentNode.appendChild(row);
+  });
+  applyFilter();
 }
 
 /* ── RENDER ALL ── */
@@ -788,7 +924,10 @@ function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, oddsStore, isLa
     var pred = mx===P.h ? 'Home Win' : mx===P.d ? 'Draw' : 'Away Win';
     var cf  = conf(mx);
     div.setAttribute('data-conf', cf.l);
-    div.setAttribute('data-value', '0'); // updated below if value found
+    div.setAttribute('data-value', '0');
+    div.setAttribute('data-ph', P.h.toFixed(3));
+    div.setAttribute('data-pd', P.d.toFixed(3));
+    div.setAttribute('data-pa', P.a.toFixed(3));
 
     // ── Odds & value calculation ──────────────────────────────────────────
     var fid = f.fixture.id;
