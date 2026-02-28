@@ -527,7 +527,7 @@ function fetchFormData(gen, groups, date){
     .then(function(json){
       if(gen!==loadGen) return;
       tick('Form '+doneCalls+' / '+teamIds.length+'...');
-      formStore[tid]=Array.isArray(json.response)?json.response:[];
+      formStore[String(tid)]=Array.isArray(json.response)?json.response:[];
       fetchTeams(i+1);
     });
   }
@@ -541,7 +541,7 @@ function fetchFormData(gen, groups, date){
     .then(function(json){
       if(gen!==loadGen) return;
       tick('H2H '+doneCalls+' / '+(teamIds.length+h2hKeys.length)+'...');
-      h2hStore[key]=Array.isArray(json.response)?json.response:[];
+      h2hStore[String(key)]=Array.isArray(json.response)?json.response:[];
       fetchH2H(i+1);
     });
   }
@@ -880,6 +880,7 @@ function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, oddsStore, isLa
   var div = document.createElement('div');
   div.className = 'fx-wrap';
   div.setAttribute('data-conf','');  // filled after prediction calculated
+  div.setAttribute('data-fid', String(f.fixture.id));
 
   // Fixture row
   var row = document.createElement('div');
@@ -902,8 +903,8 @@ function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, oddsStore, isLa
   div.appendChild(row);
 
   // Prediction + stats panel
-  var hR  = formStore && formStore[ht.id] ? formStore[ht.id] : [];
-  var aR  = formStore && formStore[at.id] ? formStore[at.id] : [];
+  var hR  = formStore && formStore[String(ht.id)] ? formStore[String(ht.id)] : [];
+  var aR  = formStore && formStore[String(at.id)] ? formStore[String(at.id)] : [];
   var h2h = h2hStore  && h2hStore[ht.id+'_'+at.id] ? h2hStore[ht.id+'_'+at.id] : [];
 
   // Fallback chain: venue-specific → all games → neutral baseline
