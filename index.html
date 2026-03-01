@@ -351,7 +351,7 @@ function xhr(url){
 }
 
 /* ── CACHE (localStorage, keyed by date) ── */
-function cacheKey(date){ return 'mo_day_v10_' + date; }
+function cacheKey(date){ return 'mo_day_v13_' + date; }
 function cacheGet(date){
   try{
     var raw = localStorage.getItem(cacheKey(date));
@@ -494,7 +494,7 @@ function fetchFormData(gen, groups, date){
   var teamMap={};
   groups.forEach(function(g){ g.fixtures.forEach(function(f){
     var s=(f.league&&f.league.season)||g.lg.season;
-    teamMap[f.teams.home.id]=s; teamMap[f.teams.away.id]=s;
+    teamMap[String(f.teams.home.id)]=s; teamMap[String(f.teams.away.id)]=s;
   });});
   // Unique H2H pairs
   var h2hMap={};
@@ -523,7 +523,7 @@ function fetchFormData(gen, groups, date){
     if(gen!==loadGen){ el('load-btn').disabled=false; hide('prog-wrap'); return; }
     if(i>=teamIds.length){ fetchH2H(0); return; }
     var tid=teamIds[i];
-    xhr('https://v3.football.api-sports.io/fixtures?team='+tid+'&season='+teamMap[tid]+'&last=20')
+    xhr('https://v3.football.api-sports.io/fixtures?team='+tid+'&last=20')
     .then(function(json){
       if(gen!==loadGen) return;
       tick('Form '+doneCalls+' / '+teamIds.length+'...');
@@ -568,7 +568,7 @@ function fetchFormData(gen, groups, date){
             var g2=fx[i];
             if(!g2||!g2.fixture||!g2.teams||!g2.goals) continue;
             var st=g2.fixture.status&&g2.fixture.status.short;
-            if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
+            if(st!=='FT'&&st!=='AET'&&st!=='PEN'&&st!=='AWD') continue;
             if(viewDate&&g2.fixture.date&&g2.fixture.date.slice(0,10)===viewDate) continue;
             var isH=g2.teams.home&&g2.teams.home.id===tid;
             var isA=g2.teams.away&&g2.teams.away.id===tid;
@@ -910,15 +910,24 @@ function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, oddsStore, isLa
   // Fallback chain: venue-specific → all games → neutral baseline
   // viewDate ensures same-day completed games are excluded so predictions stay pre-match
   var viewDate = el('date-input').value || todayStr();
-  var hm = calcForm(hR, ht.id, 'home', viewDate, eventsStore)
-        || calcForm(hR, ht.id, 'all',  viewDate, eventsStore)
+  // Try venue-specific first (min 4 games), fall back to all games, then neutral
+  var lgId = (f.league && f.league.id) || lg.id;
+
+  // League games only — cup games excluded from form data
+  var hmVenue = calcForm(hR, ht.id, 'home', viewDate, eventsStore, lgId);
+  var hm = (hmVenue && hmVenue.n >= 4) ? hmVenue
+         : calcForm(hR, ht.id, 'all', viewDate, eventsStore, lgId)
+        || hmVenue
         || neutralForm();
-  var am = calcForm(aR, at.id, 'away', viewDate, eventsStore)
-        || calcForm(aR, at.id, 'all',  viewDate, eventsStore)
+
+  var amVenue = calcForm(aR, at.id, 'away', viewDate, eventsStore, lgId);
+  var am = (amVenue && amVenue.n >= 4) ? amVenue
+         : calcForm(aR, at.id, 'all', viewDate, eventsStore, lgId)
+        || amVenue
         || neutralForm();
 
   {
-    var h2hStat = calcH2H(h2h, ht.id, at.id, viewDate);
+    var h2hStat = calcH2H(h2h, ht.id, at.id, viewDate, lgId);
     var L   = lambdas(hm, am, h2hStat);
     var P   = probs(L.h, L.a);
     var mx  = Math.max(P.h, P.d, P.a);
@@ -1015,6 +1024,7 @@ function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, oddsStore, isLa
           '<th>Pts/G</th>'+
           '<th>CS%</th>'+
           '<th>L15</th>'+
+          '<th>N</th>'+
         '</tr>'+
         statsRow(ht, hm, L.h)+
         statsRow(at, am, L.a)+
@@ -1026,6 +1036,8 @@ function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, oddsStore, isLa
 }
 
 function statsRow(team, m, xg){
+  var nColor = m.n===0 ? '#ff4040' : m.n<4 ? '#ff9a1f' : '#555';
+  var nLabel = m.n===0 ? 'est' : String(m.n);
   return '<tr>'+
     '<td><div class="td-team">'+
       (team.logo ? '<img src="'+esc(team.logo)+'" alt="" onerror="this.style.display=\'none\'">' : '')+
@@ -1037,6 +1049,7 @@ function statsRow(team, m, xg){
     statCell(m.ppg.toFixed(2), '#39ff88')+
     statCell(Math.round(m.csRate*100)+'%', '#aaa')+
     statCell(m.lateGF!==null ? m.lateGF.toFixed(2) : '-', '#c084fc')+
+    statCell(nLabel, nColor)+
   '</tr>';
 }
 function statCell(val, color){
@@ -1072,7 +1085,7 @@ function probs(hL,aL){
   each prior game multiplied by 0.85.
   Returns weighted averages for goals, conceded, pts, clean sheets.
 */
-function calcForm(fx, tid, venue, viewDate, eventsStore){
+function calcForm(fx, tid, venue, viewDate, eventsStore, leagueId){
   if(!fx||!fx.length) return null;
   var rel=[];
   for(var i=0;i<fx.length;i++){
@@ -1082,6 +1095,8 @@ function calcForm(fx, tid, venue, viewDate, eventsStore){
     if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
     // Exclude games played on the same date we are viewing — keeps predictions pre-match
     if(viewDate && f.fixture.date && f.fixture.date.slice(0,10)===viewDate) continue;
+    // League games only — skip cup games
+    if(leagueId && f.league && f.league.id && f.league.id!==leagueId) continue;
     var isH=f.teams.home&&f.teams.home.id===tid;
     var isA=f.teams.away&&f.teams.away.id===tid;
     if(venue==='home'&&!isH) continue;
@@ -1147,7 +1162,7 @@ function calcForm(fx, tid, venue, viewDate, eventsStore){
   Returns home wins, draws, away wins, and a scoring rate adjustment.
   Only counts games where home team was home and away was away (venue-specific).
 */
-function calcH2H(fx, hid, aid, viewDate){
+function calcH2H(fx, hid, aid, viewDate, leagueId){
   if(!fx||!fx.length) return null;
   var rel=[];
   for(var i=0;i<fx.length;i++){
@@ -1156,6 +1171,8 @@ function calcH2H(fx, hid, aid, viewDate){
     var st=f.fixture.status&&f.fixture.status.short;
     if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
     if(viewDate && f.fixture.date && f.fixture.date.slice(0,10)===viewDate) continue;
+    // Same league only — ignore cup H2H meetings
+    if(leagueId && f.league && f.league.id && f.league.id!==leagueId) continue;
     // Only count fixtures at this venue (home team matches)
     if(f.teams.home.id===hid && f.teams.away.id===aid) rel.push(f);
     if(rel.length===10) break;
