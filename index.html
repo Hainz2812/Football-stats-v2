@@ -321,6 +321,10 @@ var LEAGUES = [
 var API_KEY = '';
 var loadGen  = 0;
 
+// Set of all league IDs we track — used to filter form data to competitive league games only
+var LEAGUE_IDS = {};
+LEAGUES.forEach(function(l){ LEAGUE_IDS[l.id] = true; });
+
 /* ── HELPERS ── */
 function el(id){ return document.getElementById(id); }
 function show(id){ var e=el(id); if(e) e.classList.remove('hidden'); }
@@ -351,7 +355,7 @@ function xhr(url){
 }
 
 /* ── CACHE (localStorage, keyed by date) ── */
-function cacheKey(date){ return 'mo_day_v13_' + date; }
+function cacheKey(date){ return 'mo_day_v15_' + date; }
 function cacheGet(date){
   try{
     var raw = localStorage.getItem(cacheKey(date));
@@ -1085,6 +1089,7 @@ function probs(hL,aL){
   each prior game multiplied by 0.85.
   Returns weighted averages for goals, conceded, pts, clean sheets.
 */
+
 function calcForm(fx, tid, venue, viewDate, eventsStore, leagueId){
   if(!fx||!fx.length) return null;
   var rel=[];
@@ -1095,8 +1100,8 @@ function calcForm(fx, tid, venue, viewDate, eventsStore, leagueId){
     if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
     // Exclude games played on the same date we are viewing — keeps predictions pre-match
     if(viewDate && f.fixture.date && f.fixture.date.slice(0,10)===viewDate) continue;
-    // League games only — skip cup games
-    if(leagueId && f.league && f.league.id && f.league.id!==leagueId) continue;
+    // League games only — must be a competition we track
+    if(f.league && f.league.id && !LEAGUE_IDS[f.league.id]) continue;
     var isH=f.teams.home&&f.teams.home.id===tid;
     var isA=f.teams.away&&f.teams.away.id===tid;
     if(venue==='home'&&!isH) continue;
@@ -1171,8 +1176,8 @@ function calcH2H(fx, hid, aid, viewDate, leagueId){
     var st=f.fixture.status&&f.fixture.status.short;
     if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
     if(viewDate && f.fixture.date && f.fixture.date.slice(0,10)===viewDate) continue;
-    // Same league only — ignore cup H2H meetings
-    if(leagueId && f.league && f.league.id && f.league.id!==leagueId) continue;
+    // League games only for H2H
+    if(f.league && f.league.id && !LEAGUE_IDS[f.league.id]) continue;
     // Only count fixtures at this venue (home team matches)
     if(f.teams.home.id===hid && f.teams.away.id===aid) rel.push(f);
     if(rel.length===10) break;
