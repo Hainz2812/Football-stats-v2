@@ -781,11 +781,18 @@ function fetchOddsLive(ids, i, gen){
     fetch(url).then(function(r){ return r.json(); }).then(function(data){
       dbg('Sport '+sport+': '+(Array.isArray(data)?data.length:0)+' games returned');
       if(Array.isArray(data)){
+        dbg('Games from API for '+sport+':');
+        data.forEach(function(game){
+          dbg('  API: "'+game.home_team+'" vs "'+game.away_team+'"');
+        });
+        dbg('Our fixtures needing match:');
+        fxList.forEach(function(fx){ dbg('  Us: "'+fx.ht+'" vs "'+fx.at+'" ('+fx.conf+')'); });
         data.forEach(function(game){
           // Match to our fixture by team name similarity
           fxList.forEach(function(fx){
             var hn=normalize(fx.ht), an=normalize(fx.at);
             var ghn=normalize(game.home_team), gan=normalize(game.away_team);
+            dbg('Comparing: norm["'+fx.ht+'"]="'+hn+'" vs norm["'+game.home_team+'"]="'+ghn+'"');
             if(nameSimilar(hn,ghn)&&nameSimilar(an,gan)){
               // Extract bet365 odds
               var bk=(game.bookmakers||[]).find(function(b){ return b.key==='bet365'; });
