@@ -323,7 +323,9 @@ var loadGen  = 0;
 
 // Set of all league IDs we track — used to filter form data to competitive league games only
 var LEAGUE_IDS = {};
-LEAGUES.forEach(function(l){ LEAGUE_IDS[l.id] = true; });
+// Include all domestic leagues but exclude European/international cups
+var EXCLUDE_FROM_FORM = {2:1, 3:1, 848:1, 1:1, 5:1, 667:1};
+LEAGUES.forEach(function(l){ if(!EXCLUDE_FROM_FORM[l.id]) LEAGUE_IDS[String(l.id)] = true; });
 
 /* ── HELPERS ── */
 function el(id){ return document.getElementById(id); }
@@ -355,7 +357,7 @@ function xhr(url){
 }
 
 /* ── CACHE (localStorage, keyed by date) ── */
-function cacheKey(date){ return 'mo_day_v15_' + date; }
+function cacheKey(date){ return 'mo_day_v19_' + date; }
 function cacheGet(date){
   try{
     var raw = localStorage.getItem(cacheKey(date));
@@ -426,6 +428,7 @@ function loadAll(){
   hide('main-error');
   hide('cached-note');
   hide('filter-bar');
+  window._oddsFetching = false;  // reset so new load can fetch odds
 
   // ── Check cache first ──
   var cached = cacheGet(date);
@@ -531,7 +534,8 @@ function fetchFormData(gen, groups, date){
     .then(function(json){
       if(gen!==loadGen) return;
       tick('Form '+doneCalls+' / '+teamIds.length+'...');
-      formStore[String(tid)]=Array.isArray(json.response)?json.response:[];
+      var resp=Array.isArray(json.response)?json.response:[];
+      formStore[String(tid)]=resp;
       fetchTeams(i+1);
     });
   }
@@ -687,7 +691,7 @@ function fetchFormData(gen, groups, date){
           }
         }
       }
-      fetchOdds(ids, i+1);
+      setTimeout(function(){ fetchOdds(ids, i+1); }, 200);
     });
   }
 
@@ -696,8 +700,12 @@ function fetchFormData(gen, groups, date){
 
 /* ── LIVE ODDS FETCH (top-level, used on cache-hit path) ── */
 function fetchOddsLive(ids, i, gen){
-  if(gen!==loadGen){ hide('prog-wrap'); return; }
+  // Prevent concurrent odds fetches — only one run at a time
+  if(window._oddsFetching && i===0){ dbg('Odds fetch already running, skipping duplicate'); return; }
+  if(i===0) window._oddsFetching=true;
+  if(gen!==loadGen){ window._oddsFetching=false; hide('prog-wrap'); return; }
   if(i>=ids.length){
+    window._oddsFetching=false;
     hide('prog-wrap');
     dbg('Live odds done. Found for '+Object.keys(window._liveOddsStore||{}).length+' of '+ids.length);
     applyOddsToDOM(window._liveOddsStore||{});
@@ -708,7 +716,7 @@ function fetchOddsLive(ids, i, gen){
   var fx=ids[i], fid=fx.id, lgid=fx.league, season=fx.season;
   var url='https://v3.football.api-sports.io/odds?fixture='+fid+'&league='+lgid+'&season='+season;
   xhr(url).then(function(json){
-    if(gen!==loadGen) return;
+    if(gen!==loadGen){ window._oddsFetching=false; return; }
     var resp=Array.isArray(json.response)?json.response:[];
     var found=false;
     for(var b=0;b<resp.length&&!found;b++){
@@ -734,7 +742,7 @@ function fetchOddsLive(ids, i, gen){
         }
       }
     }
-    fetchOddsLive(ids, i+1, gen);
+    setTimeout(function(){ fetchOddsLive(ids, i+1, gen); }, 200);
   });
 }
 
@@ -917,17 +925,24 @@ function buildFixtureEl(f, lg, formStore, h2hStore, eventsStore, oddsStore, isLa
   // Try venue-specific first (min 4 games), fall back to all games, then neutral
   var lgId = (f.league && f.league.id) || lg.id;
 
-  // League games only — cup games excluded from form data
-  var hmVenue = calcForm(hR, ht.id, 'home', viewDate, eventsStore, lgId);
-  var hm = (hmVenue && hmVenue.n >= 4) ? hmVenue
-         : calcForm(hR, ht.id, 'all', viewDate, eventsStore, lgId)
-        || hmVenue
+  // Fallback chain:
+  // 1. League venue games (home for home team, away for away team)
+  // 2. League all-venue games
+  // 3. Last 5 any-competition venue games (better than neutral)
+  // 4. Last 5 any-competition all games
+  // 5. Neutral baseline (truly last resort)
+  var hmLeague = calcForm(hR, ht.id, 'home', viewDate, eventsStore, lgId);
+  var hm = hmLeague
+        || calcForm(hR, ht.id, 'all',  viewDate, eventsStore, lgId)
+        || calcForm(hR, ht.id, 'home', viewDate, eventsStore, null, 5)
+        || calcForm(hR, ht.id, 'all',  viewDate, eventsStore, null, 5)
         || neutralForm();
 
-  var amVenue = calcForm(aR, at.id, 'away', viewDate, eventsStore, lgId);
-  var am = (amVenue && amVenue.n >= 4) ? amVenue
-         : calcForm(aR, at.id, 'all', viewDate, eventsStore, lgId)
-        || amVenue
+  var amLeague = calcForm(aR, at.id, 'away', viewDate, eventsStore, lgId);
+  var am = amLeague
+        || calcForm(aR, at.id, 'all',  viewDate, eventsStore, lgId)
+        || calcForm(aR, at.id, 'away', viewDate, eventsStore, null, 5)
+        || calcForm(aR, at.id, 'all',  viewDate, eventsStore, null, 5)
         || neutralForm();
 
   {
@@ -1090,7 +1105,7 @@ function probs(hL,aL){
   Returns weighted averages for goals, conceded, pts, clean sheets.
 */
 
-function calcForm(fx, tid, venue, viewDate, eventsStore, leagueId){
+function calcForm(fx, tid, venue, viewDate, eventsStore, leagueId, maxGames){
   if(!fx||!fx.length) return null;
   var rel=[];
   for(var i=0;i<fx.length;i++){
@@ -1101,14 +1116,14 @@ function calcForm(fx, tid, venue, viewDate, eventsStore, leagueId){
     // Exclude games played on the same date we are viewing — keeps predictions pre-match
     if(viewDate && f.fixture.date && f.fixture.date.slice(0,10)===viewDate) continue;
     // League games only — must be a competition we track
-    if(f.league && f.league.id && !LEAGUE_IDS[f.league.id]) continue;
+    if(leagueId!==null && f.league && f.league.id && !LEAGUE_IDS[String(f.league.id)]) continue;
     var isH=f.teams.home&&f.teams.home.id===tid;
     var isA=f.teams.away&&f.teams.away.id===tid;
     if(venue==='home'&&!isH) continue;
     if(venue==='away'&&!isA) continue;
     if(venue==='all'&&!isH&&!isA) continue;
     rel.push(f);
-    if(rel.length===10) break; // up to 10 venue games
+    if(rel.length===(maxGames||10)) break;
   }
   if(!rel.length) return null;
   // rel[0] = most recent (API returns newest first)
@@ -1177,7 +1192,7 @@ function calcH2H(fx, hid, aid, viewDate, leagueId){
     if(st!=='FT'&&st!=='AET'&&st!=='PEN') continue;
     if(viewDate && f.fixture.date && f.fixture.date.slice(0,10)===viewDate) continue;
     // League games only for H2H
-    if(f.league && f.league.id && !LEAGUE_IDS[f.league.id]) continue;
+    if(f.league && f.league.id && !LEAGUE_IDS[String(f.league.id)]) continue;
     // Only count fixtures at this venue (home team matches)
     if(f.teams.home.id===hid && f.teams.away.id===aid) rel.push(f);
     if(rel.length===10) break;
