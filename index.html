@@ -758,12 +758,11 @@ function fetchOddsLive(ids, i, gen){
 
   // Group fixtures by sport key, only Strong Signal + Good Edge
   var sportGroups={};
-  // ids is array of {id, league, season, conf, ht, at}
   ids.forEach(function(fx){
     var conf=fx.conf;
     if(conf!=='Strong Signal'&&conf!=='Good Edge') return;
     var sport=ODDS_SPORT_MAP[fx.league];
-    if(!sport) return;
+    if(!sport){ dbg('No sport key for league '+fx.league+' ('+fx.ht+' vs '+fx.at+')'); return; }
     if(!sportGroups[sport]) sportGroups[sport]=[];
     sportGroups[sport].push(fx);
   });
@@ -772,6 +771,33 @@ function fetchOddsLive(ids, i, gen){
   dbg('Odds API: fetching '+sports.length+' sports for Strong/Good Edge fixtures');
   if(!sports.length){ window._oddsFetching=false; hide('prog-wrap'); return; }
 
+  // First verify the sport keys exist in the API
+  fetch('https://api.the-odds-api.com/v4/sports/?apiKey='+ODDS_API_KEY+'&all=true')
+  .then(function(r){ return r.json(); })
+  .then(function(allSports){
+    if(Array.isArray(allSports)){
+      var soccerKeys={};
+      allSports.forEach(function(s){ if(s.key&&s.key.indexOf('soccer')===0) soccerKeys[s.key]=s.title; });
+      dbg('Available soccer sports ('+Object.keys(soccerKeys).length+'): '+Object.keys(soccerKeys).slice(0,10).join(', ')+'...');
+      // Remap our sport groups using actual available keys
+      var remapped={};
+      Object.keys(sportGroups).forEach(function(sport){
+        if(soccerKeys[sport]){
+          remapped[sport]=sportGroups[sport];
+        } else {
+          dbg('WARNING: sport key "'+sport+'" not found in API. Available similar: '+
+            Object.keys(soccerKeys).filter(function(k){ return k.indexOf(sport.split('_')[1])>-1; }).join(', '));
+        }
+      });
+      sportGroups=remapped;
+      sports=Object.keys(sportGroups);
+    }
+    doFetchOdds();
+  }).catch(function(){ doFetchOdds(); });
+
+  function doFetchOdds(){
+  if(!sports.length){ window._oddsFetching=false; hide('prog-wrap'); dbg('No valid sport keys found'); return; }
+
   var done=0;
   sports.forEach(function(sport){
     var fxList=sportGroups[sport];
@@ -779,6 +805,7 @@ function fetchOddsLive(ids, i, gen){
       '?apiKey='+ODDS_API_KEY+
       '&regions=uk&markets=h2h&oddsFormat=decimal&bookmakers=bet365';
     fetch(url).then(function(r){ return r.json(); }).then(function(data){
+      if(data&&data.message){ dbg('API error for '+sport+': '+data.message); data=[]; }
       dbg('Sport '+sport+': '+(Array.isArray(data)?data.length:0)+' games returned');
       if(Array.isArray(data)){
         dbg('Games from API for '+sport+':');
@@ -824,11 +851,12 @@ function fetchOddsLive(ids, i, gen){
         window._liveOddsStore={};
       }
     }).catch(function(e){
-      dbg('Odds API error: '+e.message);
+      dbg('Odds API error for '+sport+': '+e.message);
       done++;
       if(done===sports.length){ window._oddsFetching=false; hide('prog-wrap'); }
     });
   });
+  } // end doFetchOdds
 }
 
 // Fallback: use API-Football odds (one request per fixture)
