@@ -213,8 +213,19 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer;-webkit-appearan
 </div>
 
 <div id="key-bar" class="key-bar hidden">
-  <span><span class="key-dot"></span>Connected · API Key Active</span>
-  <button class="btn-sm" id="change-key-btn">Change Key</button>
+  <span><span class="key-dot"></span>API-Football Active</span>
+  <button class="btn-sm" id="change-key-btn">Change Keys</button>
+</div>
+<div id="odds-key-bar" class="key-bar hidden" style="background:rgba(255,230,0,.06);border-color:rgba(255,230,0,.2)">
+  <span id="odds-key-status"><span class="key-dot" style="background:#ff9a1f"></span>No Odds API Key</span>
+  <button class="btn-sm" id="set-odds-key-btn">Add Key</button>
+</div>
+
+<div id="odds-key-entry" class="card hidden" style="margin-bottom:0;border-color:rgba(255,230,0,.3)">
+  <span class="slabel">The Odds API Key</span>
+  <input type="password" id="odds-key-inline-input" placeholder="Paste your Odds API key"
+    autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"/>
+  <button class="btn-primary" id="save-odds-key-btn" style="background:rgba(255,230,0,.15);color:var(--Y);border:1px solid rgba(255,230,0,.3)">Save Odds Key</button>
 </div>
 
 <div id="main-app" class="hidden">
@@ -411,17 +422,37 @@ function saveKey(){
   try{ localStorage.setItem('mo_key', k); }catch(e){}
   var ok = el('odds-api-key-input').value.trim();
   if(ok){ ODDS_API_KEY=ok; try{ localStorage.setItem('mo_odds_key', ok); }catch(e){} }
-  hide('key-section'); show('key-bar'); show('main-app');
+  hide('key-section'); show('key-bar'); show('odds-key-bar'); show('main-app');
   show('debug-toggle');
+  updateOddsKeyBar();
   buildQuickDates();
   loadAll();
 }
 function changeKey(){
   API_KEY = '';
   try{ localStorage.removeItem('mo_key'); }catch(e){}
-  hide('key-bar'); hide('main-app');
+  hide('key-bar'); hide('odds-key-bar'); hide('main-app'); hide('odds-key-entry');
   el('api-key-input').value = '';
   show('key-section');
+}
+function updateOddsKeyBar(){
+  if(ODDS_API_KEY){
+    el('odds-key-status').innerHTML='<span class="key-dot" style="background:#39ff88"></span>Odds API Active';
+    el('set-odds-key-btn').textContent='Change';
+  } else {
+    el('odds-key-status').innerHTML='<span class="key-dot" style="background:#ff9a1f"></span>No Odds API Key';
+    el('set-odds-key-btn').textContent='Add Key';
+  }
+}
+function saveOddsKey(){
+  var k = el('odds-key-inline-input').value.trim();
+  if(!k){ alert('Please paste your Odds API key'); return; }
+  ODDS_API_KEY = k;
+  try{ localStorage.setItem('mo_odds_key', k); }catch(e){}
+  hide('odds-key-entry');
+  updateOddsKeyBar();
+  // Re-fetch odds with new key
+  fetchOddsLive(window._lastOddsIds||[], 0, loadGen);
 }
 
 /* ── QUICK DATE PILLS ── */
@@ -480,6 +511,7 @@ function loadAll(){
     show('prog-wrap');
     el('prog-fill').style.width='90%';
     el('prog-label').textContent='Refreshing odds...';
+    window._lastOddsIds=todayFxIds;
     fetchOddsLive(todayFxIds, 0, gen);
     return;
   }
@@ -1430,6 +1462,13 @@ function badge(f){
 /* ── EVENT LISTENERS ── */
 el('date-input').value = todayStr();
 el('save-key-btn').addEventListener('click', saveKey);
+el('set-odds-key-btn').addEventListener('click', function(){
+  var entry = el('odds-key-entry');
+  entry.classList.toggle('hidden');
+  if(!entry.classList.contains('hidden')) el('odds-key-inline-input').focus();
+});
+el('save-odds-key-btn').addEventListener('click', saveOddsKey);
+el('odds-key-inline-input').addEventListener('keydown', function(e){ if(e.key==='Enter') saveOddsKey(); });
 el('change-key-btn').addEventListener('click', changeKey);
 el('api-key-input').addEventListener('keydown', function(e){ if(e.key==='Enter') saveKey(); });
 el('prev-day').addEventListener('click', function(){ var d=addDays(el('date-input').value||todayStr(),-1); el('date-input').value=d; setQD(d); loadAll(); });
@@ -1513,7 +1552,7 @@ try{
   var s = localStorage.getItem('mo_key');
   var ok = localStorage.getItem('mo_odds_key');
   if(ok) ODDS_API_KEY=ok;
-  if(s){ API_KEY=s; hide('key-section'); show('key-bar'); show('main-app'); show('debug-toggle'); buildQuickDates(); loadAll(); }
+  if(s){ API_KEY=s; hide('key-section'); show('key-bar'); show('odds-key-bar'); show('main-app'); show('debug-toggle'); updateOddsKeyBar(); buildQuickDates(); loadAll(); }
 }catch(e){}
 if(!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) hide('install-hint');
 </script>
